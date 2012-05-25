@@ -1,0 +1,16 @@
+Icon?
+.DS_Store
+.svn
+code_coverage
+*~
+*.swp
+coverage
+kohana_release
+nbproject
+build
+index.php
+application/config/database.php
+application/config/auth.php
+application/config/email.php
+application/cache/*
+application/logs/*
