@@ -13,7 +13,7 @@ class TileMapConverter {
         $this->createAssets($xml);
 
         $this->pr($this->map);
-        $this->pr($this->sprites);
+       // $this->pr($this->sprites);
     }
 
     private function createAssets($xml) {
@@ -47,7 +47,7 @@ class TileMapConverter {
                         $id++;
                     }
                 }
-                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w, $h, $img, implode(",\n", $data), $offsetX, $offsetY);
+                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w-$offsetX, $h-$offsetY, $img, implode(",\n", $data), $offsetX, $offsetY);
             }
            // $this->pr($tileset);
         }
@@ -87,7 +87,7 @@ class TileMapConverter {
             }
         }
 
-        $this->map = json_encode($r);
+        $this->map = ($r);
     }
 
     public function save($output) {

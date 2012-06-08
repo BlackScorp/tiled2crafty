@@ -20,7 +20,7 @@ Crafty.extend({
          * ~~~
          * @see Crafty.isometric.place
          */
-        init: function (width, height,orientation) {
+        init: function (tw,th,mw,mh,orientation) {
    
             switch(orientation){
                 case 'staggered':{
@@ -28,7 +28,7 @@ Crafty.extend({
                         break;
                 }
                 default:{
-                        this._iso = Crafty.diamond.init(width,height);
+                        this._iso = Crafty.diamond.init(tw,th,mw,mh);
                 }
             }
             
