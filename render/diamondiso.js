@@ -52,9 +52,9 @@ Crafty.extend({
             var paddingY = padding[1] || 0;
             
             obj.attr({
-                x:pos.left+paddingX,
-                y:pos.top-this._tile.height+paddingY,
-                z:y
+                x:pos.left,
+                y:pos.top-this._tile.height,
+                z:pos.top-this._tile.height
             });
             
             

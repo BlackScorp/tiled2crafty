@@ -25,7 +25,7 @@ class TileMapConverter {
                 foreach ($property as $p) {
                   
                     if ($p['name'] == 'ignore')
-                        $ignore = true;
+                       $ignore = false;
                 }
             }
             
@@ -47,7 +47,7 @@ class TileMapConverter {
                         $id++;
                     }
                 }
-                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w-$offsetX, $h-$offsetY, $img, implode(",\n", $data), $offsetX, $offsetY);
+                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w, $h, $img, implode(",\n", $data), $offsetX, $offsetY);
             }
            // $this->pr($tileset);
         }
