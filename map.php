@@ -12,7 +12,7 @@ class TileMapConverter {
         $this->createMap($xml);
         $this->createAssets($xml);
 
-        //$this->pr($this->map);
+        $this->pr($this->map);
         $this->pr($this->sprites);
     }
 
@@ -30,6 +30,8 @@ class TileMapConverter {
             }
             
             if (!$ignore) {
+                $offsetX = 0;
+                $offsetY = 0;
                 $offsetX = (int) $tileset->tileoffset['x'];
                 $offsetY = (int) $tileset->tileoffset['y'];
                 $w = $tileset['tilewidth'] + $offsetX;
@@ -45,7 +47,7 @@ class TileMapConverter {
                         $id++;
                     }
                 }
-                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w, $h, $img, implode(",\n", $data), $offsetX, $offsetY);
+                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w-$offsetX, $h-$offsetY, $img, implode(",\n", $data), $offsetX, $offsetY);
             }
            // $this->pr($tileset);
         }

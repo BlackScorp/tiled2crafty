@@ -45,14 +45,15 @@ Crafty.extend({
         },
         place:function(obj,x,y){
              
-            var pos = this.pos2px(x*this._grid.width,y*this._grid.height);
+            var pos = this.pos2px(x,y);
             var padding = obj.attr('__padding');
-            
+        
             var paddingX = padding[0] || 0;
             var paddingY = padding[1] || 0;
+            
             obj.attr({
                 x:pos.left+paddingX,
-                y:pos.top-paddingY+this._tile.height,
+                y:pos.top-this._tile.height+paddingY,
                 z:y
             });
             
@@ -67,8 +68,9 @@ Crafty.extend({
             });
         },
         pos2px:function(x,y){
-            var l = (x-y)*this._tile.cos;
-            var t = (x+y)*this._tile.sin;
+            var l = (x-y)*this._tile.width/2;
+            var t = (x+y)*this._tile.height/2;
+            
             return{
                 top:~~(t+this._origin.y),
                 left:~~(l+this._origin.x)
