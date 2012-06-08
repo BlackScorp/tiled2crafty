@@ -24,8 +24,8 @@ Crafty.extend({
             this._m.w = mw;
             this._m.h = mh || mh;
             
-            this._o.x = Crafty.viewport.x-tw+mw*tw/2;
-            this._o.y = Crafty.viewport.y-th/2;
+            this._o.x = tw/2+mw*tw/2-Crafty.viewport.x;
+            this._o.y = th/2-Crafty.viewport.y;
               
             return this;
         },
@@ -33,16 +33,12 @@ Crafty.extend({
         place:function(obj,x,y){
              
             var pos = this.pos2px(x,y);
-            console.log(pos);
-            var padding = obj.attr('__padding');
         
-            var paddingX = padding[0] || 0;
-            var paddingY = padding[1] || 0;
           
             obj.attr({
-                x:pos.left+paddingX,
-                y:pos.top+paddingY,
-                z:pos.top+paddingY-this._t.h
+                x:pos.left,
+                y:pos.top,
+                z:pos.top-(obj.h-this._t.h/2)
             });
             
             

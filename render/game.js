@@ -2,17 +2,16 @@ $(function(){
     Crafty.init();
     var objects = frontier_outpost.layers.object.split(",");
     var collision = frontier_outpost.layers.collision.split(",");
-    //  Crafty.viewport.y = -500;
+
     var vp = Crafty.viewport;
     var map = frontier_outpost.metadata;
-   // Crafty.viewport.x = -1200;
+ 
     var iso = Crafty.isometric.init(map.tilewidth,map.tileheight,map.width,map.height);
-     Crafty.background("url(frontier_outpost.png) no-repeat");
- 
- 
+    // Crafty.background("url(frontier_outpost.png) top left no-repeat");
+   
      var i = 0;
-    for(var y = 0;y<frontier_outpost.metadata.height;y++){
-        for(var x = 0;x<frontier_outpost.metadata.width;x++){
+    for(var y = 0;y<map.width;y++){
+        for(var x = 0;x<map.height;x++){
             var object = objects[i];
    
             if(object > 0){
@@ -24,5 +23,6 @@ $(function(){
     }
     
  
- 
+    $('#cr-stage').css({'overflow':'scroll'});
+  //  $('#cr-stage > div').css({'background':'url(frontier_outpost.png) top left no-repeat'});
 });
