@@ -177,7 +177,7 @@ Crafty.sprite(64,64,"grassland_water.png",{
 189:[13,2],
 190:[14,2],
 191:[15,2]
-});
+},0,0,0,32);
 Crafty.sprite(64,256,"grassland_structures.png",{
 208:[0,0],
 209:[1,0],
@@ -211,7 +211,7 @@ Crafty.sprite(64,256,"grassland_structures.png",{
 237:[13,1],
 238:[14,1],
 239:[15,1]
-});
+},0,0,0,0);
 Crafty.sprite(128,256,"grassland_trees.png",{
 240:[0,0],
 241:[1,0],
@@ -235,4 +235,4 @@ Crafty.sprite(128,256,"grassland_trees.png",{
 259:[8,1],
 260:[9,1],
 261:[10,1]
-});
+},0,0,-32,0);

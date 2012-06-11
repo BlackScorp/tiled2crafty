@@ -1,6 +1,6 @@
 
 Crafty.extend({
-    diamond:{
+    diamondIso:{
         _t: {
             w: 0,
             h: 0
@@ -24,8 +24,8 @@ Crafty.extend({
             this._m.w = mw;
             this._m.h = mh || mh;
             
-            this._o.x = tw/2+mw*tw/2-Crafty.viewport.x;
-            this._o.y = th/2-Crafty.viewport.y;
+            this._o.x = mw*tw/2-Crafty.viewport.x;
+            this._o.y = th-Crafty.viewport.y;
               
             return this;
         },
@@ -33,24 +33,17 @@ Crafty.extend({
         place:function(obj,x,y){
              
             var pos = this.pos2px(x,y);
-        
-          
+            var offset = obj.__offset;
+           
             obj.attr({
-                x:pos.left,
-                y:pos.top,
-                z:pos.top-(obj.h-this._t.h/2)
+                x:pos.left-obj.w/2+offset[0],
+                y:pos.top-obj.h+offset[1],
+                z:y
             });
             
             
         },
-        placeAbsolute:function(obj,x,y,z,layer){
-            var pos = this.pos2px(x,y,z);
-            obj.attr({
-                x:pos.left+Crafty.viewport.x,
-                y:pos.top,
-                z:layer
-            });
-        },
+       
         pos2px:function(x,y){
             var l = (x-y)*this._t.w/2;
             var t = (x+y)*this._t.h/2;
@@ -64,16 +57,3 @@ Crafty.extend({
     }
 });
 
-Crafty.c("DiamondIso",{
-    iso:{
-        x:0,
-        y:0,
-        z:0,
-        dynamic:false
-    },
-    init:function(){
-        this.bind("Change",function(){
-            if(!this.iso.dynamic) return;
-        })
-    } 
-});

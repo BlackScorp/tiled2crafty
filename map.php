@@ -13,7 +13,7 @@ class TileMapConverter {
         $this->createAssets($xml);
 
         $this->pr($this->map);
-       // $this->pr($this->sprites);
+        $this->pr($this->sprites);
     }
 
     private function createAssets($xml) {
