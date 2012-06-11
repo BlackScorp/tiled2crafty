@@ -127,7 +127,7 @@ Crafty.sprite(64,128,"grassland.png",{
 141:[13,7],
 142:[14,7],
 143:[15,7]
-});
+},0,0,0,0);
 Crafty.sprite(64,64,"grassland_water.png",{
 144:[0,0],
 145:[1,0],
