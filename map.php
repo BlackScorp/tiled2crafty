@@ -47,7 +47,7 @@ class TileMapConverter {
                         $id++;
                     }
                 }
-                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},%d,%d);', $w-$offsetX, $h-$offsetY, $img, implode(",\n", $data), $offsetX, $offsetY);
+                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '}0,0,%d,%d);', $w-$offsetX, $h-$offsetY, $img, implode(",\n", $data), $offsetX, $offsetY);
             }
            // $this->pr($tileset);
         }

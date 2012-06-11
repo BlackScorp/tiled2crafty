@@ -34,10 +34,10 @@ Crafty.extend({
              
             var pos = this.pos2px(x,y);
             var offset = obj.__offset;
-           
+          
             obj.attr({
-                x:pos.left-obj.w/2+offset[0],
-                y:pos.top-obj.h+offset[1],
+                x:pos.left-obj.w/2-offset[0],
+                y:pos.top-obj.h-offset[1],
                 z:y
             });
             
