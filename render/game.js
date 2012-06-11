@@ -7,7 +7,7 @@ $(function(){
     var map = frontier_outpost.metadata;
  
     var iso = Crafty.diamondIso.init(map.tilewidth,map.tileheight,map.width,map.height);
-     Crafty.background("url(frontier_outpost.png) #000 top left no-repeat");
+   //  Crafty.background("url(frontier_outpost.png) #000 top left no-repeat");
   // var tile = Crafty.e("2D","DOM",144);
    //iso.place(tile,0,0);
      var i = 0;
@@ -24,6 +24,6 @@ $(function(){
     }
     
  
-   // $('#cr-stage').css({'overflow':'scroll'});
-  //  $('#cr-stage > div').css({'background':'url(frontier_outpost.png) top left no-repeat'});
+  $('#cr-stage').css({'overflow':'scroll'});
+    $('#cr-stage > div').css({'background':'url(frontier_outpost.png) #000 top left no-repeat','width':'4096px','height':'2048px','top':'0px','left':'0px'});
 });
