@@ -12,10 +12,13 @@ $(function(){
    // iso.place(tile,5,5);
    // tile.collision(iso.polygon());
     var i = 0;
-    for(var y = 0;y<64;y++){
-        for(var x = 0;x<64;x++){
+    for(var y = 0;y<20;y++){
+       
+        for(var x = 0;x<20;x++){
+         
             var object = objects[i];
             var collision = collisions[i];
+           
             if(object > 0){
                 var tile = Crafty.e("2D","DOM",object);//.text("X:"+x+"/Y:"+y);
             
@@ -26,6 +29,7 @@ $(function(){
             }
             i++;
         }
+        i = 64*y;
     }
     
  /*
