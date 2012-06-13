@@ -1,6 +1,6 @@
 $(function(){
     Crafty.init();
-    
+    Crafty.canvas.init();
    
     var objects = frontier_outpost.layers.object.split(",");
     var collisions = frontier_outpost.layers.collision.split(",");
