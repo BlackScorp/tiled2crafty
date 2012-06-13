@@ -2390,8 +2390,8 @@ Crafty.extend({
         continue
     }
     temp=map[spriteName];
-    x=temp[0]*(tile+paddingX);
-    y=temp[1]*(tileh+paddingY);
+    x=(temp[0]*(tile+paddingX));
+    y=(temp[1]*(tileh+paddingY));
     w=temp[2]*tile||tile;
     h=temp[3]*tileh||tileh;
     Crafty.c(spriteName,{

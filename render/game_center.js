@@ -16,7 +16,7 @@ $(function(){
           }
       })
   
-    //iso.centerAt(0,0);
+    iso.centerAt(32,32);
     Crafty.background("url(frontier_outpost.png) #000 "+(Crafty.viewport.x)+"px "+ (Crafty.viewport.y)+"px no-repeat");
 
   var i = 0;
