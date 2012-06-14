@@ -54,16 +54,16 @@ Crafty.extend({
         
           
          
-            this.rect(this._map);
+          //  this.rect(Crafty.viewport);
 
             return {
                 x:{
                     min:0,
-                    max:0
+                    max:this._map.width
                 },
                 y:{
                     min:0,
-                    max:0
+                    max:this._map.height
                 }
             }
         },
@@ -92,6 +92,10 @@ Crafty.extend({
             [bottomRight.left,bottomRight.top + this._tile.height],
             [bottomLeft.left - this._tile.width/2,bottomLeft.top+this._tile.height/2]
             ]
+            for(var i in p){
+                var x = p[i];
+                console.log(this.px2pos(x[0]/this._tile.width,x[1]/this._tile.height));
+            }
             console.log(p);
         },
         polygon:function(obj){
