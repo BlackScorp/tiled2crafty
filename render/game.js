@@ -1,60 +1,100 @@
 $(function(){
+    //Init Crafty
     Crafty.init();
+    //Init Canvas
+    Crafty.canvas.init();
     
-    var backgrounds = frontier_outpost.layers.background.split(",");
+    //Setup background color
+   // Crafty.background("#000");
+     
+    //Get Background Tiles
+    var backgrounds = frontier_outpost.layers.background.split(","); 
+    //Get Object Tiles
     var objects = frontier_outpost.layers.object.split(",");
+    //Get Collision Tiles
     var collisions = frontier_outpost.layers.collision.split(",");
-
-    var vp = Crafty.viewport;
+    //Get Map Metadata;
     var map = frontier_outpost.metadata;
-  
-    var iso = Crafty.diamondIso.init(map.tilewidth,map.tileheight,map.width,map.height);
-    Crafty.c("BaseTile",{
-        init:function(){
-            this.w = map.tilewidth;
-            this.h = map.tileheight;
-        }
-    })
-  
-    iso.centerAt(25,25);
-    //Crafty.background("url(frontier_outpost.png) #000 "+(Crafty.viewport.x)+"px "+ (Crafty.viewport.y)+"px no-repeat");
+    
+    //Convert Data to Integers
+    var tw = parseInt(map.tilewidth);
+    var th = parseInt(map.tileheight);
+    var mw = parseInt(map.width);
+    var mh = parseInt(map.height);
+    
+    //Init Isometric
+    var iso = Crafty.diamondIso.init(tw,th,mw,mh);
 
-  
-    var i = 0;
-  //  for(var y = 0;y<map.height;y++){
-    //    for(var x = 0;x<map.width;x++){
-               for(var y = 0;y<40;y++){
-        for(var x = 0;x<40;x++){
-            var object = objects[i];
-            var collision = collisions[i];
-            var background = backgrounds[i];
-            var tile = null;
+    //Center Viewport at Position
+    //iso.centerAt(10,10);
+    
+    //get locations within the view
+    var area = iso.area();
+    //Rendering
+    for(var y = area.y.min;y<area.y.max;y++){
+        //Setup the tile counter
+        var i = y * mh; 
+        for(var x = area.x.min;x<area.x.max;x++){
+
+            var object = objects[i], //get current object
+            collision = collisions[i], //get current collision
+            background = backgrounds[i], //get current background
+            tile = null, //initialize tile
+            offsetX = 0, //initialize tile offset
+            offsetY = 0;
+            
+            //place background tiles
             if(background > 0){
-                tile = Crafty.e("2D","DOM","Text",background);
-                var offsetX = 0;
-                var offsetY = 0;
+                tile = Crafty.e("2D","DOM",background);
+                //add colision 
+                if(collision > 0) tile.addComponent("Solid");
                 if(tile.__offset !== undefined){
                     offsetX = tile.__offset[0];
                     offsetY = tile.__offset[1];
                 }
-    
-                iso.place(tile,x,y,offsetX,offsetY,0);
+                iso.place(tile,x,y,offsetX,offsetY,1);
             }
+            //place object tiles
             if(object > 0){
-                tile = Crafty.e("2D","DOM","Text",object,1);
-                if(collision > 0){
-                    tile.addComponent("Solid");
+                tile = Crafty.e("2D","DOM",object);
+                if(collision > 0) tile.addComponent("Solid");
+                if(tile.__offset !== undefined){
+                    offsetX = tile.__offset[0];
+                    offsetY = tile.__offset[1];
                 }
-               
-                iso.place(tile,x,y,tile.__offset[0],tile.__offset[1]); 
-            }else if(collision > 0){
-            //  var collisionTile = Crafty.e("2D","DOM","Solid","BaseTile","Color");
-            // iso.place(collisionTile,x,y);
+                iso.place(tile,x,y,offsetX,offsetY,2); 
             }
             i++;
         }
-        i = y*map.height;
+      
     }
-  
- 
+    
+   
+    Crafty.bind("KeyDown",function(e){
+        this._isDown = true;
+        this._keyCode = e.keyCode;
+     
+    })
+    Crafty.bind("KeyUp",function(e){
+        this._isDown = false;
+    })
+    Crafty.bind("EnterFrame",function(){
+        if(!this._isDown) return;
+        var scrollSpeed = 5;
+        if(Crafty.keys['W'] == this._keyCode ){
+            Crafty.viewport.y+=scrollSpeed;
+        }
+        if(Crafty.keys['A'] == this._keyCode ){
+            Crafty.viewport.x+=scrollSpeed;
+        }
+        if(Crafty.keys['S'] == this._keyCode ){
+            Crafty.viewport.y-=scrollSpeed;
+        }
+        if(Crafty.keys['D'] == this._keyCode ){
+            Crafty.viewport.x-=scrollSpeed;
+        }
+
+    });
+    console.log(Crafty("2D").length);
+
 });

@@ -34,9 +34,9 @@ Crafty.extend({
             var pos = this.pos2px(x,y);
             if(!offsetX) offsetX = 0;
             if(!offsetY) offsetY = 0;
-      
+            ;
             obj.attr({
-                x:(pos.left)+offsetX,
+                x:(pos.left-obj.w/2)+offsetX,
                 y:(pos.top-obj.h)+offsetY,
                 z:y*layer
             }); 
@@ -44,33 +44,43 @@ Crafty.extend({
         },
         centerAt:function(x,y){
             var pos = this.pos2px(x,y);
-            Crafty.viewport.x = -pos.left+Crafty.viewport.width/2;
-            Crafty.viewport.y = -pos.top+Crafty.viewport.height/2;
+            Crafty.viewport.x = -pos.left+Crafty.viewport.width/2+this._tile.w;
+            Crafty.viewport.y = -pos.top+Crafty.viewport.height/2-this._tile.h;
+        },
+        area:function(){
+            var min = this.px2pos(-Crafty.viewport.x,-Crafty.viewport.y);
+            var max = this.px2pos(-Crafty.viewport.x+Crafty.viewport.width,-Crafty.viewport.y+Crafty.viewport.height);
+            console.log(min);
+            return {
+                x:{
+                    min:min.x,
+                    max:max.x
+                },
+                y:{
+                    min:min.y,
+                    max:max.y
+                }
+            }
         },
         pos2px:function(x,y){
-            var l = (x-y)*this._tile.w/2+this._origin.x;
-            var t = (x+y)*this._tile.h/2;
-            
             return{
-                left:l,
-                top:t
+                left:((x-y)*this._tile.w/2+this._origin.x),
+                top:((x+y)*this._tile.h/2)
             }
         },
         px2pos:function(left,top){
-            var x = left - this._origin.x;
-        
             return {
-                x:(top+(x/this._tile.r)) / this._tile.h,
-                y:(top-(x/this._tile.r)) / this._tile.h
+                x:((top+((left - this._origin.x)/this._tile.r)) / this._tile.h),
+                y:((top-((left - this._origin.x)/this._tile.r)) / this._tile.h)
             }
         },
         polygon:function(){
         
             var p =[
-                [0,this._pos.y -this._t.h/2],
-                [this._t.w/2,this._pos.y -0],
-                [this._t.w,this._pos.y -this._t.h/2],
-                [this._t.w/2,this._pos.y -this._t.h]
+            [0,this._pos.y -this._t.h/2],
+            [this._t.w/2,this._pos.y -0],
+            [this._t.w,this._pos.y -this._t.h/2],
+            [this._t.w/2,this._pos.y -this._t.h]
             ]
          
             return new Crafty.polygon(p);
