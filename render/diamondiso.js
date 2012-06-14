@@ -25,12 +25,12 @@ Crafty.extend({
             this._map.h = parseInt(mh) || parseInt(mw);
             
             this._origin.x = (this._map.h * this._tile.w / 2);
-            this._origin.y = this._tile.h/2;
+    
               
             return this;
         },
 
-        place:function(obj,x,y,offsetX,offsetY){
+        place:function(obj,x,y,offsetX,offsetY,layer){
             var pos = this.pos2px(x,y);
             if(!offsetX) offsetX = 0;
             if(!offsetY) offsetY = 0;
@@ -38,7 +38,7 @@ Crafty.extend({
             obj.attr({
                 x:(pos.left)+offsetX,
                 y:(pos.top-obj.h)+offsetY,
-                z:y
+                z:y*layer
             }); 
             
         },
@@ -49,7 +49,7 @@ Crafty.extend({
         },
         pos2px:function(x,y){
             var l = (x-y)*this._tile.w/2+this._origin.x;
-            var t = (x+y)*this._tile.h/2+this._origin.y;
+            var t = (x+y)*this._tile.h/2;
             
             return{
                 left:l,
@@ -58,10 +58,10 @@ Crafty.extend({
         },
         px2pos:function(left,top){
             var x = left - this._origin.x;
-            var y = top - this._origin.y;
+        
             return {
-                x:(y+(x/this._tile.r)) / this._tile.h,
-                y:(y-(x/this._tile.r)) / this._tile.h
+                x:(top+(x/this._tile.r)) / this._tile.h,
+                y:(top-(x/this._tile.r)) / this._tile.h
             }
         },
         polygon:function(){

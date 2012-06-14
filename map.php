@@ -87,7 +87,7 @@ class TileMapConverter {
             }
         }
 
-        $this->map = ($r);
+        $this->map = json_encode($r);
     }
 
     public function save($output) {
