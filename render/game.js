@@ -35,7 +35,7 @@ $(function(){
         //Setup the tile counter
         var i = y * mh; 
         for(var x = area.x.min;x<area.x.max;x++){
-
+           
             var object = objects[i], //get current object
             collision = collisions[i], //get current collision
             background = backgrounds[i], //get current background
