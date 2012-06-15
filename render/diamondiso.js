@@ -51,37 +51,31 @@ Crafty.extend({
         },
         area:function(){
                 
-            console.log("Current Viewport");
-            console.log(Crafty.viewport);
+            //get Rectangle of Viewport
             var vp = {
                 x:-Crafty.viewport.x,
                 y:-Crafty.viewport.y,
                 width:-Crafty.viewport.x+Crafty.viewport.width,
                 height:-Crafty.viewport.y+Crafty.viewport.height
             }
+            //Adjust Rectangle
             vp = this.adjust(vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
-           
-            console.log("Viewport Size adjusted with tilesize");
-            console.log(vp);
-            var min = this.px2pos(vp.x,vp.y);
-            var max = this.px2pos(vp.width,vp.height);
-            console.log("Start Tile Coordinates");
-            console.log(min);
-            console.log("End Tile Coordinates");
-            console.log(max);
-            //  min.x = 0;
-            // max.x = 20;
-            //min.y = 0;
-            // max.y= 20;
-        
+            //calculate the corners
+            vp = this.rect(vp);
+         
+            var startX = ~~Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
+            var startY = ~~Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
+            var endX = ~~Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
+            var endY = ~~Math.min(this._map.height,this.px2pos(vp.bottom.left.x,vp.bottom.left.y).y);
+
             return {
                 x:{
-                    min:Math.max(0,~~min.x),
-                    max:Math.min(this._map.width,~~max.x)
+                    min:startX,
+                    max:endX
                 },
                 y:{
-                    min:Math.max(0,~~min.y),
-                    max:Math.min(this._map.height,~~max.y)
+                    min:startY,
+                    max:endY
                 }
             }
         },
@@ -97,13 +91,38 @@ Crafty.extend({
                 y:((top-((left - this._origin.x)/this._tile.r)) / this._tile.height)
             }
         },
+        rect:function(obj){
+          
+            return {
+                top:{
+                    left:{
+                        x:obj.x,
+                        y:obj.y
+                    },
+                    right:{
+                        x:obj.x+obj.width,
+                        y:obj.y
+                    }
+                },
+                bottom:{
+                    left:{
+                        x:obj.x,
+                        y:obj.y+obj.height
+                    },
+                    right:{
+                        x:obj.x+obj.width,
+                        y:obj.y+obj.height
+                    }
+                }
+            }  
+        },
         adjust:function(obj,left,top,right,bottom){
             
             obj.x += left;
             obj.y += top;
             obj.width += right;
             obj.height += bottom;
-           
+            
             return obj;
           
         },

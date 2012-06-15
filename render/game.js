@@ -26,7 +26,7 @@ $(function(){
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
 
     //Center Viewport at Position
-    iso.centerAt(0,0);
+    //iso.centerAt(0,0);
     
     //get locations within the view
     var area = iso.area();
