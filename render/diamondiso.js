@@ -51,39 +51,37 @@ Crafty.extend({
         },
         area:function(){
                 
-             console.log("Current Viewport");
-             console.log(Crafty.viewport);
+            console.log("Current Viewport");
+            console.log(Crafty.viewport);
             var vp = {
-                start:{
-                    x: -Crafty.viewport.x-this._tile.width/2,
-                    y: -Crafty.viewport.y-this._tile.height/2
-                },
-                end:{
-                    x:(-Crafty.viewport.x+Crafty.viewport.width)+this._tile.width/2,
-                    y:(-Crafty.viewport.y+Crafty.viewport.height)+this._tile.height/2
-                }
+                x:-Crafty.viewport.x,
+                y:-Crafty.viewport.y,
+                width:-Crafty.viewport.x+Crafty.viewport.width,
+                height:-Crafty.viewport.y+Crafty.viewport.height
             }
+            vp = this.adjust(vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
+           
             console.log("Viewport Size adjusted with tilesize");
             console.log(vp);
-            var min = this.px2pos(vp.start.x,vp.start.y);
-            var max = this.px2pos(vp.end.x,vp.end.y);
-               console.log("Start Tile Coordinates");
+            var min = this.px2pos(vp.x,vp.y);
+            var max = this.px2pos(vp.width,vp.height);
+            console.log("Start Tile Coordinates");
             console.log(min);
             console.log("End Tile Coordinates");
             console.log(max);
-         //  min.x = 0;
-          // max.x = 20;
-           //min.y = 0;
-          // max.y= 20;
+            //  min.x = 0;
+            // max.x = 20;
+            //min.y = 0;
+            // max.y= 20;
         
             return {
                 x:{
-                    min:~~min.x,
-                    max:~~max.x
+                    min:Math.max(0,~~min.x),
+                    max:Math.min(this._map.width,~~max.x)
                 },
                 y:{
-                    min:~~min.y,
-                    max:~~max.y
+                    min:Math.max(0,~~min.y),
+                    max:Math.min(this._map.height,~~max.y)
                 }
             }
         },
@@ -99,18 +97,14 @@ Crafty.extend({
                 y:((top-((left - this._origin.x)/this._tile.r)) / this._tile.height)
             }
         },
-        rect:function(obj){
-            var pos = {
-                x:((obj.x - (obj.y+obj.height))*this._tile.width/2+this._origin.x),
-                y:(obj.x + obj.y) * this._tile.height/2
-            }
-         
-            var size = {
-                width:(obj.height+obj.width) * this._tile.width/2,
-                height:(obj.height+obj.width) * this._tile.height/2
-            }
-            console.log(this.px2pos(pos.x,pos.y));
-             console.log(this.px2pos(size.width,size.height));
+        adjust:function(obj,left,top,right,bottom){
+            
+            obj.x += left;
+            obj.y += top;
+            obj.width += right;
+            obj.height += bottom;
+           
+            return obj;
           
         },
         polygon:function(obj){
