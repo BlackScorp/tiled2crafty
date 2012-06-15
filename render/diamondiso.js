@@ -26,7 +26,7 @@ Crafty.extend({
             this._map.width = parseInt(mw);
             this._map.height = parseInt(mh) || parseInt(mw);
        
-            this._origin.x = (this._map.height * this._tile.width / 2);
+            this._origin.x = this._map.height * this._tile.width / 2;
     
               
             return this;
@@ -86,9 +86,10 @@ Crafty.extend({
             }
         },
         px2pos:function(left,top){
+            var x = (left - this._origin.x)/this._tile.r;
             return {
-                x:((top+((left - this._origin.x)/this._tile.r)) / this._tile.height),
-                y:((top-((left - this._origin.x)/this._tile.r)) / this._tile.height)
+                x:((top+x) / this._tile.height),
+                y:((top-x) / this._tile.height)
             }
         },
         rect:function(obj){
