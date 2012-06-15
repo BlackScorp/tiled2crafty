@@ -55,14 +55,19 @@ Crafty.extend({
             var vp = {
                 x:-Crafty.viewport.x,
                 y:-Crafty.viewport.y,
-                width:-Crafty.viewport.x+Crafty.viewport.width,
-                height:-Crafty.viewport.y+Crafty.viewport.height
+                width:Crafty.viewport.width,
+                height:Crafty.viewport.height
             }
+            console.log("Viewport size");
+            console.log(vp);
             //Adjust Rectangle
             vp = this.adjust(vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
+            console.log("Viewport size after adjusting");
+            console.log(vp);
             //calculate the corners
             vp = this.rect(vp);
-         
+            console.log("Viewport rectangle corners");
+            console.log(vp);
             var startX = ~~Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
             var startY = ~~Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
             var endX = ~~Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
