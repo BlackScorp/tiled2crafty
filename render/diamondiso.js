@@ -51,19 +51,39 @@ Crafty.extend({
         },
         area:function(){
                 
+             console.log("Current Viewport");
+             console.log(Crafty.viewport);
+            var vp = {
+                start:{
+                    x: -Crafty.viewport.x-this._tile.width/2,
+                    y: -Crafty.viewport.y-this._tile.height/2
+                },
+                end:{
+                    x:(-Crafty.viewport.x+Crafty.viewport.width)+this._tile.width/2,
+                    y:(-Crafty.viewport.y+Crafty.viewport.height)+this._tile.height/2
+                }
+            }
+            console.log("Viewport Size adjusted with tilesize");
+            console.log(vp);
+            var min = this.px2pos(vp.start.x,vp.start.y);
+            var max = this.px2pos(vp.end.x,vp.end.y);
+               console.log("Start Tile Coordinates");
+            console.log(min);
+            console.log("End Tile Coordinates");
+            console.log(max);
+         //  min.x = 0;
+          // max.x = 20;
+           //min.y = 0;
+          // max.y= 20;
         
-          
-         
-          //  this.rect(Crafty.viewport);
-
             return {
                 x:{
-                    min:0,
-                    max:this._map.width
+                    min:~~min.x,
+                    max:~~max.x
                 },
                 y:{
-                    min:0,
-                    max:this._map.height
+                    min:~~min.y,
+                    max:~~max.y
                 }
             }
         },
@@ -80,23 +100,18 @@ Crafty.extend({
             }
         },
         rect:function(obj){
-         
-            var topRight = this.pos2px(obj.x+obj.width,obj.y);
-            var bottomRight = this.pos2px(obj.x + obj.width,obj.y + obj.height);
-            var bottomLeft = this.pos2px(obj.x,obj.y + obj.height);
-            var topLeft = this.pos2px(obj.x,obj.y);
-            
-            var p =[
-            [topLeft.left,topLeft.top],
-            [topRight.left + this._tile.width/2,topRight.top + this._tile.height/2],
-            [bottomRight.left,bottomRight.top + this._tile.height],
-            [bottomLeft.left - this._tile.width/2,bottomLeft.top+this._tile.height/2]
-            ]
-            for(var i in p){
-                var x = p[i];
-                console.log(this.px2pos(x[0]/this._tile.width,x[1]/this._tile.height));
+            var pos = {
+                x:((obj.x - (obj.y+obj.height))*this._tile.width/2+this._origin.x),
+                y:(obj.x + obj.y) * this._tile.height/2
             }
-            console.log(p);
+         
+            var size = {
+                width:(obj.height+obj.width) * this._tile.width/2,
+                height:(obj.height+obj.width) * this._tile.height/2
+            }
+            console.log(this.px2pos(pos.x,pos.y));
+             console.log(this.px2pos(size.width,size.height));
+          
         },
         polygon:function(obj){
             

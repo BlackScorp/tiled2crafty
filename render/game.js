@@ -1,6 +1,6 @@
 $(function(){
     //Init Crafty
-    Crafty.init();
+    Crafty.init(640,480);
     //Init Canvas
     Crafty.canvas.init();
     
@@ -26,16 +26,18 @@ $(function(){
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
 
     //Center Viewport at Position
-    //iso.centerAt(10,10);
+    iso.centerAt(0,0);
     
     //get locations within the view
     var area = iso.area();
+    console.log("Area");
+    console.log(area);
     //Rendering
     for(var y = area.y.min;y<area.y.max;y++){
         //Setup the tile counter
         var i = y * mh; 
         for(var x = area.x.min;x<area.x.max;x++){
-           
+       
             var object = objects[i], //get current object
             collision = collisions[i], //get current collision
             background = backgrounds[i], //get current background
@@ -53,6 +55,7 @@ $(function(){
                     offsetY = tile.__offset[1];
                 }
                 iso.place(tile,x,y,offsetX,offsetY,1);
+                //tile.text("X:"+x+"/Y:"+y);
             }
             //place object tiles
             if(object > 0){
@@ -95,6 +98,7 @@ $(function(){
         }
 
     });
+    console.log("Amount of Tiles");
     console.log(Crafty("2D").length);
 
 });
