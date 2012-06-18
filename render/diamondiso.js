@@ -27,8 +27,6 @@ Crafty.extend({
             this._map.height = parseInt(mh) || parseInt(mw);
        
             this._origin.x = this._map.height * this._tile.width / 2;
-    
-              
             return this;
         },
 
@@ -55,19 +53,13 @@ Crafty.extend({
             var vp = {
                 x:-Crafty.viewport.x,
                 y:-Crafty.viewport.y,
-                width:Crafty.viewport.width,
-                height:Crafty.viewport.height
+                w:Crafty.viewport.width,
+                h:Crafty.viewport.height
             }
-            console.log("Viewport size");
-            console.log(vp);
             //Adjust Rectangle
             vp = this.adjust(vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
-            console.log("Viewport size after adjusting");
-            console.log(vp);
             //calculate the corners
             vp = this.rect(vp);
-            console.log("Viewport rectangle corners");
-            console.log(vp);
             var startX = ~~Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
             var startY = ~~Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
             var endX = ~~Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
@@ -106,18 +98,18 @@ Crafty.extend({
                         y:obj.y
                     },
                     right:{
-                        x:obj.x+obj.width,
+                        x:obj.x+obj.w,
                         y:obj.y
                     }
                 },
                 bottom:{
                     left:{
                         x:obj.x,
-                        y:obj.y+obj.height
+                        y:obj.y+obj.h
                     },
                     right:{
-                        x:obj.x+obj.width,
-                        y:obj.y+obj.height
+                        x:obj.x+obj.w,
+                        y:obj.y+obj.h
                     }
                 }
             }  
@@ -126,27 +118,30 @@ Crafty.extend({
             
             obj.x += left;
             obj.y += top;
-            obj.width += right;
-            obj.height += bottom;
+            obj.w += right;
+            obj.h += bottom;
             
             return obj;
           
         },
         polygon:function(obj){
-            
-            var topRight = this.pos2px(obj.x+obj.width,obj.y);
-            var bottomRight = this.pos2px(obj.x + obj.width,obj.y + obj.height);
-            var bottomLeft = this.pos2px(obj.x,obj.y + obj.height);
-            var topLeft = this.pos2px(obj.x,obj.y);
       
-            var p =[
-            [topLeft.x,topLeft.y],
-            [topRight.x + this._tile.width/2,topRight.y + this._tile.height/2],
-            [bottomRight.x,bottomRight.y + this._tile.height],
-            [bottomLeft.x - this._tile.width/2,bottomLeft.y+this._tile.height/2]
+            obj.requires("Collision");
+            var offsetX = 0;
+            var offsetY = 0;
+            if(obj.__offset !== undefined){
+                offsetX = obj.__offset[0];
+                offsetY = obj.__offset[1];
+            }
+            var points = [
+            [0-offsetX,obj.h-this._tile.height/2+offsetY],
+            [this._tile.width/2-offsetX,obj.h],
+            [this._tile.width-offsetX,obj.h-this._tile.height/2],
+            [this._tile.width/2-offsetX,obj.h-this._tile.height]
             ]
-         
-            return new Crafty.polygon(p);
+
+            return new Crafty.polygon(points);
+           
         }
        
     }

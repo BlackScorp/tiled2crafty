@@ -34,8 +34,8 @@ class TileMapConverter {
                 $offsetY = 0;
                 $offsetX = (int) $tileset->tileoffset['x'];
                 $offsetY = (int) $tileset->tileoffset['y'];
-                $w = $tileset['tilewidth'] + $offsetX;
-                $h = $tileset['tileheight'] + $offsetY;
+                $w = $tileset['tilewidth'] ;
+                $h = $tileset['tileheight'];
                 $id = (int) $tileset['firstgid'];
                 $img = (string) $tileset->image['source'];
                 $maxX = round((int) $tileset->image['width'] / $w);
@@ -47,7 +47,12 @@ class TileMapConverter {
                         $id++;
                     }
                 }
-                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '}0,0,%d,%d);', $w-$offsetX, $h-$offsetY, $img, implode(",\n", $data), $offsetX, $offsetY);
+                if($offsetX != 0 || $offsetY != 0){
+                $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '},0,0,%d,%d);', $w, $h, $img, implode(",\n", $data), $offsetX, $offsetY);
+                }else{
+                   $r[] = sprintf('Crafty.sprite(%d,%d,"%s",{' . "\n" . '%s' . "\n" . '});', $w, $h, $img, implode(",\n", $data));
+                }
+                
             }
            // $this->pr($tileset);
         }

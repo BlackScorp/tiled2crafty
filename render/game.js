@@ -5,7 +5,7 @@ $(function(){
     Crafty.canvas.init();
     
     //Setup background color
-   // Crafty.background("#000");
+    Crafty.background("#000");
      
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
@@ -24,20 +24,18 @@ $(function(){
     
     //Init Isometric
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
-
+  
+ 
     //Center Viewport at Position
-    iso.centerAt(0,0);
-    
+    iso.centerAt(32,32);
+
     //get locations within the view
     var area = iso.area();
-    console.log("Area");
-    console.log(area);
     //Rendering
     for(var y = area.y.min;y<area.y.max;y++){
         //Setup the tile counter
         var i = y * mh; 
         for(var x = area.x.min;x<area.x.max;x++){
-       
             var object = objects[i], //get current object
             collision = collisions[i], //get current collision
             background = backgrounds[i], //get current background
@@ -49,23 +47,31 @@ $(function(){
             if(background > 0){
                 tile = Crafty.e("2D","DOM",background);
                 //add colision 
-                if(collision > 0) tile.addComponent("Solid");
+                if(collision > 0) {
+                    tile.addComponent("Collision,Solid");
+                    tile.collision(iso.polygon(tile));
+                } 
                 if(tile.__offset !== undefined){
                     offsetX = tile.__offset[0];
                     offsetY = tile.__offset[1];
                 }
                 iso.place(tile,x,y,offsetX,offsetY,1);
-                //tile.text("X:"+x+"/Y:"+y);
+               
             }
             //place object tiles
             if(object > 0){
                 tile = Crafty.e("2D","DOM",object);
-                if(collision > 0) tile.addComponent("Solid");
+                //add colision 
+                if(collision > 0) {
+                    tile.addComponent("Collision,Solid");
+                    tile.collision(iso.polygon(tile));
+                } 
                 if(tile.__offset !== undefined){
                     offsetX = tile.__offset[0];
                     offsetY = tile.__offset[1];
                 }
                 iso.place(tile,x,y,offsetX,offsetY,2); 
+          
             }
             i++;
         }
