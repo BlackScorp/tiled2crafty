@@ -1,11 +1,11 @@
 $(function(){
     //Init Crafty
-    Crafty.init();
+    Crafty.init(640,480);
     //Init Canvas
     Crafty.canvas.init();
     
     //Setup background color
-    Crafty.background("#000");
+   // Crafty.background("#000");
      
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
@@ -25,9 +25,13 @@ $(function(){
     //Init Isometric
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
+ tile = Crafty.e("2D","DOM",144,"Collision","WiredHitBox");
+ tile.collision(iso.polygon(tile));
  
+  tile = Crafty.e("2D","DOM",241,"Collision","WiredHitBox");
+ tile.collision(iso.polygon(tile));
     //Center Viewport at Position
-    iso.centerAt(32,32);
+   // iso.centerAt(32,32);
 
     //get locations within the view
     var area = iso.area();
@@ -39,38 +43,29 @@ $(function(){
             var object = objects[i], //get current object
             collision = collisions[i], //get current collision
             background = backgrounds[i], //get current background
-            tile = null, //initialize tile
-            offsetX = 0, //initialize tile offset
-            offsetY = 0;
+            tile = null; //initialize tile
             
             //place background tiles
-            if(background > 0){
+            if(background < 0){
                 tile = Crafty.e("2D","DOM",background);
                 //add colision 
                 if(collision > 0) {
                     tile.addComponent("Collision,Solid");
                     tile.collision(iso.polygon(tile));
                 } 
-                if(tile.__offset !== undefined){
-                    offsetX = tile.__offset[0];
-                    offsetY = tile.__offset[1];
-                }
-                iso.place(tile,x,y,offsetX,offsetY,1);
+
+                iso.place(tile,x,y,1);
                
             }
             //place object tiles
-            if(object > 0){
+            if(object < 0){
                 tile = Crafty.e("2D","DOM",object);
                 //add colision 
                 if(collision > 0) {
                     tile.addComponent("Collision,Solid");
                     tile.collision(iso.polygon(tile));
                 } 
-                if(tile.__offset !== undefined){
-                    offsetX = tile.__offset[0];
-                    offsetY = tile.__offset[1];
-                }
-                iso.place(tile,x,y,offsetX,offsetY,2); 
+                iso.place(tile,x,y,2); 
           
             }
             i++;

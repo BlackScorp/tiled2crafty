@@ -30,14 +30,12 @@ Crafty.extend({
             return this;
         },
 
-        place:function(obj,x,y,offsetX,offsetY,layer){
+        place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);
-            if(!offsetX) offsetX = 0;
-            if(!offsetY) offsetY = 0;
             if(!layer) layer = 1;
             obj.attr({
-                x:(pos.left)+offsetX,
-                y:(pos.top-obj.h)+offsetY,
+                x:pos.left,
+                y:pos.top-obj.h,
                 z:y*layer
             }); 
             
@@ -127,20 +125,22 @@ Crafty.extend({
         polygon:function(obj){
       
             obj.requires("Collision");
-            var offsetX = 0;
-            var offsetY = 0;
-            if(obj.__offset !== undefined){
-                offsetX = obj.__offset[0];
-                offsetY = obj.__offset[1];
-            }
             var points = [
-            [0-offsetX,obj.h-this._tile.height/2+offsetY],
-            [this._tile.width/2-offsetX,obj.h],
-            [this._tile.width-offsetX,obj.h-this._tile.height/2],
-            [this._tile.width/2-offsetX,obj.h-this._tile.height]
-            ]
-
-            return new Crafty.polygon(points);
+            [0,obj.h-this._tile.height/2],
+            [this._tile.width/2,obj.h-0],
+            [this._tile.width,obj.h-this._tile.height/2],
+            [this._tile.width/2,obj.h-this._tile.height]
+            ];
+            var poly = new Crafty.polygon(points);
+            var marginX = 0,marginY = 0;
+            if(obj.__margin !== undefined){
+                marginX = obj.__margin[0];
+                marginY = obj.__margin[1];
+            }
+            poly.shift(-marginX,marginY);
+            
+       console.log(obj.__margin);
+            return poly;
            
         }
        
