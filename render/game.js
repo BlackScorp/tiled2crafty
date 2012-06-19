@@ -25,14 +25,15 @@ $(function(){
     //Init Isometric
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
- tile = Crafty.e("2D","DOM",144,"Collision","WiredHitBox");
+
+    //Center Viewport at Position
+    iso.centerAt(32,32);
+ /*tile = Crafty.e("2D","DOM",144,"Collision","WiredHitBox");
  tile.collision(iso.polygon(tile));
- 
+ iso.place(tile,0,0,1);
   tile = Crafty.e("2D","DOM",241,"Collision","WiredHitBox");
  tile.collision(iso.polygon(tile));
-    //Center Viewport at Position
-   // iso.centerAt(32,32);
-
+  iso.place(tile,0,1,2); */
     //get locations within the view
     var area = iso.area();
     //Rendering
@@ -46,7 +47,7 @@ $(function(){
             tile = null; //initialize tile
             
             //place background tiles
-            if(background < 0){
+            if(background > 0){
                 tile = Crafty.e("2D","DOM",background);
                 //add colision 
                 if(collision > 0) {
@@ -58,7 +59,7 @@ $(function(){
                
             }
             //place object tiles
-            if(object < 0){
+            if(object > 0){
                 tile = Crafty.e("2D","DOM",object);
                 //add colision 
                 if(collision > 0) {

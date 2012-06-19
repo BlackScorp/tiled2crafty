@@ -33,9 +33,14 @@ Crafty.extend({
         place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);
             if(!layer) layer = 1;
+            var marginX = 0,marginY = 0;
+             if(obj.__margin !== undefined){
+                marginX = obj.__margin[0];
+                marginY = obj.__margin[1];
+            }
             obj.attr({
-                x:pos.left,
-                y:pos.top-obj.h,
+                x:pos.left+marginX,
+                y:pos.top-obj.h-marginY,
                 z:y*layer
             }); 
             
@@ -125,21 +130,22 @@ Crafty.extend({
         polygon:function(obj){
       
             obj.requires("Collision");
-            var points = [
-            [0,obj.h-this._tile.height/2],
-            [this._tile.width/2,obj.h-0],
-            [this._tile.width,obj.h-this._tile.height/2],
-            [this._tile.width/2,obj.h-this._tile.height]
-            ];
-            var poly = new Crafty.polygon(points);
             var marginX = 0,marginY = 0;
             if(obj.__margin !== undefined){
                 marginX = obj.__margin[0];
                 marginY = obj.__margin[1];
             }
-            poly.shift(-marginX,marginY);
+            var points = [
+            [marginX-0,obj.h-marginY-this._tile.height/2],
+            [marginX-this._tile.width/2,obj.h-marginY-0],
+            [marginX-this._tile.width,obj.h-marginY-this._tile.height/2],
+            [marginX-this._tile.width/2,obj.h-marginY-this._tile.height]
+            ];
+            var poly = new Crafty.polygon(points);
             
-       console.log(obj.__margin);
+           
+            
+       
             return poly;
            
         }
