@@ -8,7 +8,7 @@ $(function(){
     //Setup background color
     Crafty.background("#000");
      
-
+    //FrontierOutpost Component
     Crafty.c("FrontierOutpost",{
         _tiles:null,
         _objects:null,
@@ -62,20 +62,23 @@ $(function(){
             
                     //place background tiles
                     if(background > 0){
+                        //Find Tile
                         tile = Crafty("Y"+y+"X"+x+"L"+(y+1)*layer);
-                
-                        if(tile.length == 0){
+                        
+                        if(tile.length == 0){ //Create tile if tile not exists
                             tile = Crafty.e("2D","Text","DOM",background,"Y"+y+"X"+x+"L"+(y+1)*layer);
                             //add colision 
+                            // < 0 means disabled 
                             if(collision < 0) {
                                 tile.addComponent("Collision,Solid");
                                 tile.collision( this._iso.polygon(tile));
                             } 
-                             this._iso.place(tile,x,y,layer);
+                            this._iso.place(tile,x,y,layer);
                         }else{
-                            tile = Crafty(tile[0]);
+                            tile = Crafty(tile[0]); //select tile if exists
                         }
-                        if(!tile.intersect(this._iso.viewport())){
+                        //destroy tiles outside viewport
+                        if(!tile.intersect(this._iso.viewport())){ 
                             tile.destroy();
                         }
                 
@@ -86,21 +89,24 @@ $(function(){
                     //place object tiles
                     if(object> 0){
                         tile = Crafty("Y"+y+"X"+x+"L"+(y+1)*layer);
-                        if(tile.length == 0){
+                        if(tile.length == 0){ //create object if not exists
                             tile = Crafty.e("2D","DOM",object,"Y"+y+"X"+x+"L"+(y+1)*layer);
                             //add colision 
-                            if(collision > 0) {
+                            // < 0 means disabled 
+                            if(collision < 0) { 
                                 tile.addComponent("Collision,Solid");
                                 tile.collision( this._iso.polygon(tile));
                             } 
-                             this._iso.place(tile,x,y,layer);
+                            this._iso.place(tile,x,y,layer);
                         }else{
                             tile = Crafty(tile[0]);
                         }
+                        //destroy objects outside viewport
                         if(!tile.intersect(this._iso.viewport())){
                             tile.destroy();
                         }
                     }
+                    //increment counter
                     i++;
                 }
       
@@ -108,9 +114,12 @@ $(function(){
         }
     }
     );
-    
+    //Create entity
     var map = Crafty.e("FrontierOutpost");
+    //trigger event
     map.trigger("UpdateMap");
+    
+    
     Crafty.bind("KeyDown",function(e){
         this._isDown = true;
         this._keyCode = e.keyCode;
@@ -119,6 +128,8 @@ $(function(){
     Crafty.bind("KeyUp",function(e){
         this._isDown = false;
         map.trigger("UpdateMap");
+        console.log("Amount of Tiles");
+        console.log(Crafty("2D").length);
     })
     Crafty.bind("EnterFrame",function(){
         if(!this._isDown) return;
