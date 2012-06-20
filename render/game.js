@@ -5,7 +5,7 @@ $(function(){
     Crafty.canvas.init();
     
     //Setup background color
-   // Crafty.background("#000");
+    // Crafty.background("#000");
      
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
@@ -27,54 +27,76 @@ $(function(){
   
 
     //Center Viewport at Position
-    iso.centerAt(32,32);
- /*tile = Crafty.e("2D","DOM",144,"Collision","WiredHitBox");
+    iso.centerAt(10,10);
+    /*tile = Crafty.e("2D","DOM",144,"Collision","WiredHitBox");
  tile.collision(iso.polygon(tile));
  iso.place(tile,0,0,1);
   tile = Crafty.e("2D","DOM",241,"Collision","WiredHitBox");
  tile.collision(iso.polygon(tile));
-  iso.place(tile,0,1,2); */
+  iso.place(tile,0,0,2); */
     //get locations within the view
     var area = iso.area();
-    //Rendering
-    for(var y = area.y.min;y<area.y.max;y++){
-        //Setup the tile counter
-        var i = y * mh; 
-        for(var x = area.x.min;x<area.x.max;x++){
-            var object = objects[i], //get current object
-            collision = collisions[i], //get current collision
-            background = backgrounds[i], //get current background
-            tile = null; //initialize tile
+    Crafty.bind("RenderMap",function(){
+        iso._updateViewport();
+        //Rendering
+        
+        for(var y = 0;y<mw;y++){
+            //Setup the tile counter
+            var i = y * mh; 
+            for(var x = 0;x<mh;x++){
+                var object = objects[i], //get current object
+                collision = collisions[i], //get current collision
+                background = backgrounds[i], //get current background
+                tile = null,//initialize tile
+                layer = 1; //initialize layer
             
-            //place background tiles
-            if(background > 0){
-                tile = Crafty.e("2D","DOM",background);
-                //add colision 
-                if(collision > 0) {
-                    tile.addComponent("Collision,Solid");
-                    tile.collision(iso.polygon(tile));
-                } 
-
-                iso.place(tile,x,y,1);
+                //place background tiles
+                if(background > 0){
+                    tile = Crafty("Y"+y+"X"+x+"L"+(y+1)*layer);
+                
+                    if(tile.length == 0){
+                        tile = Crafty.e("2D","Text","DOM",background,"Y"+y+"X"+x+"L"+(y+1)*layer);
+                        //add colision 
+                        if(collision > 0) {
+                            tile.addComponent("Collision,Solid");
+                            tile.collision(iso.polygon(tile));
+                        } 
+                        iso.place(tile,x,y,layer);
+                    }else{
+                        tile = Crafty(tile[0]);
+                    }
+                    if(!tile.intersect(iso.viewport())){
+                        tile.destroy();
+                    }
+                
                
+                }
+                //set layer
+                layer = 2;
+                //place object tiles
+                if(object> 0){
+                    tile = Crafty("Y"+y+"X"+x+"L"+(y+1)*layer);
+                    if(tile.length == 0){
+                        tile = Crafty.e("2D","DOM",object,"Y"+y+"X"+x+"L"+(y+1)*layer);
+                        //add colision 
+                        if(collision > 0) {
+                            tile.addComponent("Collision,Solid");
+                            tile.collision(iso.polygon(tile));
+                        } 
+                        iso.place(tile,x,y,layer);
+                    }else{
+                        tile = Crafty(tile[0]);
+                    }
+                    if(!tile.intersect(iso.viewport())){
+                        tile.destroy();
+                    }
+                }
+                i++;
             }
-            //place object tiles
-            if(object > 0){
-                tile = Crafty.e("2D","DOM",object);
-                //add colision 
-                if(collision > 0) {
-                    tile.addComponent("Collision,Solid");
-                    tile.collision(iso.polygon(tile));
-                } 
-                iso.place(tile,x,y,2); 
-          
-            }
-            i++;
-        }
       
-    }
-    
-   
+        }
+    });
+    Crafty.trigger("RenderMap");
     Crafty.bind("KeyDown",function(e){
         this._isDown = true;
         this._keyCode = e.keyCode;
@@ -82,6 +104,7 @@ $(function(){
     })
     Crafty.bind("KeyUp",function(e){
         this._isDown = false;
+         Crafty.trigger("RenderMap");
     })
     Crafty.bind("EnterFrame",function(){
         if(!this._isDown) return;
@@ -98,7 +121,7 @@ $(function(){
         if(Crafty.keys['D'] == this._keyCode ){
             Crafty.viewport.x-=scrollSpeed;
         }
-
+       
     });
     console.log("Amount of Tiles");
     console.log(Crafty("2D").length);

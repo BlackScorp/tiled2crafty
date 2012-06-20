@@ -17,7 +17,12 @@ Crafty.extend({
             x:0,
             y:0
         },
-
+        _vp:{
+            x:0,
+            y:0,
+            h:0,
+            w:0
+        },
         init:function(tw, th,mw,mh){
             this._tile.width = parseInt(tw);
             this._tile.height = parseInt(th)||parseInt(tw)/2;
@@ -27,6 +32,9 @@ Crafty.extend({
             this._map.height = parseInt(mh) || parseInt(mw);
        
             this._origin.x = this._map.height * this._tile.width / 2;
+                            
+            this._updateViewport();            
+         
             return this;
         },
 
@@ -34,39 +42,45 @@ Crafty.extend({
             var pos = this.pos2px(x,y);
             if(!layer) layer = 1;
             var marginX = 0,marginY = 0;
-             if(obj.__margin !== undefined){
+            if(obj.__margin !== undefined){
                 marginX = obj.__margin[0];
                 marginY = obj.__margin[1];
             }
             obj.attr({
                 x:pos.left+marginX,
-                y:pos.top-obj.h-marginY,
-                z:y*layer
+                y:pos.top-obj.h+marginY,
+                z:(y+1)*layer
             }); 
             
         },
         centerAt:function(x,y){
             var pos = this.pos2px(x,y);
-            Crafty.viewport.x = -pos.left+Crafty.viewport.width/2+this._tile.width;
-            Crafty.viewport.y = -pos.top+Crafty.viewport.height/2-this._tile.height;
+            Crafty.viewport.x = -pos.left+Crafty.viewport.width/2-this._tile.width/2;
+            Crafty.viewport.y = -pos.top+Crafty.viewport.height/2-this._tile.height/2;
+            this._updateViewport();
         },
-        area:function(){
-                
+        _updateViewport:function(){
             //get Rectangle of Viewport
-            var vp = {
+            this._vp = {
                 x:-Crafty.viewport.x,
                 y:-Crafty.viewport.y,
                 w:Crafty.viewport.width,
                 h:Crafty.viewport.height
             }
             //Adjust Rectangle
-            vp = this.adjust(vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
+            this._vp = this.adjust(this._vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
+        },
+        viewport:function(){
+            return this._vp;
+        },
+        area:function(){
+            this._updateViewport();
             //calculate the corners
-            vp = this.rect(vp);
-            var startX = ~~Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
-            var startY = ~~Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
-            var endX = ~~Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
-            var endY = ~~Math.min(this._map.height,this.px2pos(vp.bottom.left.x,vp.bottom.left.y).y);
+            var vp = this.rect(this._vp);
+            var startX = Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
+            var startY = Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
+            var endX = Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
+            var endY = Math.min(this._map.height,this.px2pos(vp.bottom.left.x,vp.bottom.left.y).y);
 
             return {
                 x:{
