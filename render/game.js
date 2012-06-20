@@ -55,14 +55,14 @@ $(function(){
             console.log(area);
              
             //draw map
-            //  for(var y = area.y.min;y<area.y.max;y++){
+              for(var y = area.y.min;y<area.y.max;y++){
             //Setup the tile counter
-            //    var i = y * mh; 
-            //   for(var x = area.x.min;x<area.x.max;x++){
-            for(var y = 0;y<mh;y++){
+              var i = y * mh; 
+               for(var x = area.x.min;x<area.x.max;x++){
+            //for(var y = 0;y<mh;y++){
                 //Setup the tile counter
-                var i = y * mh; 
-                for(var x = 0;x<mw;x++){
+              //  var i = y * mh; 
+               // for(var x = 0;x<mw;x++){
                     var object = this._objects[i], //get current object
                     collision =  this._collisions[i], //get current collision
                     background =  this._tiles[i], //get current background
