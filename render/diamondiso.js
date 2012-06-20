@@ -71,25 +71,26 @@ Crafty.extend({
             this._vp = this.adjust(this._vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
         },
         viewport:function(){
+            
             return this._vp;
         },
         area:function(){
             this._updateViewport();
             //calculate the corners
             var vp = this.rect(this._vp);
-            var startX = Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
-            var startY = Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
-            var endX = Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
-            var endY = Math.min(this._map.height,this.px2pos(vp.bottom.left.x,vp.bottom.left.y).y);
+            var startX = ~~Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
+            var startY = ~~Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
+            var endX = ~~Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
+            var endY = ~~Math.min(this._map.height,this.px2pos(vp.bottom.left.x,vp.bottom.left.y).y);
 
             return {
                 x:{
-                    min:~~startX,
-                    max:~~endX
+                    min:startX,
+                    max:endX
                 },
                 y:{
-                    min:~~startY,
-                    max:~~endY
+                    min:startY,
+                    max:endY
                 }
             }
         },
