@@ -24,7 +24,7 @@ $(function(){
             this._collisions = frontier_outpost.layers.collision.split(",");
             //Get Map Metadata;
             this._map = frontier_outpost.metadata;
-    
+
             //Convert Data to Integers
             var tw = parseInt(this._map.tilewidth);
             var th = parseInt(this._map.tileheight);
@@ -43,99 +43,81 @@ $(function(){
         
         },
         drawMap:function(){
-           
-            
+                 
             //Convert Data to Integers
-            var mw = parseInt(this._map.width);
             var mh = parseInt(this._map.height);
-            
-            //Get the area to draw
             var area = this._iso.area();
-           
-            console.log(area);
-             
-            //draw map
-           // for(var y = area.y.min;y<area.y.max;y++){
-                //Setup the tile counter
-               // var i = y * mh; 
-              //  for(var x = area.x.min;x<area.x.max;x++){
-                    for(var y = 0;y<mh;y++){
-                    //Setup the tile counter
-                      var i = y * mh; 
-                     for(var x = 0;x<mw;x++){
-                    var object = this._objects[i], //get current object
-                    collision =  this._collisions[i], //get current collision
-                    background =  this._tiles[i], //get current background
-                    tile = null,//initialize tile
-                    layer = 1,//initialize layer
-                    z=0,//initialize Z
-                    tilename=''; //initialize individual name for tiles
-                
-                    //place background tiles
-                    if(background > 0){
-                        //set layer
-                        layer = 1;
-                        z = (y+1)*layer;
-                        tilename = 'Y'+y+'X'+x+'Z'+z;
-                        //Find Tile
-                        tile = Crafty(tilename);
+            for(var a=0,al = area.length;a<al;a++){
+                var loc = area[a],
+                x = loc[0],
+                y= loc[1],
+                i = y * mh + x,
+                object = this._objects[i], //get current object
+                collision =  this._collisions[i], //get current collision
+                background =  this._tiles[i], //get current background
+                tile = null,//initialize tile
+                layer = 1,//initialize layer
+                z=0,//initialize Z
+                tilename=''; //initialize individual name for tiles
+                //place background tiles
+                if(background > 0){
+                    //set layer
+                    layer = 1;
+                    z = (y+1)*layer;
+                    tilename = 'Y'+y+'X'+x+'Z'+z;
+                    //Find Tile
+                    tile = Crafty(tilename);
                         
-                        if(tile.length < 1){ //Create tile if tile not exists
-                            tile = Crafty.e("2D","Text","Tile","DOM",background,tilename);
-                            //add colision 
-                            // < 0 means disabled 
-                            if(collision < 0) {
-                                tile.addComponent("Collision,Solid");
-                                tile.collision( this._iso.polygon(tile));
-                            } 
-                            this._iso.place(tile,x,y,layer);
-                        }else{
-                           
-                            tile = Crafty(tile[0]); //select tile if exists
-                            tile.addComponent("Red");
-                        }
-                         tile.text('Y'+y+'X'+x);
-                        //destroy tiles outside viewport
-                        if(!this._iso.contains(tile)){
-                            tile.destroy();
-                        }
-                        
-                        //clear tile
-                        tile = null;
-                    }
-                    
-                    //place object tiles
-                    if(object > 0){
-                        //set layer
-                        layer = 2;
-                        z = (y+1)*layer;
-                        tilename = 'Y'+y+'X'+x+'Z'+z;
-                        tile = Crafty(tilename);
-                        if(tile.length == 0){ //create object if not exists
-                            tile = Crafty.e("2D","DOM",object,tilename);
-                            //add colision 
-                            // < 0 means disabled 
-                            if(collision < 0) { 
-                                tile.addComponent("Collision,Solid");
-                                tile.collision( this._iso.polygon(tile));
-                            } 
-                            this._iso.place(tile,x,y,layer);
-                        }else{
-                            tile = Crafty(tile[0]);
-                        }
-                        //destroy objects outside viewport
-                        if(!this._iso.contains(tile)){
-                            tile.destroy();
-                        }
-                          
-                        //clear tile
-                        tile = null;
-                    }
-                    //increment counter
-                    i++;
+                    if(tile.length < 1){ //Create tile if tile not exists
+                        tile = Crafty.e("2D","Tile","Canvas",background,tilename); //Mark the components as Tiles with Tile component
+                        //add colision 
+                        // < 0 means disabled 
+                        if(collision < 0) {
+                            tile.addComponent("Collision,Solid");
+                            tile.collision( this._iso.polygon(tile));
+                        } 
+                        this._iso.place(tile,x,y,layer);
+                    }   
+                    //clear tile
+                    tile = null;
                 }
-      
+                //place object tiles
+                if(object > 0){
+                    //set layer
+                    layer = 2;
+                    z = (y+1)*layer;
+                    tilename = 'Y'+y+'X'+x+'Z'+z;
+                    //Find Tile
+                    tile = Crafty(tilename);
+                    if(tile.length < 1){ //Create tile if tile not exists
+                        tile = Crafty.e("2D","Tile","Canvas",object,tilename);//Mark the components as Tiles with Tile component
+                        //add colision 
+                        // < 0 means disabled 
+                        if(collision < 0) {
+                            tile.addComponent("Collision,Solid");
+                            tile.collision( this._iso.polygon(tile));
+                        } 
+                        this._iso.place(tile,x,y,layer);
+                    }
+                    //clear tile
+                    tile = null;
+                }
+                    
+              
             }
+            //Clearing up the map
+            var tiles = Crafty("Tile"); //get the marked tiles
+            var vp = Crafty.viewport.rect(); //get Rect of viewport
+            for(var t = 0,tl = tiles.length;t<tl;t++){
+                tile = Crafty(tiles[t]);
+                if(!tile.intersect(vp._x,vp._y,vp._w,vp._h)){ //if tile not intersect the viewport
+                    tile.destroy(); //destroy
+                }
+               
+            }
+            
+           
+           
         }
     }
     );

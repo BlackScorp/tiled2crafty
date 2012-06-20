@@ -51,7 +51,7 @@ Crafty.extend({
             var pos = this.pos2px(x,y);
             Crafty.viewport.x = -pos.left+Crafty.viewport.width/2-this._tile.width/2;
             Crafty.viewport.y = -pos.top+Crafty.viewport.height/2-this._tile.height/2;
-            Crafty.viewport.adjust(-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);      
+        
         },
         contains:function(rect){
             var vp = Crafty.viewport.rect();
@@ -62,22 +62,20 @@ Crafty.extend({
           
             //calculate the corners
             var vp = Crafty.viewport.rect();
-          
-            var startX = ~~Math.max(0,this.px2pos(vp._x,vp._y).x);
-            var startY = ~~Math.max(0,this.px2pos(vp._x+vp._h,vp._y).y);
-            var endX = ~~Math.min(this._map.width,this.px2pos(vp._x+vp._h,vp._y+vp._h).x);
-            var endY = ~~Math.min(this._map.height,this.px2pos(vp._x,vp._y+vp._h).y);
-
-            return {
-                x:{
-                    min:startX,
-                    max:endX
-                },
-                y:{
-                    min:startY,
-                    max:endY
+            vp._x -= this._tile.width/2;
+            vp._y -= this._tile.height/2;
+            vp._w += this._tile.width/2;
+            vp._h += this._tile.height/2;
+        
+            
+            var grid = [];
+            for(var y = vp._y,yl = (vp._y+vp._h);y<=yl;y+=this._tile.height/2){
+                for(var x = vp._x,xl = (vp._x+vp._w);x<=xl;x+=this._tile.width/2){
+                    var row = this.px2pos(x,y);
+                    grid.push([~~row.x,~~row.y]);
                 }
             }
+            return grid;       
         },
         pos2px:function(x,y){
             return{
@@ -92,41 +90,7 @@ Crafty.extend({
                 y:((top-x) / this._tile.height)
             }
         },
-        rect:function(obj){
-          
-            return {
-                top:{
-                    left:{
-                        x:obj.x,
-                        y:obj.y
-                    },
-                    right:{
-                        x:obj.x+obj.w,
-                        y:obj.y
-                    }
-                },
-                bottom:{
-                    left:{
-                        x:obj.x,
-                        y:obj.y+obj.h
-                    },
-                    right:{
-                        x:obj.x+obj.w,
-                        y:obj.y+obj.h
-                    }
-                }
-            }  
-        },
-        adjust:function(obj,left,top,right,bottom){
-            console.log(obj);
-            obj._x += left;
-            obj._y += top;
-            obj._w += right;
-            obj._h += bottom;
-            
-            return obj;
-          
-        },
+        
         polygon:function(obj){
       
             obj.requires("Collision");
