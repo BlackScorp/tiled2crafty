@@ -55,14 +55,14 @@ $(function(){
             console.log(area);
              
             //draw map
-              for(var y = area.y.min;y<area.y.max;y++){
-            //Setup the tile counter
-              var i = y * mh; 
-               for(var x = area.x.min;x<area.x.max;x++){
-            //for(var y = 0;y<mh;y++){
+           // for(var y = area.y.min;y<area.y.max;y++){
                 //Setup the tile counter
-              //  var i = y * mh; 
-               // for(var x = 0;x<mw;x++){
+               // var i = y * mh; 
+              //  for(var x = area.x.min;x<area.x.max;x++){
+                    for(var y = 0;y<mh;y++){
+                    //Setup the tile counter
+                      var i = y * mh; 
+                     for(var x = 0;x<mw;x++){
                     var object = this._objects[i], //get current object
                     collision =  this._collisions[i], //get current collision
                     background =  this._tiles[i], //get current background
@@ -70,16 +70,18 @@ $(function(){
                     layer = 1,//initialize layer
                     z=0,//initialize Z
                     tilename=''; //initialize individual name for tiles
-                    
+                
                     //place background tiles
                     if(background > 0){
+                        //set layer
+                        layer = 1;
                         z = (y+1)*layer;
                         tilename = 'Y'+y+'X'+x+'Z'+z;
                         //Find Tile
                         tile = Crafty(tilename);
                         
-                        if(tile.length == 0){ //Create tile if tile not exists
-                            tile = Crafty.e("2D","Text","DOM",background,tilename);
+                        if(tile.length < 1){ //Create tile if tile not exists
+                            tile = Crafty.e("2D","Text","Tile","DOM",background,tilename);
                             //add colision 
                             // < 0 means disabled 
                             if(collision < 0) {
@@ -90,24 +92,24 @@ $(function(){
                         }else{
                            
                             tile = Crafty(tile[0]); //select tile if exists
-                       
+                            tile.addComponent("Red");
                         }
-                         
+                         tile.text('Y'+y+'X'+x);
                         //destroy tiles outside viewport
-                        if(!tile.intersect(this._iso.viewport())){ 
-                      
+                        if(!this._iso.contains(tile)){
                             tile.destroy();
                         }
                         
                         //clear tile
                         tile = null;
                     }
-                    //set layer
-                    layer = 2;
+                    
                     //place object tiles
                     if(object > 0){
+                        //set layer
+                        layer = 2;
                         z = (y+1)*layer;
-                         tilename = 'Y'+y+'X'+x+'Z'+z;
+                        tilename = 'Y'+y+'X'+x+'Z'+z;
                         tile = Crafty(tilename);
                         if(tile.length == 0){ //create object if not exists
                             tile = Crafty.e("2D","DOM",object,tilename);
@@ -122,7 +124,7 @@ $(function(){
                             tile = Crafty(tile[0]);
                         }
                         //destroy objects outside viewport
-                        if(!tile.intersect(this._iso.viewport())){
+                        if(!this._iso.contains(tile)){
                             tile.destroy();
                         }
                           

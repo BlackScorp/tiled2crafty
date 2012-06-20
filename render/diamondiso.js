@@ -17,12 +17,6 @@ Crafty.extend({
             x:0,
             y:0
         },
-        _vp:{
-            x:0,
-            y:0,
-            h:0,
-            w:0
-        },
         init:function(tw, th,mw,mh){
             this._tile.width = parseInt(tw);
             this._tile.height = parseInt(th)||parseInt(tw)/2;
@@ -33,7 +27,7 @@ Crafty.extend({
        
             this._origin.x = this._map.height * this._tile.width / 2;
                             
-            this._updateViewport();            
+            
          
             return this;
         },
@@ -57,31 +51,22 @@ Crafty.extend({
             var pos = this.pos2px(x,y);
             Crafty.viewport.x = -pos.left+Crafty.viewport.width/2-this._tile.width/2;
             Crafty.viewport.y = -pos.top+Crafty.viewport.height/2-this._tile.height/2;
-            this._updateViewport();
+            Crafty.viewport.adjust(-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);      
         },
-        _updateViewport:function(){
-            //get Rectangle of Viewport
-            this._vp = {
-                x:-Crafty.viewport.x,
-                y:-Crafty.viewport.y,
-                w:Crafty.viewport.width,
-                h:Crafty.viewport.height
-            }
-            //Adjust Rectangle
-            this._vp = this.adjust(this._vp,-this._tile.width/2,-this._tile.height/2,this._tile.width/2,this._tile.height/2);
-        },
-        viewport:function(){
-            
-            return this._vp;
+        contains:function(rect){
+            var vp = Crafty.viewport.rect();
+            return rect.x >= vp._x && rect.x - rect.w <= vp._x + vp._w &&
+            rect.y >= vp._y && rect.y - rect.h <= vp._y + vp._h;
         },
         area:function(){
-            this._updateViewport();
+          
             //calculate the corners
-            var vp = this.rect(this._vp);
-            var startX = ~~Math.max(0,this.px2pos(vp.top.left.x,vp.top.left.y).x);
-            var startY = ~~Math.max(0,this.px2pos(vp.top.right.x,vp.top.right.y).y);
-            var endX = ~~Math.min(this._map.width,this.px2pos(vp.bottom.right.x,vp.bottom.right.y).x);
-            var endY = ~~Math.min(this._map.height,this.px2pos(vp.bottom.left.x,vp.bottom.left.y).y);
+            var vp = Crafty.viewport.rect();
+          
+            var startX = ~~Math.max(0,this.px2pos(vp._x,vp._y).x);
+            var startY = ~~Math.max(0,this.px2pos(vp._x+vp._h,vp._y).y);
+            var endX = ~~Math.min(this._map.width,this.px2pos(vp._x+vp._h,vp._y+vp._h).x);
+            var endY = ~~Math.min(this._map.height,this.px2pos(vp._x,vp._y+vp._h).y);
 
             return {
                 x:{
@@ -133,11 +118,11 @@ Crafty.extend({
             }  
         },
         adjust:function(obj,left,top,right,bottom){
-            
-            obj.x += left;
-            obj.y += top;
-            obj.w += right;
-            obj.h += bottom;
+            console.log(obj);
+            obj._x += left;
+            obj._y += top;
+            obj._w += right;
+            obj._h += bottom;
             
             return obj;
           

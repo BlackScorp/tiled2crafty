@@ -2510,6 +2510,13 @@ viewport:{
     }
     style[axis=="_x"?"left":"top"]=v+"px"
 },
+adjust:function(left,top,right,bottom){
+    this._x += left;
+            this._y += top;
+            this.width += right;
+            this.height += bottom;
+            
+},
 rect:function(){
     return{
         _x:-this._x,
