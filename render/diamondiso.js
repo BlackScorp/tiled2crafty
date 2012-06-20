@@ -84,12 +84,12 @@ Crafty.extend({
 
             return {
                 x:{
-                    min:startX,
-                    max:endX
+                    min:~~startX,
+                    max:~~endX
                 },
                 y:{
-                    min:startY,
-                    max:endY
+                    min:~~startY,
+                    max:~~endY
                 }
             }
         },

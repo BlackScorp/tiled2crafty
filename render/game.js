@@ -43,30 +43,34 @@ $(function(){
         
         },
         drawMap:function(){
-            this._iso._updateViewport();
+           
             
             //Convert Data to Integers
             var mw = parseInt(this._map.width);
             var mh = parseInt(this._map.height);
-    
+            var area = this._iso.area();
+           
+             console.log(area);
             //Rendering
-            for(var y = 0;y<mw;y++){
+            for(var y = area.y.min;y<area.y.max;y++){
                 //Setup the tile counter
                 var i = y * mh; 
-                for(var x = 0;x<mh;x++){
+                for(var x = area.x.min;x<area.x.max;x++){
                     var object = this._objects[i], //get current object
                     collision =  this._collisions[i], //get current collision
                     background =  this._tiles[i], //get current background
                     tile = null,//initialize tile
-                    layer = 1; //initialize layer
-            
+                    layer = 1,//initialize layer
+                    z=0; //initialize Z
+                    
                     //place background tiles
                     if(background > 0){
+                        z = (y+1)*layer;
                         //Find Tile
-                        tile = Crafty("Y"+y+"X"+x+"L"+(y+1)*layer);
+                        tile = Crafty("Y"+y+"X"+x+"Z"+z);
                         
                         if(tile.length == 0){ //Create tile if tile not exists
-                            tile = Crafty.e("2D","Text","DOM",background,"Y"+y+"X"+x+"L"+(y+1)*layer);
+                            tile = Crafty.e("2D","Text","DOM",background,"Y"+y+"X"+x+"Z"+z);
                             //add colision 
                             // < 0 means disabled 
                             if(collision < 0) {
@@ -88,9 +92,10 @@ $(function(){
                     layer = 2;
                     //place object tiles
                     if(object> 0){
-                        tile = Crafty("Y"+y+"X"+x+"L"+(y+1)*layer);
+                         z = (y+1)*layer;
+                        tile = Crafty("Y"+y+"X"+x+"Z"+z);
                         if(tile.length == 0){ //create object if not exists
-                            tile = Crafty.e("2D","DOM",object,"Y"+y+"X"+x+"L"+(y+1)*layer);
+                            tile = Crafty.e("2D","DOM",object,"Y"+y+"X"+x+"Z"+z);
                             //add colision 
                             // < 0 means disabled 
                             if(collision < 0) { 
