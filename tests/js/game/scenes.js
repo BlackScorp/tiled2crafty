@@ -19,12 +19,17 @@ Crafty.scene("FrontierOutpost",function(){
     var th = parseInt(map.tileheight);
     var mw = parseInt(map.width);
     var mh = parseInt(map.height);
-    var startX = 2;
-    var startY = 12;
+    var startX = 20;
+    var startY = 40;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
     iso.centerAt(startX,startY);
        var player = Crafty.e("Player");
     iso.place(player,startX,startY,2);
+    player.bind("Moved",function(){
+      var pos = iso.px2pos(this.x,this.y+this.h);
+      
+      this.z = (~~pos.y+1) * 2;
+    });
     var renderMap = function(){
         var area = iso.area();
         for(var a=0,al = area.length;a<al;a++){
