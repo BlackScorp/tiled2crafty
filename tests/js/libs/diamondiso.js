@@ -34,6 +34,10 @@ Crafty.extend({
         },
         layer:{
             id:0,
+            tmp:{
+                canvas:null,
+                viewport:null
+            },
             create:function(name,data){
                 
                 var c,t = Crafty.diamondIso,
@@ -46,35 +50,58 @@ Crafty.extend({
                 c.height = h;
                 c.style.position = 'absolute';
                 c.style.left = "0px";
-                c.style.top = "0px";
+                c.style.top = -h+"px";
                 Crafty.stage.elem.appendChild(c);
+                //Save temporary canvas and viewport
+                if(!this.tmp.canvas){
+                    this.tmp.canvas = Crafty.canvas._canvas;
+                }
+                if(!this.tmp.viewport){
+                    this.tmp.viewport = Crafty.viewport.rect();
+                }
+                //add layer
                 t._layers[name] = {
                     data:data,
                     id:this.id
                 };
+                
+                //Setup viewport with full prerender screen
+                Crafty.viewport._x = 0;
+                Crafty.viewport._y = 0;
+                Crafty.viewport.width = w;
+                Crafty.viewport.height = h;
+                //Setup the context of offscreen canvas
                 Crafty.canvas.context = c.getContext('2d');
                 Crafty.canvas._canvas = c; 
-                for(var y=0,yl = h;y<yl;y++){
+                //PLace tiles
+                for(var y=0,yl = t._map.height;y<yl;y++){
                     
-                    for(var x=0,xl = w;x<xl;x++){
-                        var i = y*w+x,d=data[i];
+                    for(var x=0,xl =t._map.width;x<xl;x++){
+                        var i = y*t._map.height+x,d=data[i];
                          
-                        if(d > 0){
+                        if(d > 0 ){
                             var z = (y+1)*this.id,
                             tilename = 'Y'+y+'X'+x+'Z'+z;
                             var tile = Crafty.e("2D","Canvas",d,tilename);
+                          
                             t.place(tile,x,y,this.id);
                      
                         }
                     }
                 }
-           
+                //Restore settings
+                Crafty.canvas._canvas = this.tmp.canvas;
+                Crafty.canvas.context = this.tmp.canvas.getContext('2d');
+                Crafty.viewport.x = this.tmp.viewport._x;
+                Crafty.viewport.y = this.tmp.viewport._x;
+                Crafty.viewport.width = this.tmp.viewport._w;
+                Crafty.viewport.height = this.tmp.viewport._h;
             }
         },
         render:function(){
             for(var i in this._layers){
                 
-            }
+                }
         },
         place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);

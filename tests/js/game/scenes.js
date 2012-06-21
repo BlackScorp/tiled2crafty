@@ -4,7 +4,7 @@ Crafty.scene("Loading",function(){
 
 Crafty.scene("FrontierOutpost",function(){
     //Setup background color
-  //Crafty.background("#000");
+    //Crafty.background("#000");
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
     //Get Object Tiles
@@ -22,22 +22,21 @@ Crafty.scene("FrontierOutpost",function(){
     var startX = 20;
     var startY = 40;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
-    iso.centerAt(startX,startY);
-       var player = Crafty.e("Player");
-    iso.place(player,startX,startY,2);
-    for(var i in frontier_outpost.layers){
-        var data = frontier_outpost.layers[i].split(",");
-        iso.layer.create(i,data);
-
-    }
+  
+  //  var player = Crafty.e("Player");
+   // iso.place(player,startX,startY,2);
+  
+    iso.layer.create("background",frontier_outpost.layers.background.split(","));
+    iso.layer.create("object",frontier_outpost.layers.object.split(","));
     iso.render();
-  console.log(Crafty("2D").length);
+      iso.centerAt(startX,startY);
+    console.log(iso.layer);
     
-    player.bind("Moved",function(){
-      var pos = iso.px2pos(this.x,this.y+this.h);
+    /*player.bind("Moved",function(){
+        var pos = iso.px2pos(this.x,this.y+this.h);
       
-      this.z = (~~pos.y+1) * 2;
-    });
+        this.z = (~~pos.y+1) * 2;
+    });*/
     var renderMap = function(){
         var area = iso.area();
         for(var a=0,al = area.length;a<al;a++){
@@ -109,6 +108,6 @@ Crafty.scene("FrontierOutpost",function(){
                
         }
     };   
-   // renderMap();
+// renderMap();
  
 });
