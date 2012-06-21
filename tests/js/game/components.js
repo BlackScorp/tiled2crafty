@@ -168,8 +168,8 @@ Crafty.c("Player",{
                 y:-this.y-this.h+Crafty.viewport.height/2
             }
           
-            Crafty.viewport.x = vp.x;
-            Crafty.viewport.y = vp.y;
+           // Crafty.viewport.x = vp.x;
+            //Crafty.viewport.y = vp.y;
          
            
         })
