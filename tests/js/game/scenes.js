@@ -28,9 +28,10 @@ Crafty.scene("FrontierOutpost",function(){
   
     iso.layer.create("background",frontier_outpost.layers.background.split(","));
     iso.layer.create("object",frontier_outpost.layers.object.split(","));
+    iso.centerAt(startX,startY);
     iso.render();
-      iso.centerAt(startX,startY);
-    console.log(iso.layer);
+   //   
+   
     
     /*player.bind("Moved",function(){
         var pos = iso.px2pos(this.x,this.y+this.h);

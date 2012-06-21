@@ -89,19 +89,27 @@ Crafty.extend({
                         }
                     }
                 }
+           
+                Crafty.DrawManager.drawAll();
+           
                 //Restore settings
                 Crafty.canvas._canvas = this.tmp.canvas;
                 Crafty.canvas.context = this.tmp.canvas.getContext('2d');
-                Crafty.viewport.x = this.tmp.viewport._x;
-                Crafty.viewport.y = this.tmp.viewport._x;
+                Crafty.viewport._x = this.tmp.viewport._x;
+                Crafty.viewport._y = this.tmp.viewport._x;
                 Crafty.viewport.width = this.tmp.viewport._w;
                 Crafty.viewport.height = this.tmp.viewport._h;
+               
             }
         },
         render:function(){
+            var vp = Crafty.viewport.rect();
+            console.log(vp);
             for(var i in this._layers){
-                
-                }
+                var cache = document.getElementById(i);
+              
+                Crafty.canvas.context.drawImage(cache, vp._x, vp._y,vp._w,vp._h);
+            }
         },
         place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);
