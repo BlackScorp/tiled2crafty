@@ -40,37 +40,35 @@ Crafty.extend({
                 marginX = obj.__margin[0];
                 marginY = obj.__margin[1];
             }
-            obj.attr({
-                x:pos.left+marginX,
-                y:pos.top-obj.h+marginY,
-                z:(y+1)*layer
-            }); 
+          
+            obj.x = pos.left-obj.w/2+marginX;
+            obj.y = pos.top-obj.h+marginY;
+            obj.z = (y+1)*layer;
+           
             
         },
         centerAt:function(x,y){
             var pos = this.pos2px(x,y);
-            Crafty.viewport.x = -pos.left+Crafty.viewport.width/2-this._tile.width/2;
-            Crafty.viewport.y = -pos.top+Crafty.viewport.height/2-this._tile.height/2;
+            Crafty.viewport.x = -pos.left+Crafty.viewport.width/2;
+            Crafty.viewport.y = -pos.top+Crafty.viewport.height/2;
         
         },
-        contains:function(rect){
-            var vp = Crafty.viewport.rect();
-            return rect.x >= vp._x && rect.x - rect.w <= vp._x + vp._w &&
-            rect.y >= vp._y && rect.y - rect.h <= vp._y + vp._h;
-        },
-        area:function(){
-          
+        area:function(offset){
+            if(!offset) offset = 0;
             //calculate the corners
             var vp = Crafty.viewport.rect();
-            vp._x -= this._tile.width/2;
-            vp._y -= this._tile.height/2;
-            vp._w += this._tile.width/2;
-            vp._h += this._tile.height/2;
-        
-            
+            vp._x -= (this._tile.width/2+offset*this._tile.width);
+            vp._y -= (this._tile.height/2+offset*this._tile.height);
+            vp._w += (this._tile.width/2+offset*this._tile.width);
+            vp._h += (this._tile.height/2+offset*this._tile.height); 
+          /*  Crafty.viewport.x = -vp._x;
+            Crafty.viewport.y = -vp._y;    
+            Crafty.viewport.width = vp._w;
+            Crafty.viewport.height = vp._h;   */
+            console.log(vp);
             var grid = [];
-            for(var y = vp._y,yl = (vp._y+vp._h);y<=yl;y+=this._tile.height/2){
-                for(var x = vp._x,xl = (vp._x+vp._w);x<=xl;x+=this._tile.width/2){
+            for(var y = vp._y,yl = (vp._y+vp._h);y<yl;y+=this._tile.height/2){
+                for(var x = vp._x,xl = (vp._x+vp._w);x<xl;x+=this._tile.width/2){
                     var row = this.px2pos(x,y);
                     grid.push([~~row.x,~~row.y]);
                 }
