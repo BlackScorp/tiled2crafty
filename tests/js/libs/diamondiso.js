@@ -107,7 +107,7 @@ Crafty.extend({
             console.log(vp);
             for(var i in this._layers){
                 var cache = document.getElementById(i);
-              
+                console.log(cache);
                 Crafty.canvas.context.drawImage(cache, vp._x, vp._y,vp._w,vp._h);
             }
         },
