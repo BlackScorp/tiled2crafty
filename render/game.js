@@ -51,18 +51,17 @@ $(function(){
             
             //Get the area to draw
             var area = this._iso.area();
-           
-            console.log(area);
+      
              
             //draw map
-           // for(var y = area.y.min;y<area.y.max;y++){
+             for(var y = area.y.min;y<area.y.max;y++){
+            //Setup the tile counter
+             var i = y * mh; 
+              for(var x = area.x.min;x<area.x.max;x++){
+           // for(var y = 0;y<mh;y++){
                 //Setup the tile counter
-               // var i = y * mh; 
-              //  for(var x = area.x.min;x<area.x.max;x++){
-                    for(var y = 0;y<mh;y++){
-                    //Setup the tile counter
-                      var i = y * mh; 
-                     for(var x = 0;x<mw;x++){
+             //   var i = y * mh; 
+              //  for(var x = 0;x<mw;x++){
                     var object = this._objects[i], //get current object
                     collision =  this._collisions[i], //get current collision
                     background =  this._tiles[i], //get current background
@@ -92,12 +91,14 @@ $(function(){
                         }else{
                            
                             tile = Crafty(tile[0]); //select tile if exists
-                            tile.addComponent("Red");
+                           
                         }
-                         tile.text('Y'+y+'X'+x);
+                        
                         //destroy tiles outside viewport
                         if(!this._iso.contains(tile)){
+                            console.log(tile.rect());
                             tile.destroy();
+                            
                         }
                         
                         //clear tile
@@ -105,13 +106,13 @@ $(function(){
                     }
                     
                     //place object tiles
-                    if(object > 0){
+                    if(object < 0){
                         //set layer
                         layer = 2;
                         z = (y+1)*layer;
                         tilename = 'Y'+y+'X'+x+'Z'+z;
                         tile = Crafty(tilename);
-                        if(tile.length == 0){ //create object if not exists
+                        if(tile.length < 1){ //create object if not exists
                             tile = Crafty.e("2D","DOM",object,tilename);
                             //add colision 
                             // < 0 means disabled 
@@ -124,7 +125,7 @@ $(function(){
                             tile = Crafty(tile[0]);
                         }
                         //destroy objects outside viewport
-                        if(!this._iso.contains(tile)){
+                         if(!tile.intersect(vp)){
                             tile.destroy();
                         }
                           

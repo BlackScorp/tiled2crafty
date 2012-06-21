@@ -40,11 +40,11 @@ Crafty.extend({
                 marginX = obj.__margin[0];
                 marginY = obj.__margin[1];
             }
-            obj.attr({
-                x:pos.left+marginX,
-                y:pos.top-obj.h+marginY,
-                z:(y+1)*layer
-            }); 
+          
+            obj.x = pos.left+marginX;
+            obj.y = pos.top-obj.h+marginY;
+            obj.z = (y+1)*layer;
+           
             
         },
         centerAt:function(x,y){
@@ -55,8 +55,10 @@ Crafty.extend({
         },
         contains:function(rect){
             var vp = Crafty.viewport.rect();
-            return rect.x >= vp._x && rect.x - rect.w <= vp._x + vp._w &&
-            rect.y >= vp._y && rect.y - rect.h <= vp._y + vp._h;
+            console.log(rect.x + rect.w);
+            console.log(vp._x + vp._w);
+            return rect.x < vp._x && rect.x + rect.w > vp._x + vp._w &&
+            rect.y < vp._y && rect.y + rect.h > vp._y + vp._h;
         },
         area:function(){
           
@@ -91,41 +93,6 @@ Crafty.extend({
                 x:((top+x) / this._tile.height),
                 y:((top-x) / this._tile.height)
             }
-        },
-        rect:function(obj){
-          
-            return {
-                top:{
-                    left:{
-                        x:obj.x,
-                        y:obj.y
-                    },
-                    right:{
-                        x:obj.x+obj.w,
-                        y:obj.y
-                    }
-                },
-                bottom:{
-                    left:{
-                        x:obj.x,
-                        y:obj.y+obj.h
-                    },
-                    right:{
-                        x:obj.x+obj.w,
-                        y:obj.y+obj.h
-                    }
-                }
-            }  
-        },
-        adjust:function(obj,left,top,right,bottom){
-            console.log(obj);
-            obj._x += left;
-            obj._y += top;
-            obj._w += right;
-            obj._h += bottom;
-            
-            return obj;
-          
         },
         polygon:function(obj){
       
