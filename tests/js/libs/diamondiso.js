@@ -17,6 +17,7 @@ Crafty.extend({
             x:0,
             y:0
         },
+        _layers:{},
         init:function(tw, th,mw,mh){
             this._tile.width = parseInt(tw);
             this._tile.height = parseInt(th)||parseInt(tw)/2;
@@ -31,7 +32,50 @@ Crafty.extend({
          
             return this;
         },
-
+        layer:{
+            id:0,
+            create:function(name,data){
+                
+                var c,t = Crafty.diamondIso,
+                w =  t._map.width * (t._tile.width/2) +   t._map.height * (t._tile.width/2),
+                h= t._map.width * (t._tile.height/2) +   t._map.height * (t._tile.height/2)
+                c = document.createElement("canvas");
+                this.id++;
+                c.id = name;
+                c.width = w;
+                c.height = h;
+                c.style.position = 'absolute';
+                c.style.left = "0px";
+                c.style.top = "0px";
+                Crafty.stage.elem.appendChild(c);
+                t._layers[name] = {
+                    data:data,
+                    id:this.id
+                };
+                Crafty.canvas.context = c.getContext('2d');
+                Crafty.canvas._canvas = c; 
+                for(var y=0,yl = h;y<yl;y++){
+                    
+                    for(var x=0,xl = w;x<xl;x++){
+                        var i = y*w+x,d=data[i];
+                         
+                        if(d > 0){
+                            var z = (y+1)*this.id,
+                            tilename = 'Y'+y+'X'+x+'Z'+z;
+                            var tile = Crafty.e("2D","Canvas",d,tilename);
+                            t.place(tile,x,y,this.id);
+                     
+                        }
+                    }
+                }
+           
+            }
+        },
+        render:function(){
+            for(var i in this._layers){
+                
+            }
+        },
         place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);
             if(!layer) layer = 1;
@@ -61,11 +105,11 @@ Crafty.extend({
             vp._y -= (this._tile.height/2+offset*this._tile.height);
             vp._w += (this._tile.width/2+offset*this._tile.width);
             vp._h += (this._tile.height/2+offset*this._tile.height); 
-          /*  Crafty.viewport.x = -vp._x;
+            /*  Crafty.viewport.x = -vp._x;
             Crafty.viewport.y = -vp._y;    
             Crafty.viewport.width = vp._w;
             Crafty.viewport.height = vp._h;   */
-            console.log(vp);
+ 
             var grid = [];
             for(var y = vp._y,yl = (vp._y+vp._h);y<yl;y+=this._tile.height/2){
                 for(var x = vp._x,xl = (vp._x+vp._w);x<xl;x+=this._tile.width/2){

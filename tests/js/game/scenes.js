@@ -4,7 +4,7 @@ Crafty.scene("Loading",function(){
 
 Crafty.scene("FrontierOutpost",function(){
     //Setup background color
-  Crafty.background("#000");
+  //Crafty.background("#000");
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
     //Get Object Tiles
@@ -25,6 +25,14 @@ Crafty.scene("FrontierOutpost",function(){
     iso.centerAt(startX,startY);
        var player = Crafty.e("Player");
     iso.place(player,startX,startY,2);
+    for(var i in frontier_outpost.layers){
+        var data = frontier_outpost.layers[i].split(",");
+        iso.layer.create(i,data);
+
+    }
+    iso.render();
+  console.log(Crafty("2D").length);
+    
     player.bind("Moved",function(){
       var pos = iso.px2pos(this.x,this.y+this.h);
       
@@ -101,6 +109,6 @@ Crafty.scene("FrontierOutpost",function(){
                
         }
     };   
-    renderMap();
+   // renderMap();
  
 });
