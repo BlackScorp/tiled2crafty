@@ -92,7 +92,7 @@ Crafty.extend({
         },
         
         polygon:function(obj){
-      
+     
             obj.requires("Collision");
             var marginX = 0,marginY = 0;
             if(obj.__margin !== undefined){
