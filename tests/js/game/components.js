@@ -23,7 +23,7 @@ Crafty.c("Player",{
     init:function(){ 
         
       
-        this.addComponent("2D,Canvas,male,SpriteAnimation,Multiway,Collision")
+        this.addComponent("2D,DOM,male,SpriteAnimation,Multiway,Collision")
         .attr({
             w:128,
             h:128
@@ -168,8 +168,8 @@ Crafty.c("Player",{
                 y:-this.y-this.h+Crafty.viewport.height/2
             }
           
-           // Crafty.viewport.x = vp.x;
-            //Crafty.viewport.y = vp.y;
+          Crafty.viewport.x = vp.x;
+            Crafty.viewport.y = vp.y;
          
            
         })

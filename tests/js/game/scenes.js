@@ -23,21 +23,22 @@ Crafty.scene("FrontierOutpost",function(){
     var startY = 40;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
-  //  var player = Crafty.e("Player");
-   // iso.place(player,startX,startY,2);
-  
-    iso.layer.create("background",frontier_outpost.layers.background.split(","));
-    iso.layer.create("object",frontier_outpost.layers.object.split(","));
-   // iso.centerAt(startX,startY);
-    iso.render();
-   //   
+    var player = Crafty.e("Player");
+  iso.place(player,startX,startY,2);
+
+    //iso.layer.create("background",frontier_outpost.layers.background.split(","));
+ 
    
+    iso.centerAt(startX,startY);
+    iso.render();
+      
+ 
     
-    /*player.bind("Moved",function(){
+    player.bind("Moved",function(){
         var pos = iso.px2pos(this.x,this.y+this.h);
       
         this.z = (~~pos.y+1) * 2;
-    });*/
+    });
     var renderMap = function(){
         var area = iso.area();
         for(var a=0,al = area.length;a<al;a++){
@@ -62,7 +63,7 @@ Crafty.scene("FrontierOutpost",function(){
                 tile = Crafty(tilename);
                         
                 if(tile.length < 1){ //Create tile if tile not exists
-                    tile = Crafty.e("2D","Tile","Canvas",background,tilename); //Mark the components as Tiles with Tile component
+                    tile = Crafty.e("2D","Tile","DOM",background,tilename); //Mark the components as Tiles with Tile component
                     //add colision 
                     // < 0 means disabled 
                     if(collision < 0) {
@@ -83,7 +84,7 @@ Crafty.scene("FrontierOutpost",function(){
                 //Find Tile
                 tile = Crafty(tilename);
                 if(tile.length < 1){ //Create tile if tile not exists
-                    tile = Crafty.e("2D","Tile","Canvas",object,tilename);//Mark the components as Tiles with Tile component
+                    tile = Crafty.e("2D","Tile","DOM",object,tilename);//Mark the components as Tiles with Tile component
                     //add colision 
                     // < 0 means disabled 
                     if(collision < 0) {
@@ -109,6 +110,8 @@ Crafty.scene("FrontierOutpost",function(){
                
         }
     };   
-// renderMap();
- 
+   
+   renderMap();
+    console.log("Tiles in Screen");
+    console.log(Crafty("Tile").length);
 });
