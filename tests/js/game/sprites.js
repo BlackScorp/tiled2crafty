@@ -1,4 +1,4 @@
-Crafty.sprite(64,128,"img/grassland.png",{
+Crafty.displayList(64,128,"img/grassland.png",{
 16:[0,0],
 17:[1,0],
 18:[2,0],
@@ -128,7 +128,7 @@ Crafty.sprite(64,128,"img/grassland.png",{
 142:[14,7],
 143:[15,7]
 });
-Crafty.sprite(64,64,"img/grassland_water.png",{
+Crafty.displayList(64,64,"img/grassland_water.png",{
 144:[0,0],
 145:[1,0],
 146:[2,0],
@@ -194,7 +194,7 @@ Crafty.sprite(64,64,"img/grassland_water.png",{
 206:[14,3],
 207:[15,3]
 },0,0,0,32);
-Crafty.sprite(64,256,"img/grassland_structures.png",{
+Crafty.displayList(64,256,"img/grassland_structures.png",{
 208:[0,0],
 209:[1,0],
 210:[2,0],
@@ -228,7 +228,7 @@ Crafty.sprite(64,256,"img/grassland_structures.png",{
 238:[14,1],
 239:[15,1]
 });
-Crafty.sprite(128,256,"img/grassland_trees.png",{
+Crafty.displayList(128,256,"img/grassland_trees.png",{
 240:[0,0],
 241:[1,0],
 242:[2,0],
