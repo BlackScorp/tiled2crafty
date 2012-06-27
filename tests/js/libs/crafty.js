@@ -2486,12 +2486,7 @@
          
                 Crafty.asset(url, img);
                 img.onload = function () {
-                 
-                   
-                        
-                  
-                          
-                         
+                     
                     //all components with this img are now ready
                     for (spriteName in map) {
                         Crafty(spriteName).each(function () {
@@ -2508,6 +2503,7 @@
             }
 
             for (spriteName in map) {
+              
                 if (!map.hasOwnProperty(spriteName)) continue;
   
                 temp = map[spriteName];
@@ -2522,6 +2518,7 @@
                     __coord: [x, y, w, h],
 
                     init: function () {
+                       
                         this.requires("DisplayList");
                         this.__trim = [0, 0, 0, 0];
                         this.__image = url;
@@ -2537,8 +2534,6 @@
                         if (this.img.complete && this.img.width > 0) {
                             this.ready = true;
                             this.trigger("Change");
-                       
-                         
                         }
                         
                         //set the width and height to the sprite size
@@ -2548,18 +2543,7 @@
                         //set the margin
                         this.x = marginX;
                         this.y = marginY;
-                    
-                             c = document.createElement("canvas");
-                   
-                    c.width = this.w;
-                    c.height = this.h;
-                    c.style.position = 'absolute';
-                    c.style.top = -this.h+'px';
-                    Crafty.stage.elem.appendChild(c);
-                    var ctx = c.getContext("2d");
-                    ctx.drawImage(img,this.__coord[0],this.__coord[1],this.__coord[2], this.__coord[3],0,0,this.w,this.h);
-                     this.imgList = c;
-                        
+               
                   
                     }
                 });
@@ -3174,42 +3158,40 @@
         }
     });
     Crafty.c("DisplayList",{
-        __image:"",
-        __tile:0,
-        __tileh:0,
-        __padding:null,
-        __trim:null,
-        imgList:null,
-        ready:false,
-        src:null,
+        drawed:false,
         init:function(){
-            this.__trim=[0,0,0,0];
+            var id = this[0];
         
-            var draw=function(e){
-                var co=e.co,pos=e.pos,context=e.ctx;
-                if(e.type==="canvas"){
-                    if(this.imgList){
-                   //  console.log(this.imgList);
-                       // context.drawImage(this.imgList,co.x,co.y,co.w,co.h,pos._x,pos._y,pos._w,pos._h);
-                     context.drawImage(this.imgList,0,0,co.w,co.h,pos._x,pos._y,pos._w,pos._h);
-                     //  context.drawImage(this.imgList,0,0);
-                    }
-                   
-                
-                }else{
-                    if(e.type==="DOM"){
-                        this._element.style.background="url('"+this.__image+"') no-repeat -"+co.x+"px -"+co.y+"px"
-                    }
-                }
-            };
-    
-            this.bind("Draw",draw).bind("RemoveComponent",function(id){
-                if(id==="DisplayList"){
-                    this.unbind("Draw",draw)
-                }
+            var  c = document.getElementById("DisplayList"+id);
+        
+ 
+            var draw = function(e){
+                var context = e.ctx || Crafty.canvas.context;
+                context.drawImage(c,e.pos._x, e.pos._y);
+            }
+            this.bind("Draw", draw).bind("RemoveComponent", function (id) {
+                Crafty.stage.elem.removeChild(c); 
+                if (id === "DisplayList") this.unbind("Draw", draw);
+            }).bind("Change",function(){
+                if(this.ready && !this.drawed){
+                    c = document.createElement("canvas");
+                    c.id = "DisplayList"+id;
+                    c.width = this.__coord[2];
+                    c.height =this.__coord[3];
+                    c.style.position = 'absolute';
+                    c.style.left = "0px";
+                    c.style.top = -this.__coord[3]+"px";
+                    c.style.zIndex = '1000';
+                    Crafty.stage.elem.appendChild(c);
+                    var ctx = c.getContext('2d')
+                    ctx.drawImage(this.img,this.__coord[0],this.__coord[1],this.__coord[2],this.__coord[3],0,0,this.__coord[2],this.__coord[3]);
+                    this.drawed = true;
+                }  
             });
+       
         }
     });
+
     Crafty.c("Sprite",{
         __image:"",
         __tile:0,

@@ -6,7 +6,6 @@ $(function(){
     
     Crafty.scene("FrontierOutpost");
 
-     
-
+   
 
 });
