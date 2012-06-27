@@ -57,7 +57,7 @@ $(function(){
                     var sprite = spriteLayer.get('.'+tile)[0];
                     if(sprite){
                         sprite.visible = true;
-                         sprite.cloneTo(backgroundLayer);
+                        // sprite.cloneTo(backgroundLayer);
                          
                     }    
                 }
@@ -67,7 +67,7 @@ $(function(){
         backgroundLayer.draw();
         stage.add(backgroundLayer);
 
-        console.log(backgroundLayer);
+        console.log(spriteLayer.getChildren()[0]);
         console.log(spriteLayer);
     }
       
