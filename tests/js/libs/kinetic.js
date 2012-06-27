@@ -939,6 +939,17 @@ Kinetic.Node.prototype = {
         this.parent = newContainer;
         newContainer._setChildrenIndices();
     },
+    cloneTo :function(newContainer){
+        var clone = {};
+        clone.apply(this);
+        console.log(clone);
+        // add to new parent
+        newContainer.children.push(clone);
+        clone.index = newContainer.children.length - 1;
+        clone.parent = newContainer;
+        newContainer._setChildrenIndices();
+    
+    },
     /**
      * get parent container
      */
