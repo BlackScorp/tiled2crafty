@@ -38,6 +38,7 @@ Crafty.scene("FrontierOutpost",function(){
         var pos = iso.px2pos(this.x,this.y+this.h);
       
         this.z = (~~pos.y+1) * 2;
+        
     });
     var renderMap = function(){
         var area = iso.area();

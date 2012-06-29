@@ -15,8 +15,8 @@ Crafty.c("Player",{
     },
     ground:null,
     movementSpeed:{
-        x:2,
-        y:1
+        x:5,
+        y:2.5
     },
     url:null,
     xsrf:null,
@@ -108,7 +108,7 @@ Crafty.c("Player",{
         .animate('shoot_s',28,6,31)
         .animate('shoot_sw',28,7,31)
         .bind("NewDirection",function(direction){
-           return;
+           
             if (direction.x == 0 && direction.y < 0 ) {
                 this.direction = 'n';
             }
@@ -178,8 +178,8 @@ Crafty.c("Player",{
             S: 90, 
             D: 0, 
             A: 180
-        });
-     //   .animate('stand_'+this.direction,30,-1)
+        })
+        .animate('stand_'+this.direction,30,-1)
 
         return this;
     }

@@ -377,6 +377,7 @@
             current:(+new Date),
             curTime:Date.now(),
             init:function(){
+                console.log("init timer");
                 var x=k.requestAnimationFrame||k.webkitRequestAnimationFrame||k.mozRequestAnimationFrame||k.oRequestAnimationFrame||k.msRequestAnimationFrame||null;
                 if(x){
                     t=function(){
@@ -413,7 +414,7 @@
                     g++
                 }
                 if(g){
-                    r.DrawManager.draw()
+                    //r.DrawManager.draw()
                 }
             },
             getFPS:function(){
@@ -3186,6 +3187,7 @@
                     var ctx = c.getContext('2d')
                     ctx.drawImage(this.img,this.__coord[0],this.__coord[1],this.__coord[2],this.__coord[3],0,0,this.__coord[2],this.__coord[3]);
                     this.drawed = true;
+                
                 }  
             });
        
@@ -4216,6 +4218,7 @@
                 q.sort(function(a,b){
                     return a._globalZ-b._globalZ
                 });
+                
                 for(;i<l;i++){
                     current=q[i];
                     if(current._visible&&current.__c.Canvas){
