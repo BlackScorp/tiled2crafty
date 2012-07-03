@@ -24,13 +24,13 @@ Crafty.scene("FrontierOutpost",function(){
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
     var player = Crafty.e("Player");
-  iso.place(player,startX,startY,2);
+    iso.place(player,startX,startY,2);
 
     //iso.layer.create("background",frontier_outpost.layers.background.split(","));
  
    
     iso.centerAt(startX,startY);
-    iso.render();
+    
       
  
     
@@ -38,8 +38,11 @@ Crafty.scene("FrontierOutpost",function(){
         var pos = iso.px2pos(this.x,this.y+this.h);
       
         this.z = (~~pos.y+1) * 2;
-        
+        if(this.y % 32 == 0 || this.x%64==0)
+            renderMap();
+
     });
+
     var renderMap = function(){
         var area = iso.area();
         for(var a=0,al = area.length;a<al;a++){
@@ -49,33 +52,12 @@ Crafty.scene("FrontierOutpost",function(){
             i = y * mh + x,
             object = objects[i], //get current object
             collision =  collisions[i], //get current collision
-            background =  backgrounds[i], //get current background
             tile = null,//initialize tile
             layer = 1,//initialize layer
             z=0,//initialize Z
             tilename=''; //initialize individual name for tiles
-            //place background tiles
-            if(background > 0){
-                //set layer
-                layer = 1;
-                z = (y+1)*layer;
-                tilename = 'Y'+y+'X'+x+'Z'+z;
-                //Find Tile
-                tile = Crafty(tilename);
-                        
-                if(tile.length < 1){ //Create tile if tile not exists
-                    tile = Crafty.e("2D","Tile","Canvas",background,tilename); //Mark the components as Tiles with Tile component
-                    //add colision 
-                    // < 0 means disabled 
-                    if(collision < 0) {
-                        tile.addComponent("Collision,Solid");
-                        tile.collision( this._iso.polygon(tile));
-                    } 
-                    iso.place(tile,x,y,layer);
-                }   
-                //clear tile
-                tile = null;
-            }
+          
+         
             //place object tiles
             if(object > 0){
                 //set layer
@@ -100,19 +82,53 @@ Crafty.scene("FrontierOutpost",function(){
                     
               
         }
-        //Clearing up the map
+        //Clearing up the objects
         var tiles = Crafty("Tile"); //get the marked tiles
-        var vp = Crafty.viewport.rect(); //get Rect of viewport
-        for(var t = 0,tl = tiles.length;t<tl;t++){
-            tile = Crafty(tiles[t]);
-            if(!tile.intersect(vp._x,vp._y,vp._w,vp._h)){ //if tile not intersect the viewport
-                tile.destroy(); //destroy
-            }
+        if(tiles.length >200){
+            var vp = Crafty.viewport.rect(); //get Rect of viewport
+            for(var t = 0,tl = tiles.length;t<tl;t++){
+                tile = Crafty(tiles[t]);
+                if(!tile.intersect(vp._x,vp._y,vp._w,vp._h)){ //if tile not intersect the viewport
+                    tile.destroy(); //destroy
+                }
                
+            }
+    
         }
-    };   
+         
+    };  
+    //Testing prerender
+    var prerenderBg = function(){
+        var i = 0;
+        var bg = Crafty.e("IsoLayer,background"); //Create Background entity
+       
+        for(var y = 0;y<mh;y++){
+            
+            for(var x = 0;x<mw;x++){
+                i = y * mh+x;
+                var background = backgrounds[i],tile=null; //get Background image
+                if(background > 0){
+                    tile = Crafty.e(background); //Create Tile
+                    iso.place(tile,x,y); //calculate tile positions
+                    bg.addTile(tile.cacheCanvas,tile.x,tile.y); //Draw tile to offscreen
+                    tile.destroy(); //Destroy object
+                }
+                
+              
+            }
+                
+            
+        }
+        bg.draw(); //Draw offscreen into stage
+      
+    }
+    prerenderBg(); 
+    renderMap();
+ 
    
-   renderMap();
+    Crafty.bind("Change",function(){
+        console.log("test");
+    });
     console.log("Tiles in Screen");
-    console.log(Crafty("Tile").length);
+    console.log(Crafty("2D").length);
 });

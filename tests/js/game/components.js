@@ -15,8 +15,8 @@ Crafty.c("Player",{
     },
     ground:null,
     movementSpeed:{
-        x:5,
-        y:2.5
+        x:4,
+        y:2
     },
     url:null,
     xsrf:null,
@@ -186,4 +186,7 @@ Crafty.c("Player",{
   
 });
 
+Crafty.c("Cache",{
+    
+});
 
