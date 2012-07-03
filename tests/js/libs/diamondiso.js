@@ -168,15 +168,28 @@ Crafty.extend({
                      Crafty.stage.elem.appendChild(c);
                 this.canvas = c;
             } 
+            var rect = Crafty.viewport.rect();
+            
+            this.attr({x:rect._x,y:rect._y,w:w,h:h,z:0}).bind("Draw",function(e){
+                console.log("test");
+            }).bind("Change",function(){console.log("Changed")});
         } ,
         addTile:function(img,x,y){
             var ctx = this.canvas.getContext("2d");
             ctx.drawImage(img,x,y);
              
         },
-        draw:function(){
+        render:function(){
             var ctx = Crafty.canvas.context,rect=Crafty.viewport.rect();
+            
+            console.log("Destination Canvas");
+            console.log(ctx);
+            console.log("Source Canvas");
+            console.log(this.canvas);
+            console.log("Viewport Rect");
+            console.log(rect);
             ctx.drawImage(this.canvas,rect._x,rect._y);
+            
         }
     });
 

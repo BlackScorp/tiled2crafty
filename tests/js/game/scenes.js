@@ -25,25 +25,31 @@ Crafty.scene("FrontierOutpost",function(){
   
     var player = Crafty.e("Player");
     iso.place(player,startX,startY,2);
-
-    //iso.layer.create("background",frontier_outpost.layers.background.split(","));
+          
  
    
     iso.centerAt(startX,startY);
-    
+    var bg = Crafty.e("2D,Canvas,IsoLayer,background"); //Create Background entity
       
  
     
     player.bind("Moved",function(){
         var pos = iso.px2pos(this.x,this.y+this.h);
+        pos.x = ~~pos.x;
+        pos.y = ~~pos.y;
+        //If player coordiantes didnt changed return
+        if(this.position.x == pos.x || this.position.y == pos.y) return;
       
+        //update player coordiantes
+        this.position.x = pos.x;
+        this.position.y = pos.y;
         this.z = (~~pos.y+1) * 2;
-        if(this.y % 32 == 0 || this.x%64==0)
-            renderMap();
-
+        //update map
+        bg.render();
+        renderObjects();
     });
 
-    var renderMap = function(){
+    var renderObjects = function(){
         var area = iso.area();
         for(var a=0,al = area.length;a<al;a++){
             var loc = area[a],
@@ -98,9 +104,9 @@ Crafty.scene("FrontierOutpost",function(){
          
     };  
     //Testing prerender
-    var prerenderBg = function(){
+    var renderBg = function(){
         var i = 0;
-        var bg = Crafty.e("IsoLayer,background"); //Create Background entity
+
        
         for(var y = 0;y<mh;y++){
             
@@ -119,11 +125,12 @@ Crafty.scene("FrontierOutpost",function(){
                 
             
         }
-        bg.draw(); //Draw offscreen into stage
+        bg.render(); //Draw offscreen into stage
       
     }
-    prerenderBg(); 
-    renderMap();
+    
+    renderBg(); 
+    renderObjects();
  
    
     Crafty.bind("Change",function(){
