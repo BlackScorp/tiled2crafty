@@ -123,7 +123,8 @@ Crafty.extend({
 Crafty.c("IsoLayer",{
     canvas:null,
     zones:{},
-        
+    w:0,
+    h:0,
     init:function(){
             
     
@@ -133,12 +134,14 @@ Crafty.c("IsoLayer",{
                 
         var c,t = Crafty.diamondIso,w =  t._map.width * (t._tile.width/2) +   t._map.height * (t._tile.width/2),
         h= t._map.width * (t._tile.height/2) +   t._map.height * (t._tile.height/2);
-             
+        this.h = h;
+        this.w = w;
         var my = Math.round(h/Crafty.viewport.height),mx = Math.round(w/Crafty.viewport.width);
         for(var y = 0;y<my;y++){
             for(var x = 0;x<mx;x++){
                 var name = 'Y'+y+'X'+x;
                 c = document.createElement('canvas');
+                c.id=name;
                 c.width = rect._w;
                 c.height = rect._h;
                 c.style.position = 'absolute';
@@ -153,15 +156,16 @@ Crafty.c("IsoLayer",{
      
     } ,
     addTile:function(img,x,y){
-        var rect = Crafty.viewport.rect();
-        var zy = Math.round(y/Crafty.viewport.height),zx = Math.round(x/Crafty.viewport.width);
-        x-=zx*Crafty.viewport.width;
-        y-=zy*Crafty.viewport.height;
+       
+        var zy = ~~(y/Crafty.viewport.height),zx = ~~(x/Crafty.viewport.width);
+        x -=(zx*Crafty.viewport.width);
+        y -=(zy*Crafty.viewport.height);
         var name = 'Y'+zy+'X'+zx;
-        console.log("X"+x+" / Y"+y);
+    
         var zone = this.zones[name];
         if(zone)
         zone.drawImage(img,x,y);
+    else console.log(name);
              
     },
     render:function(){
@@ -169,8 +173,8 @@ Crafty.c("IsoLayer",{
             
         console.log("Destination Canvas");
         console.log(ctx);
-        console.log("Source Canvas");
-        console.log(this.canvas);
+        console.log("Zones");
+        console.log(this.zones);
         console.log("Viewport Rect");
         console.log(rect);
        // ctx.drawImage(this.canvas,rect._x,rect._y);
