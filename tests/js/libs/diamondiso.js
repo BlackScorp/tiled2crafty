@@ -156,25 +156,29 @@ Crafty.extend({
         
         init:function(){
             if(this.canvas == null){
+                 var rect = Crafty.viewport.rect();
                 var c,t = Crafty.diamondIso,w =  t._map.width * (t._tile.width/2) +   t._map.height * (t._tile.width/2),
                 h= t._map.width * (t._tile.height/2) +   t._map.height * (t._tile.height/2)
                 c = document.createElement("canvas");
-                c.width = w;
-                c.height = h;
+               
+                c.width = rect._w;
+                c.height = rect._h;
                 //just for debug
                    c.style.position = 'absolute';
                     c.style.left = "0px";
-                    c.style.top = -h+"px";
+                    c.style.top = -rect._h+"px";
                      Crafty.stage.elem.appendChild(c);
                 this.canvas = c;
             } 
-            var rect = Crafty.viewport.rect();
+           
             
             this.attr({x:rect._x,y:rect._y,w:w,h:h,z:0}).bind("Draw",function(e){
                 console.log("test");
             }).bind("Change",function(){console.log("Changed")});
         } ,
         addTile:function(img,x,y){
+    
+             
             var ctx = this.canvas.getContext("2d");
             ctx.drawImage(img,x,y);
              
