@@ -7785,11 +7785,12 @@
             drawAll: function (rect) {
                 var rect = rect || Crafty.viewport.rect(),
                 q = Crafty.map.search(rect),
+               
                 i = 0,
                 l = q.length,
                 ctx = Crafty.canvas.context,
                 current;
-
+ 
                 ctx.clearRect(rect._x, rect._y, rect._w, rect._h);
 
                 //sort the objects by the global Z

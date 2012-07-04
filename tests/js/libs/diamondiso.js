@@ -123,8 +123,7 @@ Crafty.extend({
 Crafty.c("IsoLayer",{
     canvas:null,
     zones:{},
-    w:0,
-    h:0,
+
     init:function(){
             
     
@@ -134,9 +133,8 @@ Crafty.c("IsoLayer",{
                 
         var c,t = Crafty.diamondIso,w =  t._map.width * (t._tile.width/2) +   t._map.height * (t._tile.width/2),
         h= t._map.width * (t._tile.height/2) +   t._map.height * (t._tile.height/2);
-        this.h = h;
-        this.w = w;
-        var my = Math.round(h/Crafty.viewport.height),mx = Math.round(w/Crafty.viewport.width);
+        
+        var my = Math.ceil(h/Crafty.viewport.height),mx = Math.ceil(w/Crafty.viewport.width);
         for(var y = 0;y<my;y++){
             for(var x = 0;x<mx;x++){
                 var name = 'Y'+y+'X'+x;
@@ -148,7 +146,10 @@ Crafty.c("IsoLayer",{
                 c.style.left = x*rect._w+'px';
                 c.style.top = y*rect._h+'px';
                  document.body.appendChild(c);
-                this.zones[name] = c.getContext("2d");
+                this.zones[name] = {
+                    canvas:c,
+                    rect:{x:x*rect._w,y:y*rect._y,h:rect._h,w:rect._w}
+                }
             }
         }
              
@@ -156,17 +157,23 @@ Crafty.c("IsoLayer",{
      
     } ,
     addTile:function(img,x,y){
-       
-        var zy = ~~(y/Crafty.viewport.height),zx = ~~(x/Crafty.viewport.width);
-        x -=(zx*Crafty.viewport.width);
-        y -=(zy*Crafty.viewport.height);
-        var name = 'Y'+zy+'X'+zx;
-    
-        var zone = this.zones[name];
-        if(zone)
-        zone.drawImage(img,x,y);
-    else console.log(name);
+   
+       for(var i in this.zones){
+           
+           var zone = this.zones[i];
+           var rect = {x:x,y:y,w:img.width,h:img.height};
+         
+           if(this.within(zone.rect,rect)){
+               zone.canvas.getContext("2d").drawImage(img,x-zone.rect.x,y-zone.rect.y);
+           }
+       }
+ 
              
+    },
+    winthin:function(rect,zone){
+       console.log(rect);
+         return rect.x <= zone.x && rect.x + rect.w >= zone.x + zone.w &&
+            rect.y <= zone.y && rect.y + rect.h >= zone.y + zone.h;
     },
     render:function(){
         var ctx = Crafty.canvas.context,rect=Crafty.viewport.rect();
