@@ -1,7 +1,6 @@
 Crafty.extend({
     dungeon:{
         map:[],
-        collision_map:[],
         rooms:{},
         w:100,
         h:100,
@@ -32,7 +31,7 @@ Crafty.extend({
             w:10,
             h:10
         },
-        maxObjects:0,
+        maxObjects:10,
         directions:['n','e','s','w'],
         init:function(w,h){
             for(var y=0;y<this.h;y++){
@@ -40,9 +39,19 @@ Crafty.extend({
                     this.setCell(x,y,this.tiles.unused);
                 }
             }
-            this.createRoom(11,11);
-            this.createRoom(40,40);
-                      this.createRoom(10,30);
+            
+              this.createRoom(~~(this.w/2),~~(this.h/2));
+              
+              var objects = Crafty.math.randomInt(10,this.maxObjects+1);
+             do{
+                 console.log(objects);
+                 objects++;
+             }while(objects < this.maxObjects)
+             
+                var newx = Crafty.math.randomInt(1, this.w - 1);
+                var newy = Crafty.math.randomInt(1, this.h - 1);
+            
+          
             console.log(this.rooms);
             return this;
         },
