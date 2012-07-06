@@ -31,7 +31,7 @@ Crafty.scene("FrontierOutpost",function(){
       this.z = (~~pos.y+1) * 2;
     });
     var renderMap = function(){
-        var area = iso.area();
+        var area = iso.area(1);
         for(var a=0,al = area.length;a<al;a++){
             var loc = area[a],
             x = loc[0],
@@ -95,8 +95,8 @@ Crafty.scene("FrontierOutpost",function(){
         var vp = Crafty.viewport.rect(); //get Rect of viewport
         for(var t = 0,tl = tiles.length;t<tl;t++){
             tile = Crafty(tiles[t]);
-            if(!tile.intersect(vp._x,vp._y,vp._w,vp._h)){ //if tile not intersect the viewport
-                tile.destroy(); //destroy
+            if(!tile.intersect(vp._x,vp._y,vp._w+64,vp._h+64)){ //if tile not intersect the viewport
+               // tile.destroy(); //destroy
             }
                
         }

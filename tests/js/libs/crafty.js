@@ -4068,7 +4068,9 @@ Crafty.DrawManager=(function(){
         },
     drawAll:function(rect){
         var rect=rect||Crafty.viewport.rect(),q=Crafty.map.search(rect),i=0,l=q.length,ctx=Crafty.canvas.context,current;
+       
         ctx.clearRect(rect._x,rect._y,rect._w,rect._h);
+        
         q.sort(function(a,b){
             return a._globalZ-b._globalZ
             });
@@ -4079,6 +4081,7 @@ Crafty.DrawManager=(function(){
                 current._changed=false
                 }
             }
+          
         },
 boundingRect:function(set){
     if(!set||!set.length){
@@ -4126,6 +4129,7 @@ draw:function draw(){
         return
     }
     if(l/this.total2D>0.6){
+       
         this.drawAll();
         dirty_rects.length=0;
         return
