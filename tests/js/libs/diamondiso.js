@@ -17,6 +17,7 @@ Crafty.extend({
             x:0,
             y:0
         },
+        _layers:{},
         init:function(tw, th,mw,mh){
             this._tile.width = parseInt(tw);
             this._tile.height = parseInt(th)||parseInt(tw)/2;
@@ -35,7 +36,7 @@ Crafty.extend({
         place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);
             if(!layer) layer = 1;
-            var marginX = 0,marginY = 0;
+            var marginX = 0,marginY = 0,posX=0,posY=0,posZ=0;
             if(obj.__margin !== undefined){
                 marginX = obj.__margin[0];
                 marginY = obj.__margin[1];
@@ -114,6 +115,75 @@ Crafty.extend({
            
         }
        
+    }
+});
+
+Crafty.c("IsoLayer",{
+    canvas:null,
+    zones:{},
+
+    init:function(){
+            
+    
+        var rect ={
+            _x:0,_y:0,_w:800,_h:600
+        };
+                
+        var c,t = Crafty.diamondIso,w =  t._map.width * (t._tile.width/2) +   t._map.height * (t._tile.width/2),
+        h= t._map.width * (t._tile.height/2) +   t._map.height * (t._tile.height/2);
+        
+        var my = Math.ceil(h/Crafty.viewport.height),mx = Math.ceil(w/Crafty.viewport.width);
+        for(var y = 0;y<my;y++){
+            for(var x = 0;x<mx;x++){
+                var name = 'Y'+y+'X'+x;
+                c = document.createElement('canvas');
+                c.id=name;
+                c.width = rect._w;
+                c.height = rect._h;
+                c.style.position = 'absolute';
+                c.style.left = x*rect._w+'px';
+                c.style.top = y*rect._h+'px';
+                 document.body.appendChild(c);
+                this.zones[name] = {
+                    canvas:c,
+                    rect:{x:x*rect._w,y:y*rect._y,h:rect._h,w:rect._w}
+                }
+            }
+        }
+             
+         
+     
+    } ,
+    addTile:function(img,x,y){
+   
+       for(var i in this.zones){
+           
+           var zone = this.zones[i];
+           var rect = {x:x,y:y,w:img.width,h:img.height};
+         
+           if(this.within(zone.rect,rect)){
+               zone.canvas.getContext("2d").drawImage(img,x-zone.rect.x,y-zone.rect.y);
+           }
+       }
+ 
+             
+    },
+    winthin:function(rect,zone){
+       console.log(rect);
+         return rect.x <= zone.x && rect.x + rect.w >= zone.x + zone.w &&
+            rect.y <= zone.y && rect.y + rect.h >= zone.y + zone.h;
+    },
+    render:function(){
+        var ctx = Crafty.canvas.context,rect=Crafty.viewport.rect();
+            
+        console.log("Destination Canvas");
+        console.log(ctx);
+        console.log("Zones");
+        console.log(this.zones);
+        console.log("Viewport Rect");
+        console.log(rect);
+       // ctx.drawImage(this.canvas,rect._x,rect._y);
+            
     }
 });
 

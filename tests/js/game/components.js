@@ -15,8 +15,8 @@ Crafty.c("Player",{
     },
     ground:null,
     movementSpeed:{
-        x:2,
-        y:1
+        x:4,
+        y:2
     },
     url:null,
     xsrf:null,
@@ -133,7 +133,7 @@ Crafty.c("Player",{
             if (direction.x < 0 && direction.y < 0) {
                 this.direction = 'nw';
             }
-
+            
             if(!direction.x && !direction.y) {
                // if (!this.isPlaying())
                   //  this.stop().animate('stand_'+this.direction,30,-1);
@@ -163,13 +163,13 @@ Crafty.c("Player",{
                 eq.trigger("Attack");
         })
         .bind('Moved', function(from) {   
-                 var vp = {
+            var vp = {
                 x:-this.x-this.w/2+Crafty.viewport.width/2,
                 y:-this.y-this.h+Crafty.viewport.height/2
             }
           
             Crafty.viewport.x = vp.x;
-           Crafty.viewport.y = vp.y;
+            Crafty.viewport.y = vp.y;
          
            
         })
@@ -177,12 +177,20 @@ Crafty.c("Player",{
             W: -90, 
             S: 90, 
             D: 0, 
-            A: 180
-        });
-        //.animate('stand_'+this.direction,30,-1)
+            A: 180,
+            UP_ARROW:-90,
+            DOWN_ARROW:90,
+            RIGHT_ARROW:0,
+            LEFT_ARROW:180
+        })
+        .animate('stand_'+this.direction,30,-1)
 
         return this;
     }
   
+});
+
+Crafty.c("Cache",{
+    
 });
 
