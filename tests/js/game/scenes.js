@@ -19,8 +19,8 @@ Crafty.scene("FrontierOutpost",function(){
     var th = parseInt(map.tileheight);
     var mw = parseInt(map.width);
     var mh = parseInt(map.height);
-    var startX = 20;
-    var startY = 40;
+    var startX = 10;
+    var startY = 10;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
     var player = Crafty.e("Player");
@@ -29,7 +29,7 @@ Crafty.scene("FrontierOutpost",function(){
  
    
     iso.centerAt(startX,startY);
-    var bg = Crafty.e("2D,Canvas,IsoLayer,background"); //Create Background entity
+    var bg = Crafty.e("IsoLayer"); //Create Background entity
       
  
     
@@ -45,7 +45,7 @@ Crafty.scene("FrontierOutpost",function(){
         this.position.y = pos.y;
         this.z = (~~pos.y+1) * 2;
         //update map
-        bg.render();
+       // bg.render();
         renderObjects();
     });
 
@@ -77,7 +77,7 @@ Crafty.scene("FrontierOutpost",function(){
                     //add colision 
                     // < 0 means disabled 
                     if(collision < 0) {
-                        tile.addComponent("Collision,Solid");
+                        tile.addComponent("Solid");
                         tile.collision( this._iso.polygon(tile));
                     } 
                     iso.place(tile,x,y,layer);
@@ -90,7 +90,7 @@ Crafty.scene("FrontierOutpost",function(){
         }
         //Clearing up the objects
         var tiles = Crafty("Tile"); //get the marked tiles
-        if(tiles.length >200){
+        if(tiles.length >1){
             var vp = Crafty.viewport.rect(); //get Rect of viewport
             for(var t = 0,tl = tiles.length;t<tl;t++){
                 tile = Crafty(tiles[t]);
@@ -125,7 +125,7 @@ Crafty.scene("FrontierOutpost",function(){
                 
             
         }
-        bg.render(); //Draw offscreen into stage
+      //  bg.render(); //Draw offscreen into stage
       
     }
     
@@ -133,9 +133,6 @@ Crafty.scene("FrontierOutpost",function(){
     renderObjects();
  
    
-    Crafty.bind("Change",function(){
-        console.log("test");
-    });
     console.log("Tiles in Screen");
     console.log(Crafty("2D").length);
 });
