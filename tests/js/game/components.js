@@ -23,7 +23,7 @@ Crafty.c("Player",{
     init:function(){ 
         
       
-        this.addComponent("2D,Canvas,male,SpriteAnimation,Multiway,Collision")
+        this.addComponent("2D,Canvas,male,SpriteAnimation,Multiway")
         .attr({
             w:128,
             h:128

@@ -4,7 +4,7 @@ Crafty.scene("Loading",function(){
 
 Crafty.scene("FrontierOutpost",function(){
     //Setup background color
-    //Crafty.background("#000");
+    Crafty.background("#ccc");
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
     //Get Object Tiles
@@ -20,35 +20,41 @@ Crafty.scene("FrontierOutpost",function(){
     var mw = parseInt(map.width);
     var mh = parseInt(map.height);
     var startX = 10;
-    var startY = 10;
+    var startY = 40;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
     var player = Crafty.e("Player");
     iso.place(player,startX,startY,2);
-          
- 
-   
+
     iso.centerAt(startX,startY);
     var bg = Crafty.e("IsoLayer"); //Create Background entity
       
- 
+  var counter =$('#counter').text("Amount of Tiles: 0");
     
-    player.bind("Moved",function(){
+    player.bind("Moved",function(from){
         var pos = iso.px2pos(this.x,this.y+this.h);
         pos.x = ~~pos.x;
         pos.y = ~~pos.y;
+        //calculate index of tile
+        var i = pos.y * mh + pos.x;
+        
+        //check if the tile is solid
+        if(collisions[i] > 0) {
+            this.x = from.x;
+            this.y = from.y;
+        }
         //If player coordiantes didnt changed return
         if(this.position.x == pos.x || this.position.y == pos.y) return;
       
         //update player coordiantes
         this.position.x = pos.x;
         this.position.y = pos.y;
-        this.z = (~~pos.y+1) * 2;
+        this.z = (this.y+this.h) * 2;
         //update map
-       // bg.render();
+        // bg.render();
         renderObjects();
     });
-
+   
     var renderObjects = function(){
         var area = iso.area();
         for(var a=0,al = area.length;a<al;a++){
@@ -89,18 +95,12 @@ Crafty.scene("FrontierOutpost",function(){
               
         }
         //Clearing up the objects
-        var tiles = Crafty("Tile"); //get the marked tiles
-        if(tiles.length >1){
-            var vp = Crafty.viewport.rect(); //get Rect of viewport
-            for(var t = 0,tl = tiles.length;t<tl;t++){
-                tile = Crafty(tiles[t]);
-                if(!tile.intersect(vp._x,vp._y,vp._w,vp._h)){ //if tile not intersect the viewport
-                    tile.destroy(); //destroy
-                }
-               
-            }
-    
-        }
+       
+        var vp = Crafty.viewport.rect(); //get Rect of viewport
+        Crafty("Tile").each(function () {
+            if (!this.intersect(vp._x,vp._y,vp._w,vp._h)) this.destroy();
+        });
+        counter.text( "Amount of Tiles: "+Crafty("Tile").length);
          
     };  
     //Testing prerender
@@ -125,14 +125,12 @@ Crafty.scene("FrontierOutpost",function(){
                 
             
         }
-      //  bg.render(); //Draw offscreen into stage
+    //  bg.render(); //Draw offscreen into stage
       
     }
     
     renderBg(); 
     renderObjects();
  
-   
-    console.log("Tiles in Screen");
-    console.log(Crafty("2D").length);
+    
 });
