@@ -121,7 +121,6 @@ Crafty.extend({
 Crafty.c("IsoLayer",{
     canvas:null,
     zones:{},
-    drawed:false,
     init:function(){
             
     
@@ -147,7 +146,7 @@ Crafty.c("IsoLayer",{
                 c.style.left = x*rect._w+'px';
                 c.style.top = y*rect._h+'px';
                 document.body.appendChild(c);
-                this.zones[name] = c
+                this.zones[name] = c;
             }
         }
              
@@ -155,36 +154,22 @@ Crafty.c("IsoLayer",{
      
     } ,
     addTile:function(img,x,y){
-     
-        var nX = ((x+img.width/2)/Crafty.viewport.width);
-        var nY = ((y+img.height)/Crafty.viewport.height);
-        var name = 'Y'+~~nY+'X'+~~nX;
-       
-        if(this.zones[name]){
-             
-            var canvas = this.zones[name];
-            var ctx = canvas.getContext('2d');
-            var top = parseInt(canvas.style.top);
-            var left = parseInt(canvas.style.left);
-              
-            ctx.drawImage(img,x-left,y-top);
+        for(var i in this.zones){
+            var c = this.zones[i];
+            var ctx = c.getContext('2d');    
+            ctx.drawImage(img,x-parseInt(c.style.left),y-parseInt(c.style.top));
         }
         
-      
-               
-            
-     
+        
+    
  
              
     },
-    isInt:function(number){
-        
-        return parseFloat(number) == parseInt(number);
-    },
+
     within:function(rect,zone){
-     
-        return rect.x <= zone.x && rect.x + rect.w >= zone.x + zone.w &&
-        rect.y <= zone.y && rect.y + rect.h >= zone.y + zone.h;
+        
+        return zone.x <= rect.x && zone.x + zone.w >= rect.x + rect.w &&
+        zone.y <= rect.y && zone.y + zone.h >= rect.y + rect.h;
     
         
     },
@@ -192,7 +177,7 @@ Crafty.c("IsoLayer",{
         
         var ctx = Crafty.canvas.context,rect=Crafty.viewport.rect();
     
-    // ctx.drawImage(this.canvas,rect._x,rect._y);
+        ctx.drawImage(this.canvas,rect._x,rect._y);
             
     }
 });

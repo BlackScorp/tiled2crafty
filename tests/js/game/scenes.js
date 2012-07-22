@@ -3,8 +3,7 @@ Crafty.scene("Loading",function(){
     });
 
 Crafty.scene("FrontierOutpost",function(){
-    //Setup background color
-    Crafty.background("#ccc");
+ 
     //Get Background Tiles
     var backgrounds = frontier_outpost.layers.background.split(","); 
     //Get Object Tiles
@@ -27,7 +26,10 @@ Crafty.scene("FrontierOutpost",function(){
     iso.place(player,startX,startY,2);
 
     iso.centerAt(startX,startY);
-    var bg = Crafty.e("IsoLayer"); //Create Background entity
+       //Setup background color
+       console.log(Crafty.viewport);
+    Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-64)+'px  #000');
+    //var bg = Crafty.e("IsoLayer"); //Create Background entity
       
   var counter =$('#counter').text("Amount of Tiles: 0");
     
@@ -43,9 +45,10 @@ Crafty.scene("FrontierOutpost",function(){
             this.x = from.x;
             this.y = from.y;
         }
+        Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-64)+'px  #000');
         //If player coordiantes didnt changed return
         if(this.position.x == pos.x || this.position.y == pos.y) return;
-      
+        
         //update player coordiantes
         this.position.x = pos.x;
         this.position.y = pos.y;
@@ -125,11 +128,11 @@ Crafty.scene("FrontierOutpost",function(){
                 
             
         }
-    //  bg.render(); //Draw offscreen into stage
+      bg.render(); //Draw offscreen into stage
       
     }
     
-    renderBg(); 
+   // renderBg(); 
     renderObjects();
  
     
