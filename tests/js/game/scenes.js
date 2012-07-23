@@ -3,23 +3,23 @@ Crafty.scene("Loading",function(){
     });
 
 Crafty.scene("FrontierOutpost",function(){
- 
+    
     //Get Background Tiles
-    var backgrounds = frontier_outpost.layers.background.split(","); 
+    var backgrounds = frontier_outpost2.layers[0].data; 
     //Get Object Tiles
-    var objects = frontier_outpost.layers.object.split(",");
+    var objects = frontier_outpost2.layers[1].data;
     //Get Collision Tiles
-    var collisions = frontier_outpost.layers.collision.split(",");
+    var collisions = frontier_outpost2.layers[2].data;
     //Get Map Metadata;
-    var map = frontier_outpost.metadata;
+    var map = frontier_outpost2;
 
     //Convert Data to Integers
     var tw = parseInt(map.tilewidth);
     var th = parseInt(map.tileheight);
     var mw = parseInt(map.width);
     var mh = parseInt(map.height);
-    var startX = 10;
-    var startY = 10;
+    var startX = 40;
+    var startY = 12;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
     var player = Crafty.e("Player");
@@ -34,21 +34,21 @@ Crafty.scene("FrontierOutpost",function(){
   var counter =$('#counter').text("Amount of Tiles: 0");
     
     player.bind("Moved",function(from){
-        var pos = iso.px2pos(this.x,this.y+this.h);
+        var pos = iso.px2pos(this.x+this.w/2,this.y+this.h);
         pos.x = ~~pos.x;
         pos.y = ~~pos.y;
-      
-        Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-32)+'px  #000');
-        //If player coordiantes didnt changed return
-        if(this.position.x == pos.x || this.position.y == pos.y) return;
            //calculate index of tile
         var i = pos.y * mh + pos.x;
-        
+  
         //check if the tile is solid
         if(collisions[i] > 0) {
             this.x = from.x;
             this.y = from.y;
         }
+        Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-32)+'px  #000');
+        //If player coordiantes didnt changed return
+        if(this.position.x == pos.x || this.position.y == pos.y) return;
+      
         //update player coordiantes
         this.position.x = pos.x;
         this.position.y = pos.y;
