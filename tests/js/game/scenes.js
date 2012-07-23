@@ -46,13 +46,14 @@ Crafty.scene("FrontierOutpost",function(){
             this.y = from.y;
         }
         Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-32)+'px  #000');
+        this.z = (this.y+this.h) * 2;
         //If player coordiantes didnt changed return
         if(this.position.x == pos.x || this.position.y == pos.y) return;
       
         //update player coordiantes
         this.position.x = pos.x;
         this.position.y = pos.y;
-        this.z = (pos.y) * 2;
+        
         //update map
         // bg.render();
         renderObjects();
