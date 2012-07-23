@@ -19,7 +19,7 @@ Crafty.scene("FrontierOutpost",function(){
     var mw = parseInt(map.width);
     var mh = parseInt(map.height);
     var startX = 10;
-    var startY = 40;
+    var startY = 10;
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
     var player = Crafty.e("Player");
@@ -27,8 +27,8 @@ Crafty.scene("FrontierOutpost",function(){
 
     iso.centerAt(startX,startY);
        //Setup background color
-       console.log(Crafty.viewport);
-    Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-64)+'px  #000');
+     
+    Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-32)+'px  #000');
     //var bg = Crafty.e("IsoLayer"); //Create Background entity
       
   var counter =$('#counter').text("Amount of Tiles: 0");
@@ -37,7 +37,11 @@ Crafty.scene("FrontierOutpost",function(){
         var pos = iso.px2pos(this.x,this.y+this.h);
         pos.x = ~~pos.x;
         pos.y = ~~pos.y;
-        //calculate index of tile
+      
+        Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-32)+'px  #000');
+        //If player coordiantes didnt changed return
+        if(this.position.x == pos.x || this.position.y == pos.y) return;
+           //calculate index of tile
         var i = pos.y * mh + pos.x;
         
         //check if the tile is solid
@@ -45,14 +49,10 @@ Crafty.scene("FrontierOutpost",function(){
             this.x = from.x;
             this.y = from.y;
         }
-        Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-64)+'px  #000');
-        //If player coordiantes didnt changed return
-        if(this.position.x == pos.x || this.position.y == pos.y) return;
-        
         //update player coordiantes
         this.position.x = pos.x;
         this.position.y = pos.y;
-        this.z = (this.y+this.h) * 2;
+        this.z = (pos.y) * 2;
         //update map
         // bg.render();
         renderObjects();

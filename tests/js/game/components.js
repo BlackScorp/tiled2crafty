@@ -163,6 +163,7 @@ Crafty.c("Player",{
                 eq.trigger("Attack");
         })
         .bind('Moved', function(from) {   
+        
             var vp = {
                 x:-this.x-this.w/2+Crafty.viewport.width/2,
                 y:-this.y-this.h+Crafty.viewport.height/2
