@@ -97,7 +97,7 @@ Crafty.scene("FrontierOutpost",function(){
        
         var vp = Crafty.viewport.rect(); //get Rect of viewport
         Crafty("Tile").each(function () {
-            if (!this.intersect(vp._x,vp._y,vp._w,vp._h)) this.destroy();
+            if (!this.intersect(vp._x-128,vp._y-128,vp._w+128,vp._h+128) && Crafty("Tile").length > 200) this.destroy();
         });
         counter.text( "Amount of Tiles: "+Crafty("Tile").length);
          
