@@ -39,7 +39,7 @@
     GUID = 1, //GUID for entity IDs
     FPS = 50,
     frame = 1,
-
+    minimumDelay = 30,
     components = {}, //map of components and their functions
     entities = {}, //map of entities and their data
     handlers = {}, //global event handlers
@@ -837,40 +837,11 @@
             prev: (+new Date),
             current: (+new Date),
             curTime: Date.now(),
-            onFrame :null,
+    
             
             init: function () {
                 
-                (function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-                                   || window[vendors[x]+'RequestCancelAnimationFrame'];
-    }
  
-    if (!window.requestAnimationFrame || !window.cancelAnimationFrame) //current Chrome (16) supports request but not cancel
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
- 
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-}());
-                var self = this;
-              (function animloop(){
-      requestAnimationFrame(animloop);
-      self.step();
-    })();
-            /*
                 var onFrame = window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
@@ -889,7 +860,7 @@
                     tick();
                 } else {
                     tick = setInterval(self.step, 1000 / FPS);
-                }*/
+                }
             },
 
             stop: function () {
@@ -915,24 +886,17 @@
             * Advances the game by triggering `EnterFrame` and calls `Crafty.DrawManager.draw` to update the stage.
             */
             step: function () {
-                /*
+                
                 this.curTime = Date.now();
-                if (this.curTime - nextGameTick > 60 * milliSecPerFrame) {
-                    nextGameTick = this.curTime - milliSecPerFrame;
-                }
-                while (this.curTime >= nextGameTick) {
-                    Crafty.trigger("EnterFrame", {
+                if (this.curTime > nextGameTick) {
+                    
+                      Crafty.trigger("EnterFrame", {
                         frame: frame++
                     });
-                    nextGameTick += (milliSecPerFrame);
+                   
                     Crafty.DrawManager.draw();
+                    nextGameTick = this.curTime +minimumDelay;
                 }
-             */
-              
-                 Crafty.trigger("EnterFrame", {
-                        frame: frame++
-                    });
-                       Crafty.DrawManager.draw();
             },
             /**@
             * #Crafty.timer.getFPS
