@@ -908,7 +908,10 @@
             getFPS: function () {
                 return FPS;
             },
-
+             setFPS: function (value) {
+                 FPS = value;
+                 milliSecPerFrame = 1000/FPS;
+            },
             /**@
             * #Crafty.timer.simulateFrames
             * @comp Crafty.timer
