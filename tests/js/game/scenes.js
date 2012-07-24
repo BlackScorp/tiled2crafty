@@ -84,12 +84,7 @@ Crafty.scene("FrontierOutpost",function(){
                 tile = Crafty(tilename);
                 if(tile.length < 1){ //Create tile if tile not exists
                     tile = Crafty.e("2D","Tile","Canvas",object,tilename);//Mark the components as Tiles with Tile component
-                    //add colision 
-                    // < 0 means disabled 
-                    if(collision < 0) {
-                        tile.addComponent("Solid");
-                        tile.collision( this._iso.polygon(tile));
-                    } 
+                    
                     iso.place(tile,x,y,layer);
                 }
                 //clear tile

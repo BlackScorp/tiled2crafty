@@ -1,6 +1,6 @@
 $(function(){
     //Init Crafty
-    Crafty.init(640,480);
+    Crafty.init(800,600);
     //Init Canvas
     Crafty.canvas.init();
     

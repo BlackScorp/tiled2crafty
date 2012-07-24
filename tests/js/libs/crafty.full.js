@@ -700,6 +700,12 @@
 
         return target;
     };
+    // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+// requestAnimationFrame polyfill by Erik Möller
+// fixes from Paul Irish and Tino Zijdel
+
 
     /**@
     * #Crafty.extend
@@ -831,26 +837,59 @@
             prev: (+new Date),
             current: (+new Date),
             curTime: Date.now(),
-
+            onFrame :null,
+            
             init: function () {
+                
+                (function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                   || window[vendors[x]+'RequestCancelAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame || !window.cancelAnimationFrame) //current Chrome (16) supports request but not cancel
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+                var self = this;
+              (function animloop(){
+      requestAnimationFrame(animloop);
+      self.step();
+    })();
+            /*
                 var onFrame = window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
                 window.oRequestAnimationFrame ||
                 window.msRequestAnimationFrame ||
-                null;
-
+                null,
+            self=this;
+        
                 if (onFrame) {
                     tick = function () {
-                        Crafty.timer.step();
+                       self.step();
                         requestID = onFrame(tick);
                     //console.log(requestID + ', ' + frame)
                     }
 
                     tick();
                 } else {
-                    tick = setInterval(Crafty.timer.step, 1000 / FPS);
-                }
+                    tick = setInterval(self.step, 1000 / FPS);
+                }*/
             },
 
             stop: function () {
@@ -876,7 +915,7 @@
             * Advances the game by triggering `EnterFrame` and calls `Crafty.DrawManager.draw` to update the stage.
             */
             step: function () {
-              
+                /*
                 this.curTime = Date.now();
                 if (this.curTime - nextGameTick > 60 * milliSecPerFrame) {
                     nextGameTick = this.curTime - milliSecPerFrame;
@@ -888,7 +927,12 @@
                     nextGameTick += (milliSecPerFrame);
                     Crafty.DrawManager.draw();
                 }
-             
+             */
+              
+                 Crafty.trigger("EnterFrame", {
+                        frame: frame++
+                    });
+                       Crafty.DrawManager.draw();
             },
             /**@
             * #Crafty.timer.getFPS
