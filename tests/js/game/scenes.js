@@ -5,13 +5,22 @@ Crafty.scene("Loading",function(){
 Crafty.scene("FrontierOutpost",function(){
     
     console.time("Initial Scene");
+    console.log("Tiled Level Editor JSON file",frontier_outpost2);
     //Get Object Tiles
-    var objects = frontier_outpost2.layers[1].data;
+    var objects = null;
     //Get Collision Tiles
-    var collisions = frontier_outpost2.layers[2].data;
+    var collisions = null;
     //Get Map Metadata;
     var map = frontier_outpost2;
-
+    for(var i = 0,il = frontier_outpost2.layers.length;i<il;i++){
+        var layer = frontier_outpost2.layers[i];
+        if(layer.name == "object"){
+            objects = layer.data;
+        }
+        if(layer.name == "collision"){
+            collisions = layer.data;
+        }
+    }
     //Convert Data to Integers
     var tw = parseInt(map.tilewidth);
     var th = parseInt(map.tileheight);
