@@ -206,7 +206,7 @@
         * this.addComponent("2D", "Canvas");
         * ~~~
         */
-        addComponent: function (id) {
+        addComponent: function(id) {
             var uninit = [], c = 0, ul, //array of components to init
             i = 0, l, comps;
 
@@ -234,7 +234,7 @@
             //extend the components
             ul = uninit.length;
             for (; c < ul; c++) {
-                comp = components[uninit[c]];
+                var comp = components[uninit[c]];
                 this.extend(comp);
 
                 //if constructor, call it
@@ -251,8 +251,8 @@
         * #.toggleComponent
         * @comp Crafty Core
         * @sign public this. toggleComponent(String componentID,String componentToggle)
-        * @param componentID - Component ID to add or remove.
-        * @param componentToggle - Component ID to replace instead of remove
+  
+        * @param toggle - Component ID to replace instead of remove
         * Add or Remove Components
         * 
         * @example
@@ -261,7 +261,7 @@
         * e.toggleComponent("Test,Test2"); //Remove Test add Test2 and vice versa
         * ~~~
         */
-        toggleComponent:function(toggle){
+        toggleComponent: function(toggle) {
             var i = 0, l, comps;
             if (arguments.length > 1) {
                 l = arguments.length;
@@ -1293,13 +1293,14 @@
     * The easier usage is with `filter`=`true`. For performance reason, you may use `filter`=`false`, and filter the result youself. See examples in drawing.js and collision.js
 	*/
             search: function (rect, filter) {
+       
                 var keys = HashMap.key(rect),
-                i, j,
+                i, j,l,
                 hash,
                 results = [];
 
                 if (filter === undefined) filter = true; //default filter to true
-
+ 
                 //search in all x buckets
                 for (i = keys.x1; i <= keys.x2; i++) {
                     //insert into all y buckets
@@ -1311,12 +1312,15 @@
                         }
                     }
                 }
-
+       
                 if (filter) {
+                  
                     var obj, id, finalresult = [], found = {};
+                  
                     //add unique elements to lookup table with the entity ID as unique key
                     for (i = 0, l = results.length; i < l; i++) {
                         obj = results[i];
+                        
                         if (!obj) continue; //skip if deleted
                         id = obj[0]; //unique ID
 
@@ -1325,12 +1329,15 @@
                             obj.y < rect._y + rect._h && obj._h + obj._y > rect._y)
                             found[id] = results[i];
                     }
-
+                   
                     //loop over lookup table and copy to final array
                     for (obj in found) finalresult.push(found[obj]);
-
+                    
+                      
                     return finalresult;
+                   
                 } else {
+                  
                     return results;
                 }
             },
@@ -1496,10 +1503,10 @@
             if (obj.hasOwnProperty('mbr')) {
                 obj = obj.mbr();
             }
-            var x1 = Math.floor(obj._x / cellsize),
-            y1 = Math.floor(obj._y / cellsize),
-            x2 = Math.floor((obj._w + obj._x) / cellsize),
-            y2 = Math.floor((obj._h + obj._y) / cellsize);
+            var x1 = ~~(obj._x / cellsize),
+            y1 = ~~(obj._y / cellsize),
+            x2 = ~~((obj._w + obj._x) / cellsize),
+            y2 = ~~((obj._h + obj._y) / cellsize);
             return {
                 x1: x1, 
                 y1: y1, 
@@ -5124,7 +5131,7 @@
 
                 //check if stage exists
                 var crstage = document.getElementById("cr-stage");
-
+           
                 /**@
              * #Crafty.stage
              * @category Core
@@ -5314,8 +5321,9 @@
                 h = Crafty.DOM.window.height,
                 offset;
 
-
+                
                 if (Crafty.stage.fullscreen) {
+            
                     this.width = w;
                     this.height = h;
                     Crafty.stage.elem.style.width = w + "px";
@@ -5324,6 +5332,7 @@
                     if (Crafty.canvas._canvas) {
                         Crafty.canvas._canvas.width = w;
                         Crafty.canvas._canvas.height = h;
+                        
                         Crafty.DrawManager.drawAll();
                     }
                 }
@@ -5745,8 +5754,9 @@
                 var co = e.co,
                 pos = e.pos,
                 context = e.ctx;
-
+                
                 if (e.type === "canvas") {
+                  
                     //draw the image on the canvas element
                     context.drawImage(this.img, //image element
                         co.x, //x position on sprite
