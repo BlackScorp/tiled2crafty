@@ -39,7 +39,7 @@
     GUID = 1, //GUID for entity IDs
     FPS = 50,
     frame = 1,
-    minimumDelay = 30,
+  
     components = {}, //map of components and their functions
     entities = {}, //map of entities and their data
     handlers = {}, //global event handlers
@@ -848,8 +848,9 @@
                 window.oRequestAnimationFrame ||
                 window.msRequestAnimationFrame ||
                 null,
+            
             self=this;
-        
+            
                 if (onFrame) {
                     tick = function () {
                        self.step();
@@ -859,7 +860,7 @@
 
                     tick();
                 } else {
-                    tick = setInterval(self.step, 1000 / FPS);
+                    tick = setInterval(self.step, milliSecPerFrame);
                 }
             },
 
@@ -895,7 +896,7 @@
                     });
                    
                     Crafty.DrawManager.draw();
-                    nextGameTick = this.curTime +minimumDelay;
+                    nextGameTick = this.curTime + milliSecPerFrame;
                 }
             },
             /**@
