@@ -3,7 +3,7 @@ Crafty.scene("Loading",function(){
     });
 
 Crafty.scene("FrontierOutpost",function(){
-    
+   
     console.time("Initial Scene");
     console.log("Tiled Level Editor JSON file",frontier_outpost2);
     //Get Object Tiles
@@ -39,8 +39,9 @@ Crafty.scene("FrontierOutpost",function(){
     Crafty.background('url("img/frontier_outpost.png") '+(Crafty.viewport.x+32)+'px '+(Crafty.viewport.y-32)+'px  #000');
 
       
-    var counter =$('#counter').text("Amount of Tiles: 0");
-    
+    var counter =$('#counter');
+    counter.html("Amount of Tiles: 0 <br/> FPS:0");
+  
     player.bind("Moved",function(from){
       
         var pos = iso.px2pos(this.x+this.w/2,this.y+this.h);
@@ -132,7 +133,7 @@ Crafty.scene("FrontierOutpost",function(){
             console.log("Removed Tiles",removedTiles);
             console.timeEnd("Delete objects");
         }
-        counter.text( "Amount of Tiles: "+Crafty("Tile").length);
+     
          
     };  
 
@@ -140,5 +141,10 @@ Crafty.scene("FrontierOutpost",function(){
     renderObjects();
     console.timeEnd("Initial draw objects");
     console.timeEnd("Initial Scene");
-
+  
+     Crafty.e("FPS").attr({maxValues:5}).bind("MessureFPS",function(fps){
+    
+ 
+        counter.html( "Amount of Tiles: "+Crafty("Tile").length+"<br/>FPS: "+fps.value);
+     });
 });

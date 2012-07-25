@@ -837,8 +837,8 @@
             prev: (+new Date),
             current: (+new Date),
             curTime: Date.now(),
-    
-            
+            frameTime:0,
+            frames:0,
             init: function () {
                 
  
@@ -853,14 +853,14 @@
             
                 if (onFrame) {
                     tick = function () {
-                       self.step();
+                       Crafty.timer.step();
                         requestID = onFrame(tick);
                     //console.log(requestID + ', ' + frame)
                     }
 
                     tick();
                 } else {
-                    tick = setInterval(self.step, milliSecPerFrame);
+                    tick = setInterval(Crafty.timer.step, milliSecPerFrame);
                 }
             },
 
@@ -898,7 +898,17 @@
                     Crafty.DrawManager.draw();
                     nextGameTick = this.curTime + milliSecPerFrame;
                 }
+              
+                  if(this.curTime > this.frameTime){
+                    Crafty.trigger("MessureFPS",{value:this.frame});
+                    this.frame = 0;
+                    this.frameTime = this.curTime + 1000;
+                }else{
+                    this.frame++;
+                }
+            
             },
+    
             /**@
             * #Crafty.timer.getFPS
             * @comp Crafty.timer
@@ -3096,7 +3106,16 @@
             };
         }
     });
- 
+  Crafty.c("FPS",{
+         values:[],
+         maxValues:60,
+        init:function(){
+            this.bind("MessureFPS",function(fps){
+                if(this.values.length > this.maxValues) this.values.splice(0,1);
+                this.values.push(fps.value);
+             });
+        }
+    });
     /**@
 * #.WiredHitBox
 * @comp Collision

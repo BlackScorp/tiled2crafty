@@ -1,5 +1,10 @@
 
 Crafty.extend({
+    /**@
+* #Crafty.diamondIso
+* @category 2D
+* Place entities in a 45deg diamond isometric fashion. It is similar to isometric but has another grid locations
+*/
     diamondIso:{
         _tile: {
             width: 0,
@@ -17,7 +22,26 @@ Crafty.extend({
             x:0,
             y:0
         },
-        _layers:{},
+        /**@
+        * #Crafty.diamondIso.init
+        * @comp Crafty.diamondIso
+        * @sign public this Crafty.diamondIso.init(Number tileWidth,Number tileHeight,Number mapWidth,Number mapHeight)
+        * @param tileWidth - The size of base tile width in Pixel
+        * @param tileHeight - The size of base tile height in Pixel
+        * @param mapWidth - The width of whole map in Tiles
+        * @param mapHeight - The height of whole map in Tiles
+        * 
+        * Method used to initialize the size of the isometric placement.
+        * Recommended to use a size alues in the power of `2` (128, 64 or 32).
+        * This makes it easy to calculate positions and implement zooming.
+        * 
+        * @example
+        * ~~~
+        * var iso = Crafty.diamondIso.init(64,128,20,20);
+        * ~~~
+        * 
+        * @see Crafty.diamondIso.place
+        */
         init:function(tw, th,mw,mh){
             this._tile.width = parseInt(tw);
             this._tile.height = parseInt(th)||parseInt(tw)/2;
@@ -27,12 +51,27 @@ Crafty.extend({
             this._map.height = parseInt(mh) || parseInt(mw);
        
             this._origin.x = this._map.height * this._tile.width / 2;
-                            
-            
-         
             return this;
         },
-
+   /**@
+        * #Crafty.diamondIso.place
+        * @comp Crafty.diamondIso
+        * @sign public this Crafty.diamondIso.place(Entity tile,Number x, Number y, Number layer)
+        * @param x - The `x` position to place the tile
+        * @param y - The `y` position to place the tile
+        * @param layer - The `z` position to place the tile (calculated by y position * layer)
+        * @param tile - The entity that should be position in the isometric fashion
+        * 
+        * Use this method to place an entity in an isometric grid.
+        * 
+        * @example
+        * ~~~
+        * var iso = Crafty.diamondIso.init(64,128,20,20);
+        * isos.place(Crafty.e('2D, DOM, Color').color('red').attr({w:128, h:128}),1,1,2);
+        * ~~~
+        * 
+        * @see Crafty.diamondIso.size
+        */
         place:function(obj,x,y,layer){
             var pos = this.pos2px(x,y);
             if(!layer) layer = 1;
@@ -107,78 +146,10 @@ Crafty.extend({
             [marginX-this._tile.width/2,obj.h-marginY-this._tile.height]
             ];
             var poly = new Crafty.polygon(points);
-            
-           
-            
-       
             return poly;
            
         }
        
-    }
-});
-
-Crafty.c("IsoLayer",{
-    canvas:null,
-    zones:{},
-    init:function(){
-            
-    
-        var rect ={
-            _x:0,
-            _y:0,
-            _w:Crafty.viewport.width,
-            _h:Crafty.viewport.height
-        };
-                
-        var c,t = Crafty.diamondIso,w =  t._map.width * (t._tile.width/2) +   t._map.height * (t._tile.width/2),
-        h= t._map.width * (t._tile.height/2) +   t._map.height * (t._tile.height/2);
-        
-        var my = Math.ceil(h/rect._h),mx = Math.ceil(w/rect._w);
-        for(var y = 0;y<my;y++){
-            for(var x = 0;x<mx;x++){
-                var name = 'Y'+y+'X'+x;
-                c = document.createElement('canvas');
-                c.id=name;
-                c.width = rect._w;
-                c.height = rect._h;
-                c.style.position = 'absolute';
-                c.style.left = x*rect._w+'px';
-                c.style.top = y*rect._h+'px';
-                document.body.appendChild(c);
-                this.zones[name] = c;
-            }
-        }
-             
-         
-     
-    } ,
-    addTile:function(img,x,y){
-        for(var i in this.zones){
-            var c = this.zones[i];
-            var ctx = c.getContext('2d');    
-            ctx.drawImage(img,x-parseInt(c.style.left),y-parseInt(c.style.top));
-        }
-        
-        
-    
- 
-             
-    },
-
-    within:function(rect,zone){
-        
-        return zone.x <= rect.x && zone.x + zone.w >= rect.x + rect.w &&
-        zone.y <= rect.y && zone.y + zone.h >= rect.y + rect.h;
-    
-        
-    },
-    render:function(){
-        
-        var ctx = Crafty.canvas.context,rect=Crafty.viewport.rect();
-    
-        ctx.drawImage(this.canvas,rect._x,rect._y);
-            
     }
 });
 
