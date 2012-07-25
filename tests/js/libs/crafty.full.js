@@ -3229,7 +3229,7 @@
 	* The DOM element used to represent the entity.
 	*/
         _element: null,
-
+        _interpolation:0,
         init: function () {
             this._element = document.createElement("div");
             Crafty.stage.inner.appendChild(this._element);
@@ -5789,11 +5789,11 @@
             var draw = function (e) {
                 var co = e.co,
                 pos = e.pos,
-                context = e.ctx;
-                
+                context = e.ctx,x,y;
+               
                 if (e.type === "canvas") {
-                //   pos._x = ~~(pos._x * this._interpolation);
-                 //  pos._y = ~~(pos._y * this._interpolation);
+              
+                 
                     //draw the image on the canvas element
                     context.drawImage(this.img, //image element
                         co.x, //x position on sprite
@@ -6098,16 +6098,16 @@
             }
             
             var pos = { //inlined pos() function, for speed
-                _x: (this._x + (x || 0)),
-                _y: (this._y + (y || 0)),
+                _x: (this._x + ((x * this._interpolation) || 0)),
+                _y: (this._y + ((y * this._interpolation)  || 0)),
                 _w: (w || this._w),
                 _h: (h || this._h)
             },
             context = ctx || Crafty.canvas.context,
             coord = this.__coord || [0, 0, 0, 0],
             co = {
-                x: coord[0] + (x || 0),
-                y: coord[1] + (y || 0),
+                x: coord[0] + ((x * this._interpolation)  || 0),
+                y: coord[1] + ((y * this._interpolation)  || 0),
                 w: w || coord[2],
                 h: h || coord[3]
             };
@@ -6138,7 +6138,7 @@
                 var globalpha = context.globalAlpha;
                 context.globalAlpha = this._alpha;
             }
-
+          
             this.trigger("Draw", {
                 type: "canvas", 
                 pos: pos, 
