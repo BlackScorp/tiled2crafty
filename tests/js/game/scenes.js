@@ -5,6 +5,7 @@ Crafty.scene("Loading",function(){
 Crafty.scene("FrontierOutpost",function(){
    
     console.time("Initial Scene");
+  
     console.log("Tiled Level Editor JSON file",frontier_outpost2);
     //Get Object Tiles
     var objects = null;
@@ -31,6 +32,8 @@ Crafty.scene("FrontierOutpost",function(){
     var iso = Crafty.diamondIso.init(tw,th,mw,mh);
   
     var player = Crafty.e("Player");
+    
+       
     iso.place(player,startX,startY,2);
 
     iso.centerAt(startX,startY);
@@ -53,7 +56,7 @@ Crafty.scene("FrontierOutpost",function(){
        
         //check if the tile is solid
         if(collisions[i] > 0) {
-            console.warn("Collision",pos);
+         
             this.x = from.x;
             this.y = from.y;
         }
@@ -62,7 +65,7 @@ Crafty.scene("FrontierOutpost",function(){
         
         //If player coordiantes didnt changed return
         if(this.position.x == pos.x || this.position.y == pos.y) return;
-        console.log("Player Coordinates",pos);
+   
         //update player coordiantes
         this.position.x = pos.x;
         this.position.y = pos.y;
@@ -73,17 +76,21 @@ Crafty.scene("FrontierOutpost",function(){
         console.timeEnd("Update objects");
         
     });
-   
+
+   var tiles=[];
     var renderObjects = function(){
-        var area = iso.area(),createdTiles = 0;
+        
+        var area = iso.area(),createdTiles = 0
+        
         console.time("Get and draw new objects");
+        
         for(var a=0,al = area.length;a<al;a++){
             var loc = area[a],
             x = loc[0],
             y= loc[1],
             i = y * mh + x,
             object = objects[i], //get current object
-            collision =  collisions[i], //get current collision
+         
             tile = null,//initialize tile
             layer = 1,//initialize layer
             z=0,//initialize Z
@@ -92,23 +99,25 @@ Crafty.scene("FrontierOutpost",function(){
          
             //place object tiles
             if(object > 0){
-                
+      
                 //set layer
                 layer = 2;
                 z = (y+1)*layer;
                 tilename = 'Y'+y+'X'+x+'Z'+z;
                 //Find Tile
-                tile = Crafty(tilename);
-                if(tile.length < 1){ //Create tile if tile not exists
+                if(tiles[tilename] === undefined){
+                        
+                    tile = Crafty.e("2D","Tile","Canvas",object);//Mark the components as Tiles with Tile component
                    
-                    tile = Crafty.e("2D","Tile","Canvas",object,tilename);//Mark the components as Tiles with Tile component
-                    
                     iso.place(tile,x,y,layer);
+                     
                     createdTiles++;
-            
+                    tiles[tilename] = tile;
                 }
+             
                 //clear tile
                 tile = null;
+              
             }
                     
               
@@ -118,18 +127,20 @@ Crafty.scene("FrontierOutpost",function(){
         
         console.timeEnd("Get and draw new objects");
         //Clearing up the objects
-        if(Crafty("Tile").length > 100){
+        if(Crafty("Tile").length > 300){
             console.time("Delete objects");
             var vp = Crafty.viewport.rect(); //get Rect of viewport
             var removedTiles = 0;
-           
-            Crafty("Tile").each(function () {
-                if (!this.intersect(vp._x,vp._y,vp._w,vp._h)){
+           for(var i in tiles){
+               tile = tiles[i];
+                 if (!tile.intersect(vp._x,vp._y,vp._w,vp._h)){
                   
-                    this.destroy();
+                    tile.destroy();
                     removedTiles++;
                 }
-            });
+                delete tiles[tilename];
+           }
+        
             console.log("Removed Tiles",removedTiles);
             console.timeEnd("Delete objects");
         }

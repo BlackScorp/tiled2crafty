@@ -888,17 +888,19 @@
             */
             step: function () {
                 
+                    loops = 0;
                 this.curTime = Date.now();
-                if (this.curTime > nextGameTick) {
-                    
-                      Crafty.trigger("EnterFrame", {
-                        frame: frame++
-                    });
-                   
-                    Crafty.DrawManager.draw();
-                    nextGameTick = this.curTime + milliSecPerFrame;
+                if (this.curTime - nextGameTick > 60 * milliSecPerFrame) {
+                    nextGameTick = this.curTime - milliSecPerFrame;
                 }
-              
+                while (this.curTime > nextGameTick) {
+                    Crafty.trigger("EnterFrame", { frame: frame++ });
+                    nextGameTick += milliSecPerFrame;
+                    loops++;
+                }
+                if (loops > 0) {
+                    Crafty.DrawManager.draw();
+                }
                   if(this.curTime > this.frameTime){
                     Crafty.trigger("MessureFPS",{value:this.frame});
                     this.frame = 0;
@@ -2810,7 +2812,7 @@
             this.requires("2D");
             var area = this._mbr || this;
 
-            poly = new Crafty.polygon([0, 0], [area._w, 0], [area._w, area._h], [0, area._h]);
+            var poly = new Crafty.polygon([0, 0], [area._w, 0], [area._w, area._h], [0, area._h]);
             this.map = poly;
             this.attach(this.map);
             this.map.shift(area._x, area._y);
@@ -5787,7 +5789,7 @@
                 context = e.ctx;
                 
                 if (e.type === "canvas") {
-                  
+                 
                     //draw the image on the canvas element
                     context.drawImage(this.img, //image element
                         co.x, //x position on sprite
@@ -5799,6 +5801,7 @@
                         pos._w, //width on canvas
                         pos._h //height on canvas
                         );
+                            
                 } else if (e.type === "DOM") {
                     this._element.style.background = "url('" + this.__image + "') no-repeat -" + co.x + "px -" + co.y + "px";
                 }
@@ -6195,9 +6198,10 @@
                 //create 3 empty canvas elements
                 var c;
                 c = document.createElement("canvas");
-                c.width = Crafty.viewport.width;
-                c.height = Crafty.viewport.height;
+                c.width =  Crafty.viewport.width;
+                c.height =  Crafty.viewport.height;
                 c.style.position = 'absolute';
+             
                 c.style.left = "0px";
                 c.style.top = "0px";
 
@@ -7824,6 +7828,7 @@
 		* ~~~
 		*/
             drawAll: function (rect) {
+              
                 var rect = rect || Crafty.viewport.rect(),
                 q = Crafty.map.search(rect),
                
@@ -7846,6 +7851,7 @@
                         current._changed = false;
                     }
                 }
+          
             },
 
             /**@

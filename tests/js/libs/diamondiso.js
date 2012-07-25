@@ -107,7 +107,7 @@ Crafty.extend({
             Crafty.viewport.y = -vp._y;    
             Crafty.viewport.width = vp._w;
             Crafty.viewport.height = vp._h;   */
-            
+   
             var grid = [];
             for(var y = vp._y,yl = (vp._y+vp._h);y<yl;y+=this._tile.height/2){
                 for(var x = vp._x,xl = (vp._x+vp._w);x<xl;x+=this._tile.width/2){
@@ -115,6 +115,7 @@ Crafty.extend({
                     grid.push([~~row.x,~~row.y]);
                 }
             }
+      
             return grid;       
         },
         pos2px:function(x,y){
