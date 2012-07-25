@@ -37,7 +37,7 @@
     },
 
     GUID = 1, //GUID for entity IDs
-    FPS = 50,
+    FPS = 25,
     frame = 1,
   
     components = {}, //map of components and their functions
@@ -839,6 +839,7 @@
             curTime: Date.now(),
             frameTime:0,
             frames:0,
+            frameSkip:5,
             init: function () {
                 
  
@@ -893,13 +894,15 @@
                 if (this.curTime - nextGameTick > 60 * milliSecPerFrame) {
                     nextGameTick = this.curTime - milliSecPerFrame;
                 }
-                while (this.curTime > nextGameTick) {
+                while (this.curTime > nextGameTick && loops < this.frameSkip) {
                     Crafty.trigger("EnterFrame", { frame: frame++ });
                     nextGameTick += milliSecPerFrame;
                     loops++;
                 }
                 if (loops > 0) {
-                    Crafty.DrawManager.draw();
+                    var interpolation = parseFloat(Date.now()+milliSecPerFrame- nextGameTick) / parseFloat(milliSecPerFrame);
+                   
+                    Crafty.DrawManager.draw(interpolation);
                 }
                   if(this.curTime > this.frameTime){
                     Crafty.trigger("MessureFPS",{value:this.frame});
@@ -1317,7 +1320,7 @@
     * The easier usage is with `filter`=`true`. For performance reason, you may use `filter`=`false`, and filter the result youself. See examples in drawing.js and collision.js
 	*/
             search: function (rect, filter) {
-       
+                
                 var keys = HashMap.key(rect),
                 i, j,l,
                 hash,
@@ -1357,7 +1360,7 @@
                     //loop over lookup table and copy to final array
                     for (obj in found) finalresult.push(found[obj]);
                     
-                      
+                    
                     return finalresult;
                    
                 } else {
@@ -5789,7 +5792,8 @@
                 context = e.ctx;
                 
                 if (e.type === "canvas") {
-                 
+                //   pos._x = ~~(pos._x * this._interpolation);
+                 //  pos._y = ~~(pos._y * this._interpolation);
                     //draw the image on the canvas element
                     context.drawImage(this.img, //image element
                         co.x, //x position on sprite
@@ -6047,7 +6051,7 @@
 * Draws itself onto a canvas. Crafty.canvas.init() will be automatically called it is not called already (hence the canvas element dosen't exist).
 */
     Crafty.c("Canvas", {
-
+        _interpolation:0,
         init: function () {
             if (!Crafty.canvas.context) {
                 Crafty.canvas.init();
@@ -6092,7 +6096,7 @@
                 x = ctx;
                 ctx = Crafty.canvas.context;
             }
-
+            
             var pos = { //inlined pos() function, for speed
                 _x: (this._x + (x || 0)),
                 _y: (this._y + (y || 0)),
@@ -7827,9 +7831,10 @@
 		* - If rect is provided, redraw within the rect
 		* ~~~
 		*/
-            drawAll: function (rect) {
-              
+            drawAll: function (rect,interpolation) {
+        
                 var rect = rect || Crafty.viewport.rect(),
+                 inter = interpolation || 0,
                 q = Crafty.map.search(rect),
                
                 i = 0,
@@ -7848,10 +7853,11 @@
                     
                     if (current._visible && current.__c.Canvas) {
                         current.draw();
+                        current._interpolation = inter;
                         current._changed = false;
                     }
                 }
-          
+             
             },
 
             /**@
@@ -7901,7 +7907,8 @@
 		* 
         * @see Canvas.draw, DOM.draw
 		*/
-            draw: function draw() {
+            draw: function draw(interpolation) {
+               
                 //if nothing in dirty_rects, stop
                 if (!dirty_rects.length && !dom.length) return;
 
@@ -7910,7 +7917,11 @@
 
                 //loop over all DOM elements needing updating
                 for (; i < k; ++i) {
-                    dom[i].draw()._changed = false;
+                    var elem = dom[i];
+                    elem.draw();
+                    elem._changed = false;
+                    elem._interpolation = interpolation;
+                  
                 }
                 //reset DOM array
                 dom.length = 0;
@@ -7926,7 +7937,7 @@
                     dirty_rects.length = 0;
                     return;
                 }
-
+   
                 dirty_rects = this.merge(dirty_rects);
                 for (i = 0; i < l; ++i) { //loop over every dirty rect
                     rect = dirty_rects[i];
@@ -7986,7 +7997,7 @@
                     ctx.lineTo(rect._x, rect._y);
 
                     ctx.clip();
-
+                    ent._interpolation = interpolation;
                     ent.draw();
                     ctx.closePath();
                     ctx.restore();
@@ -7999,6 +8010,7 @@
                 dirty_rects.length = 0;
                 //all merged IDs are now invalid
                 merged = {};
+        
             }
         };
     })();

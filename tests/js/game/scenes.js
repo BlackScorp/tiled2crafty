@@ -55,7 +55,7 @@ Crafty.scene("FrontierOutpost",function(){
         var i = pos.y * mh + pos.x;
        
         //check if the tile is solid
-        if(collisions[i] > 0) {
+        if(collisions[i] > 2) {
          
             this.x = from.x;
             this.y = from.y;
@@ -128,6 +128,7 @@ Crafty.scene("FrontierOutpost",function(){
         console.timeEnd("Get and draw new objects");
         //Clearing up the objects
         if(Crafty("Tile").length > 300){
+            return;
             console.time("Delete objects");
             var vp = Crafty.viewport.rect(); //get Rect of viewport
             var removedTiles = 0;
