@@ -77,10 +77,10 @@ Crafty.scene("FrontierOutpost",function(){
         
     });
 
-   var tiles=[];
+    var tiles=[];
     var renderObjects = function(){
         
-        var area = iso.area(),createdTiles = 0
+        var area = iso.area(1),createdTiles = 0
         
         console.time("Get and draw new objects");
         
@@ -131,15 +131,16 @@ Crafty.scene("FrontierOutpost",function(){
             console.time("Delete objects");
             var vp = Crafty.viewport.rect(); //get Rect of viewport
             var removedTiles = 0;
-           for(var i in tiles){
-               tile = tiles[i];
-                 if (!tile.intersect(vp._x,vp._y,vp._w,vp._h)){
+            for(var i in tiles){
+                tile = tiles[i];
+                if (!tile.intersect(vp._x,vp._y,vp._w,vp._h)){
                   
                     tile.destroy();
+                    delete tiles[i];
                     removedTiles++;
                 }
-                delete tiles[tilename];
-           }
+             
+            }
         
             console.log("Removed Tiles",removedTiles);
             console.timeEnd("Delete objects");
@@ -153,9 +154,11 @@ Crafty.scene("FrontierOutpost",function(){
     console.timeEnd("Initial draw objects");
     console.timeEnd("Initial Scene");
   
-     Crafty.e("FPS").attr({maxValues:5}).bind("MessureFPS",function(fps){
+    Crafty.e("FPS").attr({
+        maxValues:5
+    }).bind("MessureFPS",function(fps){
     
  
         counter.html( "Amount of Tiles: "+Crafty("Tile").length+"<br/>FPS: "+fps.value);
-     });
+    });
 });
