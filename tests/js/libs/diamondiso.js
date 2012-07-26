@@ -97,20 +97,18 @@ Crafty.extend({
             if(!offset) offset = 0;
             //calculate the corners
             var vp = Crafty.viewport.rect();
+            console.log(vp);
             var ow = offset*this._tile.width;
             var oh = offset*this._tile.height;
-            vp._x -= (this._tile.width/2+ow);
-            vp._y -= (this._tile.height/2+oh);
-            vp._w += (this._tile.width/2+ow);
-            vp._h += (this._tile.height/2+oh); 
-            /*  Crafty.viewport.x = -vp._x;
-            Crafty.viewport.y = -vp._y;    
-            Crafty.viewport.width = vp._w;
-            Crafty.viewport.height = vp._h;   */
-   
+            vp._x -= (ow);
+            vp._y -= (oh);
+            vp._w += (ow);
+            vp._h += (oh); 
+
+            console.log(vp);
             var grid = [];
-            for(var y = vp._y,yl = (vp._y+vp._h);y<yl;y+=this._tile.height/2){
-                for(var x = vp._x,xl = (vp._x+vp._w);x<xl;x+=this._tile.width/2){
+            for(var y = vp._y,yl = (vp._y+vp._h);y<=yl;y+=this._tile.height/2){
+                for(var x = vp._x,xl = (vp._x+vp._w);x<=xl;x+=this._tile.width/2){
                     var row = this.px2pos(x,y);
                     grid.push([~~row.x,~~row.y]);
                 }

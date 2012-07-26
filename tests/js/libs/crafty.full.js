@@ -839,7 +839,7 @@
             curTime: Date.now(),
             frameTime:0,
             frames:0,
-            frameSkip:5,
+            frameSkip:10,
             init: function () {
                 
  
