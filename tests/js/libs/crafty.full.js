@@ -1327,7 +1327,7 @@
                 results = [];
 
                 if (filter === undefined) filter = true; //default filter to true
- 
+              
                 //search in all x buckets
                 for (i = keys.x1; i <= keys.x2; i++) {
                     //insert into all y buckets
@@ -1339,9 +1339,9 @@
                         }
                     }
                 }
-       
+             
                 if (filter) {
-                  
+        
                     var obj, id, finalresult = [], found = {};
                   
                     //add unique elements to lookup table with the entity ID as unique key
@@ -1360,11 +1360,11 @@
                     //loop over lookup table and copy to final array
                     for (obj in found) finalresult.push(found[obj]);
                     
-                    
+                
                     return finalresult;
                    
                 } else {
-                  
+                
                     return results;
                 }
             },
@@ -6096,7 +6096,7 @@
                 x = ctx;
                 ctx = Crafty.canvas.context;
             }
-            
+           
             var pos = { //inlined pos() function, for speed
                 _x: (this._x + ((x * this._interpolation) || 0)),
                 _y: (this._y + ((y * this._interpolation)  || 0)),
@@ -7686,7 +7686,7 @@
 * An internal object manage objects to be drawn and implement
 * the best method of drawing in both DOM and canvas
 */
-    Crafty.DrawManager = (function () {
+    Crafty.DrawManager = ( function () {
         /** array of dirty rects on screen */
         var dirty_rects = [],
         /** array of DOMs needed updating */
@@ -7933,7 +7933,7 @@
                 //if the amount of rects is over 60% of the total objects
                 //do the naive method redrawing
                 if (l / this.total2D > 0.6) {
-                    this.drawAll();
+                    this.drawAll(null,interpolation);
                     dirty_rects.length = 0;
                     return;
                 }

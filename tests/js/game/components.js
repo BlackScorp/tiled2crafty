@@ -108,7 +108,7 @@ Crafty.c("Player",{
         .animate('shoot_s',28,6,31)
         .animate('shoot_sw',28,7,31)
         .bind("NewDirection",function(direction){
-        
+            return true;
             if (direction.x == 0 && direction.y < 0 ) {
                 this.direction = 'n';
             }
@@ -187,7 +187,7 @@ Crafty.c("Player",{
             RIGHT_ARROW:0,
             LEFT_ARROW:180
         })
-      .animate('stand_'+this.direction,10,-1)
+     // .animate('stand_'+this.direction,10,-1)
 
         return this;
     }
