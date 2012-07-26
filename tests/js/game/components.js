@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Crafty.c("Player",{
     gender:null,
     name:'',
@@ -194,3 +195,5 @@ Crafty.c("Cache",{
     
 });
 
+=======
+>>>>>>> 58aa35d629af3fcf2d3bf93eeda7f9a91096d5c6

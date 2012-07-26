@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Crafty.cachedSprite(64,128,"img/grassland.png",{
 16:[0,0],
 17:[1,0],
@@ -252,8 +253,9 @@ Crafty.cachedSprite(128,256,"img/grassland_trees.png",{
 260:[9,1],
 261:[10,1]
 },0,0,-32,0);
+=======
+ 
+$(function(){
+>>>>>>> 58aa35d629af3fcf2d3bf93eeda7f9a91096d5c6
 
-
-Crafty.sprite(128,"img/player.png",{
-    male : [0,6]
-});
+})
