@@ -33,33 +33,59 @@ Kinetic.Tiled.prototype = {
             }
            
         }
-       this.createMap();
+      
+    },
+    getSprites:function(){
+      
+        return this.sprites;
     },
     createMap:function(){
         
-        var layers = this.data.layers;
+        var layers = this.data.layers,
+        mw = this.data.width,
+        mh = this.data.height,
+        tw = this.data.tileheight,
+        th = this.data.tilewidth;
        
-        for(var i = 1;i<=1;i++){
+       var map = new Kinetic.Isometric(tw,th,mw,mh);
+       var mapLayers = {};
+       for(var i = 0;i<layers.length;i++){
+            
             var layerData = layers[i];
-            
+         
             if(layerData.data){ 
-                console.log(layerData);
                 var layer = new Kinetic.Layer();
-                for(var d=0,dl = layerData.data.length-1;d<dl;d++){
-                    var tile =layerData.data[d];
-                    if(tile > 0 && this.sprites[tile]){
-                        var sprite = this.sprites[tile];
-                        layer.add(sprite);
-                    }
-                }
-                this.stage.add(layer);
-                layer.draw();
-             
+               mapLayers[layerData.name] = layer;
+               this.stage.add(layer);
             }
-            
+       }
+      var backgrounds = layers[0].data;
+      var objects = layers[1].data;
+      var collision = layers[2].data;
+       for(var y = 0,yl = mh;y<yl;y++){
+           for(var x = 0,xl = mw;x<xl;x++){
+               var i = y * mh +x,
+               background = backgrounds[i],
+               object = objects[i];
+               
+               if(background > 0 && this.sprites[background]){
+                   var tile = this.sprites[background];
+                   var pos = map.pos2px(x, y);
+                   tile.attrs.x =pos.left;
+                   tile.attrs.y =pos.top;
+                   
+                   mapLayers.background.add(tile);
+               }
+           }
+       }
         
+        for(var i in mapLayers){
+            var l = mapLayers[i];
+           
+            l.draw();
         }
-      
+            
+         
     },
     updateMap:function(){
         
