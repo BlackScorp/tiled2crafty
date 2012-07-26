@@ -37,9 +37,9 @@
     },
 
     GUID = 1, //GUID for entity IDs
-    FPS = 50,
+    FPS = 25,
     frame = 1,
-
+  
     components = {}, //map of components and their functions
     entities = {}, //map of entities and their data
     handlers = {}, //global event handlers
@@ -206,7 +206,7 @@
         * this.addComponent("2D", "Canvas");
         * ~~~
         */
-        addComponent: function (id) {
+        addComponent: function(id) {
             var uninit = [], c = 0, ul, //array of components to init
             i = 0, l, comps;
 
@@ -234,7 +234,7 @@
             //extend the components
             ul = uninit.length;
             for (; c < ul; c++) {
-                comp = components[uninit[c]];
+                var comp = components[uninit[c]];
                 this.extend(comp);
 
                 //if constructor, call it
@@ -251,8 +251,8 @@
         * #.toggleComponent
         * @comp Crafty Core
         * @sign public this. toggleComponent(String componentID,String componentToggle)
-        * @param componentID - Component ID to add or remove.
-        * @param componentToggle - Component ID to replace instead of remove
+  
+        * @param toggle - Component ID to replace instead of remove
         * Add or Remove Components
         * 
         * @example
@@ -261,7 +261,7 @@
         * e.toggleComponent("Test,Test2"); //Remove Test add Test2 and vice versa
         * ~~~
         */
-        toggleComponent:function(toggle){
+        toggleComponent: function(toggle) {
             var i = 0, l, comps;
             if (arguments.length > 1) {
                 l = arguments.length;
@@ -700,6 +700,12 @@
 
         return target;
     };
+    // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+// requestAnimationFrame polyfill by Erik Möller
+// fixes from Paul Irish and Tino Zijdel
+
 
     /**@
     * #Crafty.extend
@@ -831,25 +837,31 @@
             prev: (+new Date),
             current: (+new Date),
             curTime: Date.now(),
-
+            frameTime:0,
+            frames:0,
+            frameSkip:10,
             init: function () {
+                
+ 
                 var onFrame = window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
                 window.oRequestAnimationFrame ||
                 window.msRequestAnimationFrame ||
-                null;
-
+                null,
+            
+            self=this;
+            
                 if (onFrame) {
                     tick = function () {
-                        Crafty.timer.step();
+                       Crafty.timer.step();
                         requestID = onFrame(tick);
                     //console.log(requestID + ', ' + frame)
                     }
 
                     tick();
                 } else {
-                    tick = setInterval(Crafty.timer.step, 1000 / FPS);
+                    tick = setInterval(Crafty.timer.step, milliSecPerFrame);
                 }
             },
 
@@ -876,20 +888,32 @@
             * Advances the game by triggering `EnterFrame` and calls `Crafty.DrawManager.draw` to update the stage.
             */
             step: function () {
-              
+                
+                    loops = 0;
                 this.curTime = Date.now();
                 if (this.curTime - nextGameTick > 60 * milliSecPerFrame) {
                     nextGameTick = this.curTime - milliSecPerFrame;
                 }
-                while (this.curTime >= nextGameTick) {
-                    Crafty.trigger("EnterFrame", {
-                        frame: frame++
-                    });
-                    nextGameTick += (milliSecPerFrame);
-                    Crafty.DrawManager.draw();
+                while (this.curTime > nextGameTick && loops < this.frameSkip) {
+                    Crafty.trigger("EnterFrame", { frame: frame++ });
+                    nextGameTick += milliSecPerFrame;
+                    loops++;
                 }
-             
+                if (loops > 0) {
+                    var interpolation = parseFloat(Date.now()+milliSecPerFrame- nextGameTick) / parseFloat(milliSecPerFrame);
+                   
+                    Crafty.DrawManager.draw(interpolation);
+                }
+                  if(this.curTime > this.frameTime){
+                    Crafty.trigger("MessureFPS",{value:this.frame});
+                    this.frame = 0;
+                    this.frameTime = this.curTime + 1000;
+                }else{
+                    this.frame++;
+                }
+            
             },
+    
             /**@
             * #Crafty.timer.getFPS
             * @comp Crafty.timer
@@ -899,7 +923,10 @@
             getFPS: function () {
                 return FPS;
             },
-
+             setFPS: function (value) {
+                 FPS = value;
+                 milliSecPerFrame = 1000/FPS;
+            },
             /**@
             * #Crafty.timer.simulateFrames
             * @comp Crafty.timer
@@ -1293,13 +1320,14 @@
     * The easier usage is with `filter`=`true`. For performance reason, you may use `filter`=`false`, and filter the result youself. See examples in drawing.js and collision.js
 	*/
             search: function (rect, filter) {
+                
                 var keys = HashMap.key(rect),
-                i, j,
+                i, j,l,
                 hash,
                 results = [];
 
                 if (filter === undefined) filter = true; //default filter to true
-
+              
                 //search in all x buckets
                 for (i = keys.x1; i <= keys.x2; i++) {
                     //insert into all y buckets
@@ -1311,12 +1339,15 @@
                         }
                     }
                 }
-
+             
                 if (filter) {
+        
                     var obj, id, finalresult = [], found = {};
+                  
                     //add unique elements to lookup table with the entity ID as unique key
                     for (i = 0, l = results.length; i < l; i++) {
                         obj = results[i];
+                        
                         if (!obj) continue; //skip if deleted
                         id = obj[0]; //unique ID
 
@@ -1325,12 +1356,15 @@
                             obj.y < rect._y + rect._h && obj._h + obj._y > rect._y)
                             found[id] = results[i];
                     }
-
+                   
                     //loop over lookup table and copy to final array
                     for (obj in found) finalresult.push(found[obj]);
-
+                    
+                
                     return finalresult;
+                   
                 } else {
+                
                     return results;
                 }
             },
@@ -1496,10 +1530,10 @@
             if (obj.hasOwnProperty('mbr')) {
                 obj = obj.mbr();
             }
-            var x1 = Math.floor(obj._x / cellsize),
-            y1 = Math.floor(obj._y / cellsize),
-            x2 = Math.floor((obj._w + obj._x) / cellsize),
-            y2 = Math.floor((obj._h + obj._y) / cellsize);
+            var x1 = ~~(obj._x / cellsize),
+            y1 = ~~(obj._y / cellsize),
+            x2 = ~~((obj._w + obj._x) / cellsize),
+            y2 = ~~((obj._h + obj._y) / cellsize);
             return {
                 x1: x1, 
                 y1: y1, 
@@ -2781,7 +2815,7 @@
             this.requires("2D");
             var area = this._mbr || this;
 
-            poly = new Crafty.polygon([0, 0], [area._w, 0], [area._w, area._h], [0, area._h]);
+            var poly = new Crafty.polygon([0, 0], [area._w, 0], [area._w, area._h], [0, area._h]);
             this.map = poly;
             this.attach(this.map);
             this.map.shift(area._x, area._y);
@@ -3077,7 +3111,16 @@
             };
         }
     });
- 
+  Crafty.c("FPS",{
+         values:[],
+         maxValues:60,
+        init:function(){
+            this.bind("MessureFPS",function(fps){
+                if(this.values.length > this.maxValues) this.values.splice(0,1);
+                this.values.push(fps.value);
+             });
+        }
+    });
     /**@
 * #.WiredHitBox
 * @comp Collision
@@ -3186,7 +3229,7 @@
 	* The DOM element used to represent the entity.
 	*/
         _element: null,
-
+        _interpolation:0,
         init: function () {
             this._element = document.createElement("div");
             Crafty.stage.inner.appendChild(this._element);
@@ -5124,7 +5167,7 @@
 
                 //check if stage exists
                 var crstage = document.getElementById("cr-stage");
-
+           
                 /**@
              * #Crafty.stage
              * @category Core
@@ -5314,8 +5357,9 @@
                 h = Crafty.DOM.window.height,
                 offset;
 
-
+                
                 if (Crafty.stage.fullscreen) {
+            
                     this.width = w;
                     this.height = h;
                     Crafty.stage.elem.style.width = w + "px";
@@ -5324,6 +5368,7 @@
                     if (Crafty.canvas._canvas) {
                         Crafty.canvas._canvas.width = w;
                         Crafty.canvas._canvas.height = h;
+                        
                         Crafty.DrawManager.drawAll();
                     }
                 }
@@ -5744,9 +5789,11 @@
             var draw = function (e) {
                 var co = e.co,
                 pos = e.pos,
-                context = e.ctx;
-
+                context = e.ctx,x,y;
+               
                 if (e.type === "canvas") {
+              
+                 
                     //draw the image on the canvas element
                     context.drawImage(this.img, //image element
                         co.x, //x position on sprite
@@ -5758,6 +5805,7 @@
                         pos._w, //width on canvas
                         pos._h //height on canvas
                         );
+                            
                 } else if (e.type === "DOM") {
                     this._element.style.background = "url('" + this.__image + "') no-repeat -" + co.x + "px -" + co.y + "px";
                 }
@@ -6003,7 +6051,7 @@
 * Draws itself onto a canvas. Crafty.canvas.init() will be automatically called it is not called already (hence the canvas element dosen't exist).
 */
     Crafty.c("Canvas", {
-
+        _interpolation:0,
         init: function () {
             if (!Crafty.canvas.context) {
                 Crafty.canvas.init();
@@ -6048,18 +6096,18 @@
                 x = ctx;
                 ctx = Crafty.canvas.context;
             }
-
+           
             var pos = { //inlined pos() function, for speed
-                _x: (this._x + (x || 0)),
-                _y: (this._y + (y || 0)),
+                _x: (this._x + ((x * this._interpolation) || 0)),
+                _y: (this._y + ((y * this._interpolation)  || 0)),
                 _w: (w || this._w),
                 _h: (h || this._h)
             },
             context = ctx || Crafty.canvas.context,
             coord = this.__coord || [0, 0, 0, 0],
             co = {
-                x: coord[0] + (x || 0),
-                y: coord[1] + (y || 0),
+                x: coord[0] + ((x * this._interpolation)  || 0),
+                y: coord[1] + ((y * this._interpolation)  || 0),
                 w: w || coord[2],
                 h: h || coord[3]
             };
@@ -6090,7 +6138,7 @@
                 var globalpha = context.globalAlpha;
                 context.globalAlpha = this._alpha;
             }
-
+          
             this.trigger("Draw", {
                 type: "canvas", 
                 pos: pos, 
@@ -6154,9 +6202,10 @@
                 //create 3 empty canvas elements
                 var c;
                 c = document.createElement("canvas");
-                c.width = Crafty.viewport.width;
-                c.height = Crafty.viewport.height;
+                c.width =  Crafty.viewport.width;
+                c.height =  Crafty.viewport.height;
                 c.style.position = 'absolute';
+             
                 c.style.left = "0px";
                 c.style.top = "0px";
 
@@ -7637,7 +7686,7 @@
 * An internal object manage objects to be drawn and implement
 * the best method of drawing in both DOM and canvas
 */
-    Crafty.DrawManager = (function () {
+    Crafty.DrawManager = ( function () {
         /** array of dirty rects on screen */
         var dirty_rects = [],
         /** array of DOMs needed updating */
@@ -7782,8 +7831,10 @@
 		* - If rect is provided, redraw within the rect
 		* ~~~
 		*/
-            drawAll: function (rect) {
+            drawAll: function (rect,interpolation) {
+        
                 var rect = rect || Crafty.viewport.rect(),
+                 inter = interpolation || 0,
                 q = Crafty.map.search(rect),
                
                 i = 0,
@@ -7802,9 +7853,11 @@
                     
                     if (current._visible && current.__c.Canvas) {
                         current.draw();
+                        current._interpolation = inter;
                         current._changed = false;
                     }
                 }
+             
             },
 
             /**@
@@ -7854,7 +7907,8 @@
 		* 
         * @see Canvas.draw, DOM.draw
 		*/
-            draw: function draw() {
+            draw: function draw(interpolation) {
+               
                 //if nothing in dirty_rects, stop
                 if (!dirty_rects.length && !dom.length) return;
 
@@ -7863,7 +7917,11 @@
 
                 //loop over all DOM elements needing updating
                 for (; i < k; ++i) {
-                    dom[i].draw()._changed = false;
+                    var elem = dom[i];
+                    elem.draw();
+                    elem._changed = false;
+                    elem._interpolation = interpolation;
+                  
                 }
                 //reset DOM array
                 dom.length = 0;
@@ -7875,11 +7933,11 @@
                 //if the amount of rects is over 60% of the total objects
                 //do the naive method redrawing
                 if (l / this.total2D > 0.6) {
-                    this.drawAll();
+                    this.drawAll(null,interpolation);
                     dirty_rects.length = 0;
                     return;
                 }
-
+   
                 dirty_rects = this.merge(dirty_rects);
                 for (i = 0; i < l; ++i) { //loop over every dirty rect
                     rect = dirty_rects[i];
@@ -7939,7 +7997,7 @@
                     ctx.lineTo(rect._x, rect._y);
 
                     ctx.clip();
-
+                    ent._interpolation = interpolation;
                     ent.draw();
                     ctx.closePath();
                     ctx.restore();
@@ -7952,6 +8010,7 @@
                 dirty_rects.length = 0;
                 //all merged IDs are now invalid
                 merged = {};
+        
             }
         };
     })();
