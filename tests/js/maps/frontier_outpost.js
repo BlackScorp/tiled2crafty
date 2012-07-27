@@ -217,6 +217,7 @@ var frontier_outpost ={ "height":64,
          "imageheight":256,
          "imagewidth":1024,
          "margin":0,
+         "offset":{"x":0,"y":32},
          "name":"water",
          "properties":
             {
@@ -247,6 +248,7 @@ var frontier_outpost ={ "height":64,
          "imageheight":512,
          "imagewidth":1024,
          "margin":0,
+          "offset":{"x":-32,"y":0},
          "name":"trees",
          "properties":
             {

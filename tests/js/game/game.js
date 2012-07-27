@@ -3,10 +3,10 @@ $(function(){
     
     var stage = new Kinetic.Stage({
         container: "game",
-        width:800,
-        height:600,
-        x:-896,
-        y:-256,
+        width:size.width(),
+        height:size.height(),
+        x:-2048,
+        y:-512,
         draggable:true
         
     });
@@ -21,18 +21,17 @@ $(function(){
     var sprites = {};
     for(var i = 0,il = tilesets.length;i<il;i++){
         var set = tilesets[i];
+        
         var img = new Image();
         img.onload = function(e){
-            if(this.complete){
-                tilesets[loaded].img = this;
-                createSprites(loaded);
-                loaded++;
-               
-                if(loaded == tilesets.length) {
-                    drawMap()
+           
+            tilesets[loaded].img = this;
+            createSprites(loaded);
+            if(++loaded >= tilesets.length) {
+                drawMap()
             
-                }  
-            }
+            }  
+            
           
             
             
@@ -45,31 +44,33 @@ $(function(){
    
         
         var set = tilesets[i];
+    
         var id = set.firstgid;
         //var spriteLayer = new Kinetic.Layer();
         for(var y = 0,yl=(set.imageheight/set.tileheight);y<yl;y++){
             for(var x = 0,xl=(set.imagewidth/set.tilewidth);x<xl;x++){
-                var sprite = new Kinetic.Image({
-                    image:set.img,
-                    name:id,
-                    width:set.tilewidth,
-                    height:set.tileheight,
-                    crop:{
-                        x:(x*set.tilewidth),
-                        y:(y*set.tileheight),
-                        width:set.tilewidth,
-                        height:set.tileheight
-                    },
-                    x:(x*set.tilewidth),
-                    y:(y*set.tileheight)
-                       
-                });
+         
+                var offset = set.offset || {
+                    x:0,
+                    y:0
+                }
 
                 // spriteLayer.add(sprite);
-                sprites[id] =sprite;
+                sprites[id] ={
+                    img:set.img,
+                    x:(x*set.tilewidth),
+                    y:(y*set.tileheight),
+                    width:set.tilewidth,
+                    height:set.tileheight,
+                    offset:{
+                        x:-offset.x,
+                        y:-offset.y
+                    }
+                };
                 id++;
             }   
         }
+      
     //stage.add(spriteLayer);
     // spriteLayer.draw();
         
@@ -84,16 +85,14 @@ $(function(){
         collisionTiles = data.layers[2].data,
         mw = data.width,
         mh = data.height,
-        tw = data.tileheight,
-        th = data.tilewidth,  
+        tw = data.tilewidth,
+        th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null,index = 0;
-        stage.add(backgroundLayer);
-        stage.add(objectLayer);
-        
-        for(var y = 0,yl = mh/4;y<yl;y++){
-            for(var x = 0,xl = mw/4;x<xl;x++){
-                var
+        tile = null,pos=null;
+       
+        for(var y = 0,yl = mh;y<yl;y++){
+            for(var x = 0,xl = mw;x<xl;x++){
+                var index = y*mh+x,
                 background = backgroundTiles[index],
                 object = objectTiles[index],l=0;
                 
@@ -101,40 +100,63 @@ $(function(){
                     l = 1;
                     tile = sprites[background];
                     pos = map.pos2px(x, y);
-                    tile.attrs.pos = {
-                        x:x,
-                        y:y
-                    };
-               
-                 
-                    backgroundLayer.add(tile);
-                    tile.setX(pos.left);
-                    tile.setY(pos.top-tile.getHeight());
-                    tile.setZIndex(pos.top*l);
+                   
+                    var image = new Kinetic.Image({
+                        x: pos.left,
+                        y:pos.top-tile.height,
+                        image: tile.img,
+                        width: tile.width,
+                        height: tile.height,
+                        crop:{
+                            x:tile.x,
+                            y:tile.y,
+                            width:tile.width,
+                            height:tile.height
+                        },
+                        offset :tile.offset,
+                        index:pos.top*l
+                    });
+                    
+                    
+                    backgroundLayer.add(image);
+            
                 }
-                if(object > 0 && sprites[object]){
+                if(object> 0 && sprites[object]){
                     l=2;
+    
                     tile = sprites[object];
                     pos = map.pos2px(x, y);
-                    tile.attrs.pos = {
-                        x:x,
-                        y:y
-                    };
-                 
-                 
-                    objectLayer.add(tile);
-                    tile.setX(pos.left);
-                    tile.setY(pos.top-tile.getHeight());
-                    tile.setZIndex(pos.top*l);
+                    image = new Kinetic.Image({
+                        x: pos.left,
+                        y:pos.top-tile.height,
+                        image: tile.img,
+                        width: tile.width,
+                        height: tile.height,
+                        crop:{
+                            x:tile.x,
+                            y:tile.y,
+                            width:tile.width,
+                            height:tile.height
+                        },
+                        offset :tile.offset,
+                        index:pos.top*l
+                    });
+                    
+                    objectLayer.add(image);
+               
                 }
               
                 tile = null;
-                index++;
+            
             }
         }
+         stage.add(backgroundLayer);
+        stage.add(objectLayer);
+       
         backgroundLayer.draw();
+      
         objectLayer.draw();
-        console.log(backgroundLayer.children[0]);
+   
     }
 
    
