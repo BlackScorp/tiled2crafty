@@ -48,39 +48,49 @@ Kinetic.Isometric.prototype ={
         var pos = this.pos2px(x,y),
         x = -pos.left+stage.getWidth()/2-this._tile.width,
         y = -pos.top+stage.getHeight()/2;
-       
-        return {
-            x:x,
-            y:y
-        }
-        
+   
+       stage.setX(x);
+       stage.setY(y);
+      
     },
     area:function(stage,offset){
         if(!offset) offset = 0;
         //calculate the corners
         var vp = {
-            _x:stage.getX(),
-            _y:stage.getY(),
+            _x:-stage.getX(),
+            _y:-stage.getY(),
             _w:stage.getWidth(),
             _h:stage.getHeight()
             
         }
-   
-        var ow = offset*this._tile.width;
-        var oh = offset*this._tile.height;
+        console.log("Before",vp._w,vp._h,vp._x,vp._y);
+        var ow = offset*(this._tile.width);
+        var oh = offset*(this._tile.height);
         vp._x -= (ow);
         vp._y -= (oh);
         vp._w += (ow);
         vp._h += (oh); 
-  
+      console.log("After",vp._w,vp._h,vp._x,vp._y);
         var grid = [];
-        for(var y = vp._y,yl = (vp._y+vp._h);y<=yl;y+=this._tile.height/2){
-            for(var x = vp._x,xl = (vp._x+vp._w);x<=xl;x+=this._tile.width/2){
+        console.log(~~(vp._y/(this._tile.height/2)),"Until ",~~((vp._y+vp._h)/(this._tile.height/2)));
+        console.log(~~(vp._x/(this._tile.width/2)),"Until ",~~((vp._x+vp._w)/(this._tile.width/2)));
+        for(var y = vp._y,yl = (vp._y+vp._h);y<yl;y+=this._tile.height/2){
+            for(var x = vp._x,xl = (vp._x+vp._w);x<xl;x+=this._tile.width/2){
                 var row = this.px2pos(x,y);
                 grid.push([~~row.x,~~row.y]);
             }
         }
-       
+        return {
+            x:{
+                min:~~(vp._x/(this._tile.width/2)),
+                max:~~((vp._x+vp._w)/(this._tile.width/2))
+            },
+            y:{
+                min:~~(vp._y/(this._tile.height/2)),
+                max:~~((vp._y+vp._h)/(this._tile.height/2))
+            }
+        }
+        
         return grid;       
     } 
     

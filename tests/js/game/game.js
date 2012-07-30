@@ -76,16 +76,18 @@ $(function(){
         tw = data.tilewidth,
         th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null,center = map.centerAt(stage,0,0),area = map.area(stage,0);
-        for(var m in area){
-           
-                var 
-                x=area[m][0],
-                y=area[m][1],
+        tile = null,pos=null;
+        map.centerAt(stage,0,0);
+      
+        var area = map.area(stage,0);
+        for(var y = area.y.min,yl=area.y.max;y<yl;y++){
+               for(var x= area.x.min,xl=area.x.max;x<xl;x++){
+                  
+                var
                 index = y*mh+x,
                 background = backgroundTiles[index],
                 object = objectTiles[index],l=0;
-                 console.log(x);
+             
                 if(background > 0 && sprites[background]){
                     l = 1;
                     tile = sprites[background];
@@ -139,11 +141,10 @@ $(function(){
                 tile = null;
             
             }
-        
+        }
         stage.add(backgroundLayer);
         stage.add(objectLayer);
-        stage.setX(center.x);
-        stage.setY(center.y);
+     
        
         backgroundLayer.draw();
       
