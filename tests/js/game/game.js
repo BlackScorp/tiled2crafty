@@ -70,13 +70,21 @@ $(function(){
     }
     var tiles = {};
     var init = false;
+    var drawed = false;
     function drawMap(){
         
-        var backgroundLayer = new Kinetic.Layer(),
-        objectLayer = new Kinetic.Layer(),
-        collisionLayer = new Kinetic.Layer(),
-        textLayer = new Kinetic.Layer(),
-        data = frontier_outpost,
+        if(!drawed){
+            var backgroundLayer = new Kinetic.Layer(),
+            objectLayer = new Kinetic.Layer(),
+            collisionLayer = new Kinetic.Layer();
+       
+        }else{
+            
+            backgroundLayer = stage.children[0];
+            objectLayer = stage.children[1];
+            collisionLayer = stage.children[2];
+        }
+        var data = frontier_outpost,
         backgroundTiles = data.layers[0].data,
         objectTiles = data.layers[1].data,
         collisionTiles = data.layers[2].data,
@@ -87,7 +95,7 @@ $(function(){
         map = new Kinetic.Isometric(tw,th,mw,mh),
         tile = null,pos=null,name;
         if(!init)
-        map.centerAt(stage,32,32);
+            map.centerAt(stage,32,32);
       
         var area = map.area(stage,2);
         for(var m in area){
@@ -120,7 +128,8 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l
+                        index:pos.top*l,
+                        name:name
                     });
                     
                     backgroundLayer.add(image);
@@ -148,11 +157,12 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l
+                        index:pos.top*l,
+                         name:name
                     });
                     
                     objectLayer.add(image);
-                      tiles[name] = image;
+                    tiles[name] = image;
                 }
             }
             if(collision< 0 && sprites[collision]){
@@ -175,35 +185,33 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l
+                        index:pos.top*l,
+                         name:name
                     });
                     
                     collisionLayer.add(image);
-                      tiles[name] = image;
+                    tiles[name] = image;
                 }
             }
               
             tile = null;
             
         }
-        
-        stage.add(backgroundLayer);
-        stage.add(objectLayer);
+        if(!drawed){
+            stage.add(backgroundLayer);
+            stage.add(objectLayer);
        
-        //  stage.add(collisionLayer);
+            //  stage.add(collisionLayer); 
+        }
+      
      
         backgroundLayer.draw();
-        
         objectLayer.draw();
-        stage.on("mousemove",function(e){
-            var posX = e.clientX - stage.getX();
-            var posY = e.clientY - stage.getY();
-            var pos = map.px2pos(posX,posY);
-           
-        //   console.log(~~pos.x,~~pos.y); 
-        })
+          //  collisionLayer.draw();
+    
         init =true;
-    //  collisionLayer.draw();
+        drawed = true;
+        console.log(backgroundLayer);
     }
     size.on("resize",function(){
      
@@ -216,8 +224,8 @@ $(function(){
     })
     .on("mouseup",function(){
         
-            drawMap();
-        });;
+        drawMap();
+    });;
    
 
 });
