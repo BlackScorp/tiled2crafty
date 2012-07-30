@@ -5,18 +5,10 @@ $(function(){
         container: "game",
         width:size.width(),
         height:size.height(),
-        x:-2048,
-        y:-512,
         draggable:true
         
     });
-    
-
-   
     var tilesets = frontier_outpost.tilesets;
- 
-   
-
     var loaded = 0;
     var sprites = {};
     for(var i = 0,il = tilesets.length;i<il;i++){
@@ -26,7 +18,7 @@ $(function(){
         img.onload = function(e){
            
             tilesets[loaded].img = this;
-            createSprites(loaded);
+            createSprites(tilesets[loaded]);
             if(++loaded >= tilesets.length) {
                 drawMap()
             
@@ -40,13 +32,10 @@ $(function(){
         img.src = set.image;
     }
     
-    function createSprites(i){
-   
-        
-        var set = tilesets[i];
-    
+    function createSprites(set){
+
         var id = set.firstgid;
-        //var spriteLayer = new Kinetic.Layer();
+     
         for(var y = 0,yl=(set.imageheight/set.tileheight);y<yl;y++){
             for(var x = 0,xl=(set.imagewidth/set.tilewidth);x<xl;x++){
          
@@ -55,7 +44,7 @@ $(function(){
                     y:0
                 }
 
-                // spriteLayer.add(sprite);
+
                 sprites[id] ={
                     img:set.img,
                     x:(x*set.tilewidth),
@@ -71,8 +60,7 @@ $(function(){
             }   
         }
       
-    //stage.add(spriteLayer);
-    // spriteLayer.draw();
+
         
     }
     function drawMap(){
@@ -88,14 +76,16 @@ $(function(){
         tw = data.tilewidth,
         th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null;
-       
-        for(var y = 0,yl = mh;y<yl;y++){
-            for(var x = 0,xl = mw;x<xl;x++){
-                var index = y*mh+x,
+        tile = null,pos=null,center = map.centerAt(stage,0,0),area = map.area(stage,0);
+        for(var m in area){
+           
+                var 
+                x=area[m][0],
+                y=area[m][1],
+                index = y*mh+x,
                 background = backgroundTiles[index],
                 object = objectTiles[index],l=0;
-                
+                 console.log(x);
                 if(background > 0 && sprites[background]){
                     l = 1;
                     tile = sprites[background];
@@ -149,9 +139,11 @@ $(function(){
                 tile = null;
             
             }
-        }
-         stage.add(backgroundLayer);
+        
+        stage.add(backgroundLayer);
         stage.add(objectLayer);
+        stage.setX(center.x);
+        stage.setY(center.y);
        
         backgroundLayer.draw();
       
