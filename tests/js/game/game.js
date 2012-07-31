@@ -1,6 +1,6 @@
 $(function(){
     var size = $(window);
-    
+    var info = $('#info');
     var stage = new Kinetic.Stage({
         container: "game",
         width:size.width(),
@@ -106,14 +106,14 @@ $(function(){
             index = y*mh+x,
             background = backgroundTiles[index],
             object = objectTiles[index],
-            collision = collisionTiles[index],l=0;
+            collision = collisionTiles[index];
              
             if(background > 0 && sprites[background]){
                    
-                l = 1;
+                
                 tile = sprites[background];
                 pos = map.pos2px(x, y);
-                name = "Y"+y+"X"+x+"Z"+l;
+                name = "Y"+y+"X"+x+"Z1";
                 if(!tiles[name]){
                     var image = new Kinetic.Image({
                         x: pos.left,
@@ -128,7 +128,7 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l,
+                        index:y,
                         name:name
                     });
                     
@@ -138,11 +138,11 @@ $(function(){
             
             }
             if(object> 0 && sprites[object]){
-                l=2;
+   
     
                 tile = sprites[object];
                 pos = map.pos2px(x, y);
-                name = "Y"+y+"X"+x+"Z"+l;
+                name = "Y"+y+"X"+x+"Z2";
                 if(!tiles[name]){
                     image = new Kinetic.Image({
                         x: pos.left,
@@ -157,8 +157,8 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l,
-                         name:name
+                        index:y,
+                        name:name
                     });
                     
                     objectLayer.add(image);
@@ -166,11 +166,9 @@ $(function(){
                 }
             }
             if(collision< 0 && sprites[collision]){
-                l=3;
-    
                 tile = sprites[collision];
                 pos = map.pos2px(x, y);
-                name = "Y"+y+"X"+x+"Z"+l;
+                name = "Y"+y+"X"+x+"Z3";
                 if(!tiles[name]){
                     image = new Kinetic.Image({
                         x: pos.left,
@@ -185,8 +183,8 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l,
-                         name:name
+                        index:y,
+                        name:name
                     });
                     
                     collisionLayer.add(image);
@@ -201,17 +199,21 @@ $(function(){
             stage.add(backgroundLayer);
             stage.add(objectLayer);
        
-            //  stage.add(collisionLayer); 
+            stage.add(collisionLayer); 
+            backgroundLayer.draw();
+            objectLayer.draw();
+            collisionLayer.draw();
         }
       
-     
-        backgroundLayer.draw();
-        objectLayer.draw();
-          //  collisionLayer.draw();
-    
         init =true;
         drawed = true;
-        console.log(backgroundLayer);
+        stage.on("mousemove",function(e){
+            var posX = -stage.getX()+e.clientX;
+            var posY =  -stage.getY()+e.clientY;
+            var pos = map.px2pos(posX,posY);
+            
+            info.text("Coordiantes: X"+~~(pos.x)+"/Y"+~~(pos.y));
+        });
     }
     size.on("resize",function(){
      
@@ -223,8 +225,8 @@ $(function(){
         stage.draw();
     })
     .on("mouseup",function(){
-        
         drawMap();
+        stage.draw();
     });;
    
 
