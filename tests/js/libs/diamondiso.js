@@ -39,8 +39,8 @@ Kinetic.Isometric.prototype ={
     px2pos:function(left,top){
         var x = (left - this._origin.x)/this._tile.r;
         return {
-            x:((top+x) / this._tile.width),
-            y:((top-x) / this._tile.width)
+            x:((top+x) / this._tile.height),
+            y:((top-x) / this._tile.height)
         }
     }
     ,
@@ -71,7 +71,7 @@ Kinetic.Isometric.prototype ={
      
 
         var grid = [];
-    
+        
         for(var y = vp._y-oh,yl = (vp._y+vp._h)+oh;y<yl;y+=this._tile.height/2){
             for(var x = vp._x-ow,xl = (vp._x+vp._w)+oh;x<xl;x+=this._tile.width/2){
                 var row = this.px2pos(x,y),
