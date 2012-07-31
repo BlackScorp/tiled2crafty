@@ -39,7 +39,7 @@ Kinetic.Isometric.prototype ={
     px2pos:function(left,top){
         var x = (left - this._origin.x)/this._tile.r;
         return {
-            x:((top+x) / this._tile.height),
+            x:((top+x) / this._tile.width),
             y:((top-x) / this._tile.height)
         }
     }
