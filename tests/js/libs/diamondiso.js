@@ -46,15 +46,16 @@ Kinetic.Isometric.prototype ={
     ,
     centerAt:function(stage,x,y){
         var pos = this.pos2px(x,y),
-        x = -pos.left+stage.getWidth()/2-this._tile.width,
-        y = -pos.top+stage.getHeight()/2;
+        posX = -pos.left+stage.getWidth()/2-this._tile.width,
+        posY = -pos.top+stage.getHeight()/2;
    
-       stage.setX(x);
-       stage.setY(y);
+        stage.setX(posX);
+        stage.setY(posY);
       
     },
-    area:function(stage,offset){
+    area:function(stage,offset,torus){
         if(!offset) offset = 0;
+        if(!torus) torus = false;
         //calculate the corners
         var vp = {
             _x:-stage.getX(),
@@ -63,34 +64,30 @@ Kinetic.Isometric.prototype ={
             _h:stage.getHeight()
             
         }
-        console.log("Before",vp._w,vp._h,vp._x,vp._y);
+ 
         var ow = offset*(this._tile.width);
-        var oh = offset*(this._tile.height);
-        vp._x -= (ow);
-        vp._y -= (oh);
-        vp._w += (ow);
-        vp._h += (oh); 
-      console.log("After",vp._w,vp._h,vp._x,vp._y);
-        var grid = [];
-        console.log(~~(vp._y/(this._tile.height/2)),"Until ",~~((vp._y+vp._h)/(this._tile.height/2)));
-        console.log(~~(vp._x/(this._tile.width/2)),"Until ",~~((vp._x+vp._w)/(this._tile.width/2)));
-        for(var y = vp._y,yl = (vp._y+vp._h);y<yl;y+=this._tile.height/2){
-            for(var x = vp._x,xl = (vp._x+vp._w);x<xl;x+=this._tile.width/2){
-                var row = this.px2pos(x,y);
-                grid.push([~~row.x,~~row.y]);
-            }
-        }
-        return {
-            x:{
-                min:~~(vp._x/(this._tile.width/2)),
-                max:~~((vp._x+vp._w)/(this._tile.width/2))
-            },
-            y:{
-                min:~~(vp._y/(this._tile.height/2)),
-                max:~~((vp._y+vp._h)/(this._tile.height/2))
-            }
-        }
         
+        var oh = offset*(this._tile.height);
+     
+
+        var grid = [];
+    
+        for(var y = vp._y-oh,yl = (vp._y+vp._h)+oh;y<yl;y+=this._tile.height/2){
+            for(var x = vp._x-ow,xl = (vp._x+vp._w)+oh;x<xl;x+=this._tile.width/2){
+                var row = this.px2pos(x,y),
+                posX = ~~row.x,posY = ~~row.y;
+                if(!torus && posX > 0 || posY > 0) {
+                    posX =   Math.max(0,Math.min(this._map.width, posX));
+                    posY = Math.max(0, Math.min(this._map.height, posY));
+                    grid.push([posX,posY]); 
+                }else{
+                    grid.push([posX,posY]);  
+                }
+              
+            }
+        }
+      
+       
         return grid;       
     } 
     
