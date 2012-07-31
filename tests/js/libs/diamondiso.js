@@ -40,7 +40,7 @@ Kinetic.Isometric.prototype ={
         var x = (left - this._origin.x)/this._tile.r;
         return {
             x:((top+x) / this._tile.width),
-            y:((top-x) / this._tile.height)
+            y:((top-x) / this._tile.width)
         }
     }
     ,
