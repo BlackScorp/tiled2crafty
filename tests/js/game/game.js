@@ -4,9 +4,8 @@ $(function(){
     var stage = new Kinetic.Stage({
         container: "game",
         width:size.width(),
-        height:size.height(),
-        draggable:true
-        
+        height:size.width(),
+        draggable:false
     });
     var tilesets = frontier_outpost.tilesets;
     var loaded = 0;
@@ -95,9 +94,10 @@ $(function(){
         map = new Kinetic.Isometric(tw,th,mw,mh),
         tile = null,pos=null,name;
         if(!init)
-            map.centerAt(stage,32,32);
+            map.centerAt(stage,10,10);
       
         var area = map.area(stage,2);
+        var grid = {};
         for(var m in area){
             
             var
@@ -107,7 +107,7 @@ $(function(){
             background = backgroundTiles[index],
             object = objectTiles[index],
             collision = collisionTiles[index],l=0;
-             
+             grid["Y"+y+"X"+x] = true;
             if(background > 0 && sprites[background]){
                    
                 l = 1;
@@ -128,7 +128,7 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l,
+                        index:(pos.top-tile.height)*l,
                         name:name
                     });
                     
@@ -157,7 +157,7 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l,
+                        index:(y)*l,
                          name:name
                     });
                     
@@ -197,6 +197,18 @@ $(function(){
             tile = null;
             
         }
+        
+        for(var i in tiles){
+            var name = i.substr(0,i.indexOf('Z'));
+            if(!grid[name]){
+                
+               var t = tiles[i];
+                t.parent.remove(t);
+                delete tiles[i];
+            }
+            
+        }
+       
         if(!drawed){
             stage.add(backgroundLayer);
             stage.add(objectLayer);
@@ -211,8 +223,117 @@ $(function(){
     
         init =true;
         drawed = true;
-        console.log(backgroundLayer);
+       
     }
+  
+  var keyboard = new Kinetic.Keyboard();
+  
+    stage.onFrame(function(frame){
+        
+     if(!keyboard.isDown()) return; 
+       
+     
+       var x = stage.getX();
+       var y = stage.getY();
+        var speed ={
+           x:10,
+           y:10
+       }
+       
+        if(keyboard.isDown('W')){
+          y +=speed.y;  
+          stage.setY(y);
+        }
+        if(keyboard.isDown('S')){
+          y -=speed.y;  
+          stage.setY(y);
+        }
+        if(keyboard.isDown('D')){
+          x -=speed.x;  
+          stage.setX(x);
+        }
+        if(keyboard.isDown('A')){
+          x +=speed.x;  
+          stage.setX(x);
+        }
+        drawMap();
+        stage.draw();
+    });
+    
+      stage.start();
+/*
+     window.requestAnimationFrame = (function(){
+      return  window.requestAnimationFrame       || 
+              window.webkitRequestAnimationFrame || 
+              window.mozRequestAnimationFrame    || 
+              window.oRequestAnimationFrame      || 
+              window.msRequestAnimationFrame     || 
+              function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();
+    var FPS = 25;
+    var SKIP = 1000/FPS;
+    var MAX_FRAMES = 2;
+    var tick = (new Date()).getTime();
+ 
+    var draw = function(interpolation){
+        
+       if(!keyboard.isDown()) return; 
+       
+     
+       var x = stage.getX();
+       var y = stage.getY();
+       var speed ={
+           x:~~(20*interpolation),
+           y:~~(20*interpolation)
+       }
+       
+        if(keyboard.isDown('W')){
+          y +=speed.y;  
+          stage.setY(y);
+        }
+        if(keyboard.isDown('S')){
+          y -=speed.y;  
+          stage.setY(y);
+        }
+        if(keyboard.isDown('D')){
+          x -=speed.x;  
+          stage.setX(x);
+        }
+        if(keyboard.isDown('A')){
+          x +=speed.x;  
+          stage.setX(x);
+        }
+         drawMap();
+        stage.draw();
+    }
+    var gameLoop = function(){
+         requestAnimationFrame(gameLoop);
+        
+        var loops = 0;
+        while((new Date()).getTime() > tick && loops < MAX_FRAMES){
+            tick += SKIP;
+            loops++;
+        }
+        if(loops > 0){
+            var interpolation = parseFloat((new Date()).getTime() + SKIP - tick) / parseFloat(SKIP);
+            draw(interpolation);
+            tick = (new Date()).getTime();
+        }
+    }
+   gameLoop();
+      */
+     size.on("keydown",function(e){
+        keyboard.dispatch(e);
+    });
+    size.on("keyup",function(e){
+       keyboard.dispatch(e);
+    });
+     stage.on("mouseup",function(){
+        
+        drawMap();
+    });
     size.on("resize",function(){
      
         var size = $(window);
@@ -222,10 +343,7 @@ $(function(){
         drawMap();
         stage.draw();
     })
-    .on("mouseup",function(){
-        
-        drawMap();
-    });;
+   
    
 
 });

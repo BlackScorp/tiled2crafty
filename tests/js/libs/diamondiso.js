@@ -46,7 +46,7 @@ Kinetic.Isometric.prototype ={
     ,
     centerAt:function(stage,x,y){
         var pos = this.pos2px(x,y),
-        posX = -pos.left+stage.getWidth()/2-this._tile.width,
+        posX = -pos.left+stage.getWidth()/2-this._tile.width/2,
         posY = -pos.top+stage.getHeight()/2;
    
         stage.setX(posX);
