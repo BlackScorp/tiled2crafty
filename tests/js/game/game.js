@@ -1,6 +1,6 @@
 $(function(){
     var size = $(window);
-    
+    var info = $('#info');
     var stage = new Kinetic.Stage({
         container: "game",
         width:size.width(),
@@ -96,7 +96,7 @@ $(function(){
         if(!init)
             map.centerAt(stage,10,10);
       
-        var area = map.area(stage,2);
+        var area = map.area(stage,0);
         var grid = {};
         for(var m in area){
             
@@ -110,10 +110,10 @@ $(function(){
              grid["Y"+y+"X"+x] = true;
             if(background > 0 && sprites[background]){
                    
-                l = 1;
+                
                 tile = sprites[background];
                 pos = map.pos2px(x, y);
-                name = "Y"+y+"X"+x+"Z"+l;
+                name = "Y"+y+"X"+x+"Z1";
                 if(!tiles[name]){
                     var image = new Kinetic.Image({
                         x: pos.left,
@@ -138,11 +138,11 @@ $(function(){
             
             }
             if(object> 0 && sprites[object]){
-                l=2;
+   
     
                 tile = sprites[object];
                 pos = map.pos2px(x, y);
-                name = "Y"+y+"X"+x+"Z"+l;
+                name = "Y"+y+"X"+x+"Z2";
                 if(!tiles[name]){
                     image = new Kinetic.Image({
                         x: pos.left,
@@ -166,11 +166,9 @@ $(function(){
                 }
             }
             if(collision< 0 && sprites[collision]){
-                l=3;
-    
                 tile = sprites[collision];
                 pos = map.pos2px(x, y);
-                name = "Y"+y+"X"+x+"Z"+l;
+                name = "Y"+y+"X"+x+"Z3";
                 if(!tiles[name]){
                     image = new Kinetic.Image({
                         x: pos.left,
@@ -185,8 +183,8 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:pos.top*l,
-                         name:name
+                        index:y,
+                        name:name
                     });
                     
                     collisionLayer.add(image);
@@ -213,31 +211,36 @@ $(function(){
             stage.add(backgroundLayer);
             stage.add(objectLayer);
        
-            //  stage.add(collisionLayer); 
+            stage.add(collisionLayer); 
+            backgroundLayer.draw();
+            objectLayer.draw();
+            collisionLayer.draw();
         }
       
-     
-        backgroundLayer.draw();
-        objectLayer.draw();
-          //  collisionLayer.draw();
-    
         init =true;
         drawed = true;
-       
+        stage.on("mousemove",function(e){
+            var posX = -stage.getX()+e.clientX;
+            var posY =  -stage.getY()+e.clientY;
+            var pos = map.px2pos(posX,posY);
+            
+            info.text("Coordiantes: X"+~~(pos.x)+"/Y"+~~(pos.y));
+        });
     }
   
   var keyboard = new Kinetic.Keyboard();
-  
+ 
     stage.onFrame(function(frame){
         
      if(!keyboard.isDown()) return; 
-       
+     
+     console.log(frame);
      
        var x = stage.getX();
        var y = stage.getY();
         var speed ={
-           x:10,
-           y:10
+           x:50,
+           y:50
        }
        
         if(keyboard.isDown('W')){
@@ -261,7 +264,7 @@ $(function(){
     });
     
       stage.start();
-/*
+ /*
      window.requestAnimationFrame = (function(){
       return  window.requestAnimationFrame       || 
               window.webkitRequestAnimationFrame || 
@@ -285,8 +288,8 @@ $(function(){
        var x = stage.getX();
        var y = stage.getY();
        var speed ={
-           x:~~(20*interpolation),
-           y:~~(20*interpolation)
+           x:~~(100*interpolation),
+           y:~~(100*interpolation)
        }
        
         if(keyboard.isDown('W')){
@@ -323,7 +326,7 @@ $(function(){
         }
     }
    gameLoop();
-      */
+     */ 
      size.on("keydown",function(e){
         keyboard.dispatch(e);
     });
@@ -343,7 +346,10 @@ $(function(){
         drawMap();
         stage.draw();
     })
-   
+    .on("mouseup",function(){
+        drawMap();
+        stage.draw();
+    });;
    
 
 });
