@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            *{margin:0px;padding:0px}
+
+
+            #game{
+                overflow: hidden;
+                position: absolute;
+                top:0px;
+                left:0px;
+                width: 100%;
+                height: 100%;
+
+            }
+            .kineticjs-content{background: black}
+            #info{width:200px;
+                  height:auto;
+                  position:absolute;
+                  top:10px;left:10px;
+                  background:black;
+                  color:white;
+                  border:1px solid black
+            }
+            </style>
+
+        </head>
+        <body>
+
+            <div id="game"></div>
+        <div id="info">
+            Count Tiles:<span id="tiles"></span><br/>
+            FPS:<span id="fps"></span>
+        </div>
+        <script src="js/libs/jquery.min.js"></script>
+        <script src="js/libs/jquery-ui.min.js"></script>
+        <script  src="js/libs/kinetic.js"></script>
+          <script  src="js/libs/spritemap.js"></script>
+            <script  src="js/libs/Keyboard.js"></script>
+           <script  src="js/libs/diamondiso.js"></script>
+           <script  src="js/libs/tiled.js"></script>
+
+        <script src="js/maps/frontier_outpost.js"></script>
+
+        <script src="js/game/game.js"></script>
+    </body>
+</html>

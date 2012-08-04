@@ -183,7 +183,7 @@ var frontier_outpost ={ "height":64,
  "tilesets":[
         {
          "firstgid":1,
-         "image":"img\/tiled_collision.png",
+         "image":"https:\/\/github.com\/BlackScorp\/tiled2crafty\/raw\/KineticJS\/tests\/img\/tiled_collision.png",
          "imageheight":32,
          "imagewidth":960,
          "margin":0,
@@ -198,7 +198,7 @@ var frontier_outpost ={ "height":64,
         }, 
         {
          "firstgid":16,
-         "image":"img\/grassland.png",
+         "image":"https:\/\/github.com\/BlackScorp\/tiled2crafty\/raw\/KineticJS\/tests\/img\/grassland.png",
          "imageheight":1024,
          "imagewidth":1024,
          "margin":0,
@@ -213,10 +213,11 @@ var frontier_outpost ={ "height":64,
         }, 
         {
          "firstgid":144,
-         "image":"img\/grassland_water.png",
+         "image":"https:\/\/github.com\/BlackScorp\/tiled2crafty\/raw\/KineticJS\/tests\/img\/grassland_water.png",
          "imageheight":256,
          "imagewidth":1024,
          "margin":0,
+         "offset":{"x":0,"y":32},
          "name":"water",
          "properties":
             {
@@ -228,7 +229,7 @@ var frontier_outpost ={ "height":64,
         }, 
         {
          "firstgid":208,
-         "image":"img\/grassland_structures.png",
+         "image":"https:\/\/github.com\/BlackScorp\/tiled2crafty\/raw\/KineticJS\/tests\/img\/grassland_structures.png",
          "imageheight":512,
          "imagewidth":1024,
          "margin":0,
@@ -243,10 +244,11 @@ var frontier_outpost ={ "height":64,
         }, 
         {
          "firstgid":240,
-         "image":"img\/grassland_trees.png",
+         "image":"https:\/\/github.com\/BlackScorp\/tiled2crafty\/raw\/KineticJS\/tests\/img\/grassland_trees.png",
          "imageheight":512,
          "imagewidth":1024,
          "margin":0,
+          "offset":{"x":-32,"y":0},
          "name":"trees",
          "properties":
             {
