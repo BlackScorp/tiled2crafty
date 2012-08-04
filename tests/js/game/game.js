@@ -4,8 +4,8 @@ $(function(){
     var stage = new Kinetic.Stage({
         container: "game",
         width:size.width(),
-        height:size.width(),
-        draggable:false
+        height:size.height(),
+        draggable:true
     });
     var tilesets = frontier_outpost.tilesets;
     var loaded = 0;
@@ -70,6 +70,7 @@ $(function(){
     var tiles = {};
     var init = false;
     var drawed = false;
+    var countTiles = 0;
     function drawMap(){
         
         if(!drawed){
@@ -96,7 +97,7 @@ $(function(){
         if(!init)
             map.centerAt(stage,10,10);
       
-        var area = map.area(stage,0);
+        var area = map.area(stage,-1);
         var grid = {};
         for(var m in area){
             
@@ -107,7 +108,7 @@ $(function(){
             background = backgroundTiles[index],
             object = objectTiles[index],
             collision = collisionTiles[index],l=0;
-             grid["Y"+y+"X"+x] = true;
+            grid["Y"+y+"X"+x] = true;
             if(background > 0 && sprites[background]){
                    
                 
@@ -115,6 +116,7 @@ $(function(){
                 pos = map.pos2px(x, y);
                 name = "Y"+y+"X"+x+"Z1";
                 if(!tiles[name]){
+                    countTiles++;
                     var image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
@@ -128,12 +130,13 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:(pos.top-tile.height)*l,
+                        index:y*l,
                         name:name
                     });
                     
                     backgroundLayer.add(image);
                     tiles[name] = image;
+                
                 }
             
             }
@@ -144,6 +147,7 @@ $(function(){
                 pos = map.pos2px(x, y);
                 name = "Y"+y+"X"+x+"Z2";
                 if(!tiles[name]){
+                    countTiles++;
                     image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
@@ -158,10 +162,11 @@ $(function(){
                         },
                         offset :tile.offset,
                         index:(y)*l,
-                         name:name
+                        name:name
                     });
                     
                     objectLayer.add(image);
+                  
                     tiles[name] = image;
                 }
             }
@@ -197,12 +202,13 @@ $(function(){
         }
         
         for(var i in tiles){
-            var name = i.substr(0,i.indexOf('Z'));
+            name = i.substr(0,i.indexOf('Z'));
             if(!grid[name]){
                 
-               var t = tiles[i];
+                var t = tiles[i];
                 t.parent.remove(t);
                 delete tiles[i];
+                countTiles--;
             }
             
         }
@@ -216,127 +222,119 @@ $(function(){
             objectLayer.draw();
             collisionLayer.draw();
         }
-      
+  
         init =true;
         drawed = true;
-        stage.on("mousemove",function(e){
-            var posX = -stage.getX()+e.clientX;
-            var posY =  -stage.getY()+e.clientY;
-            var pos = map.px2pos(posX,posY);
-            
-            info.text("Coordiantes: X"+~~(pos.x)+"/Y"+~~(pos.y));
-        });
+
+        info.find('#tiles').text(countTiles);
     }
   
-  var keyboard = new Kinetic.Keyboard();
+    var keyboard = new Kinetic.Keyboard();
  
-    stage.onFrame(function(frame){
-        
-     if(!keyboard.isDown()) return; 
-     
-     console.log(frame);
-     
-       var x = stage.getX();
-       var y = stage.getY();
-        var speed ={
-           x:50,
-           y:50
-       }
-       
+    window.requestAnimationFrame = (function(){
+        return  window.requestAnimationFrame       || 
+        window.webkitRequestAnimationFrame || 
+        window.mozRequestAnimationFrame    || 
+        window.oRequestAnimationFrame      || 
+        window.msRequestAnimationFrame     || 
+        function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+        };
+    })();
+ 
+    var speed = {
+        x:5,
+        y:10
+    };
+    var globalX = 0,globalY=0;
+    var update = function(){
+        if(!keyboard.isDown()) return; 
         if(keyboard.isDown('W')){
-          y +=speed.y;  
-          stage.setY(y);
+            globalY +=speed.y;  
         }
         if(keyboard.isDown('S')){
-          y -=speed.y;  
-          stage.setY(y);
+            globalY -=speed.y;  
         }
         if(keyboard.isDown('D')){
-          x -=speed.x;  
-          stage.setX(x);
+            globalX -=speed.x;  
         }
         if(keyboard.isDown('A')){
-          x +=speed.x;  
-          stage.setX(x);
+            globalX +=speed.x;  
         }
-        drawMap();
-        stage.draw();
-    });
-    
-      stage.start();
- /*
-     window.requestAnimationFrame = (function(){
-      return  window.requestAnimationFrame       || 
-              window.webkitRequestAnimationFrame || 
-              window.mozRequestAnimationFrame    || 
-              window.oRequestAnimationFrame      || 
-              window.msRequestAnimationFrame     || 
-              function( callback ){
-                window.setTimeout(callback, 1000 / 60);
-              };
-    })();
-    var FPS = 25;
-    var SKIP = 1000/FPS;
-    var MAX_FRAMES = 2;
-    var tick = (new Date()).getTime();
- 
+     
+    }
     var draw = function(interpolation){
         
-       if(!keyboard.isDown()) return; 
+        if(!keyboard.isDown()) return; 
        
-     
-       var x = stage.getX();
-       var y = stage.getY();
-       var speed ={
-           x:~~(100*interpolation),
-           y:~~(100*interpolation)
-       }
+        var x = stage.getX()+globalX;
+        var y = stage.getY()+globalY;
+        
+      
        
         if(keyboard.isDown('W')){
-          y +=speed.y;  
-          stage.setY(y);
+            y +=~~(speed.y*interpolation);  
+            stage.setY(y);
         }
         if(keyboard.isDown('S')){
-          y -=speed.y;  
-          stage.setY(y);
+            y -=~~(speed.y*interpolation);  
+            stage.setY(y);
         }
         if(keyboard.isDown('D')){
-          x -=speed.x;  
-          stage.setX(x);
+            x -=~~(speed.x*interpolation);  
+            stage.setX(x);
         }
         if(keyboard.isDown('A')){
-          x +=speed.x;  
-          stage.setX(x);
+            x +=~~(speed.x*interpolation);  
+            stage.setX(x);
         }
-         drawMap();
-        stage.draw();
-    }
-    var gameLoop = function(){
-         requestAnimationFrame(gameLoop);
         
-        var loops = 0;
-        while((new Date()).getTime() > tick && loops < MAX_FRAMES){
+       
+        drawMap();
+        stage.draw();
+        globalX = 0;
+        globalY = 0;
+    }
+    var FPS = 25;
+    var SKIP = 1000/FPS;
+    var MAX_FRAMES = 5;
+    var tick = (new Date()).getTime();
+    var frameTime =(new Date()).getTime();
+    var frame = 0;
+    var fpsText = info.find('#fps');
+    var gameLoop = function(){
+        requestAnimationFrame(gameLoop);
+         var loops = 0;
+        var currTime = (new Date()).getTime();
+         if(currTime > frameTime){
+           fpsText.text(frame);
+            frame = 0;
+            frameTime += 1000;
+        }else{
+            frame++;
+        }
+       
+        while(currTime > tick && loops < MAX_FRAMES){
+            update();
             tick += SKIP;
             loops++;
         }
         if(loops > 0){
-            var interpolation = parseFloat((new Date()).getTime() + SKIP - tick) / parseFloat(SKIP);
+            var interpolation = parseFloat(currTime + SKIP - tick) / parseFloat(SKIP);
             draw(interpolation);
-            tick = (new Date()).getTime();
+            tick = currTime;
         }
+       
     }
-   gameLoop();
-     */ 
-     size.on("keydown",function(e){
+    gameLoop();
+    
+    size.on("keydown",function(e){
         keyboard.dispatch(e);
     });
     size.on("keyup",function(e){
-       keyboard.dispatch(e);
+        keyboard.dispatch(e);
     });
-     stage.on("mouseup",function(){
-        
-        drawMap();
-    });
+ 
     size.on("resize",function(){
      
         var size = $(window);
@@ -346,10 +344,7 @@ $(function(){
         drawMap();
         stage.draw();
     })
-    .on("mouseup",function(){
-        drawMap();
-        stage.draw();
-    });;
+  
    
 
 });
