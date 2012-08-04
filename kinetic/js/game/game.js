@@ -243,7 +243,7 @@ $(function(){
     })();
  
     var speed = {
-        x:5,
+        x:10,
         y:10
     };
     var globalX = 0,globalY=0;
