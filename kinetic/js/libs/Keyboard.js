@@ -96,6 +96,7 @@ Kinetic.Keyboard = function(){
 Kinetic.Keyboard.prototype.isDown = function(key){
  
     if(!key) return this.anyDown;
+    
     if(typeof key === "string") key = this.keys[key];  
     return !!this.keyDown[key];
 }
@@ -106,24 +107,20 @@ Kinetic.Keyboard.prototype.dispatch = function(e){
     else if (e.which) code = e.which;
         
     if(e.type == "keydown"){
-        this.anyDown = true;
         if(!this.keyDown[code]){
-           this.keyDown[code] = true;
-           this.countKeys++;
+            this.keyDown[code] = true;
+            this.countKeys++;
         }
- 
     }
     if(e.type == "keyup"){
-        
-       
-        
-        if(this.keyDown){
+        if(this.keyDown[code]){
             delete this.keyDown[code];
-            this.countKey--;
-        }
-        if(this.countKeys < 1){
-            this.anyDown = true;
+            this.countKeys--;
         }
     }
-
+    if(this.countKeys > 0){
+        this.anyDown = true;
+    }else{
+        this.anyDown = false;
+    }
 }

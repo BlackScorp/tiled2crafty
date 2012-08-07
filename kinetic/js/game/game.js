@@ -253,7 +253,7 @@ $(function(){
     };
     var globalX = stage.getX(),globalY=stage.getY();
     var update = function(){
-     
+     if(!keyboard.isDown()) return;
         if(keyboard.isDown('W')){
             globalY +=speed.y;  
         }
@@ -270,13 +270,11 @@ $(function(){
     }
     var draw = function(interpolation){
         
-  
-       
+        if(!keyboard.isDown()) return false;
+        
         var x = stage.getX()+globalX;
         var y = stage.getY()+globalY;
 
-      
-       
         if(keyboard.isDown('W')){
             y +=~~(speed.y*interpolation);  
             stage.setY(y);
@@ -310,23 +308,22 @@ $(function(){
    
     stage.onFrame(function(frame){
         stats.begin();
-        
-        
-        if(keyboard.isDown()){
+
+       
             var loops = 0;
-           
-            while(new Date().getTime() > nextTick && loops < maxLoops){
+            var currTime = (new Date()).getTime();
+            while(currTime > nextTick && loops < maxLoops){
                 update();
                 nextTick += skipTicks;
                 loops++;
               
             }
+            var inter = parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks);
             if(loops > 0){
-                var inter = parseFloat(new Date().getTime() + skipTicks - nextTick) / parseFloat(skipTicks);
-                draw(inter);
+                draw(inter);      
             }
-           
-        }
+        
+        
         stats.end();
     });
 
