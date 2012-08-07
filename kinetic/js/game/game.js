@@ -4,9 +4,9 @@ $(function(){
     var stage = new Kinetic.Stage({
         container: "game",
         width:size.width(),
-        height:size.height(),
-        draggable:true
+        height:size.height()
     });
+    
     var tilesets = frontier_outpost.tilesets;
     var loaded = 0;
     var sprites = {};
@@ -75,22 +75,25 @@ $(function(){
     var countTiles = 0;
     var startX = 20;
     var startY = 20;
+
     function drawMap(){
         
         if(!drawed){
             var backgroundLayer = new Kinetic.Layer(),
             objectLayer = new Kinetic.Layer(),
             collisionLayer = new Kinetic.Layer();
-            objectLayer.beforeDrawFunc = function(){
+            objectLayer.beforeDraw(function(){
+                this.children.sort(function(a,b){
+                    return a.attrs.index - b.attrs.index;
+                });    
+            });
+           
+            backgroundLayer.beforeDraw(function(){
                 this.children.sort(function(a,b){
                     return a.attrs.index - b.attrs.index;
                 });
-            }
-            backgroundLayer.beforeDrawFunc = function(){
-                this.children.sort(function(a,b){
-                    return a.attrs.index - b.attrs.index;
-                });
-            }
+            });
+
         }else{
             
             backgroundLayer = stage.children[0];
@@ -149,7 +152,7 @@ $(function(){
                     
                     backgroundLayer.add(image);
                     tiles[name] = image;
-                    image.setZIndex(pos.top*l);
+                    
                 }
             
             }
@@ -181,7 +184,7 @@ $(function(){
                     objectLayer.add(image);
                   
                     tiles[name] = image;
-                    image.setZIndex(pos.top*l);
+                   
                 }
             }
             if(collision< 0 && sprites[collision]){
@@ -228,15 +231,19 @@ $(function(){
         }
        
         if(!drawed){
-            stage.add(backgroundLayer);
+           stage.add(backgroundLayer);
             stage.add(objectLayer);
        
             stage.add(collisionLayer); 
-            backgroundLayer.draw();
+            
+         
+           backgroundLayer.draw();
             objectLayer.draw();
             collisionLayer.draw();
         }
-  
+     
+       
+ 
         init =true;
         drawed = true;
 
@@ -254,6 +261,7 @@ $(function(){
     var globalX = stage.getX(),globalY=stage.getY();
     var update = function(){
         if(!keyboard.isDown()) return;
+
         if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
             globalY +=speed.y;  
         }
@@ -270,8 +278,8 @@ $(function(){
     }
     var draw = function(interpolation){
         
-        if(!keyboard.isDown()) return false;
-        
+        if(!keyboard.isDown()) return;
+   
         var x = stage.getX()+globalX;
         var y = stage.getY()+globalY;
 
@@ -294,6 +302,7 @@ $(function(){
         
        
         drawMap();
+
         stage.draw();
         globalX = 0;
         globalY = 0;
@@ -318,7 +327,9 @@ $(function(){
             loops++;
               
         }
-        var inter = parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks);
+      
+        var inter = Math.min(1,parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks));
+         
         if(loops > 0){
             draw(inter);      
         }
@@ -339,7 +350,7 @@ $(function(){
     });
  
     size.on("resize",function(){
-     
+        return ;
         var size = $(window);
         init = false;
         stage.setWidth(size.width());

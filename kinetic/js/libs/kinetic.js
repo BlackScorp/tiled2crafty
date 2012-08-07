@@ -3848,13 +3848,14 @@ Kinetic.Layer = Kinetic.Container.extend({
         var canvas;
         var mimeType = config && config.mimeType ? config.mimeType : null;
         var quality = config && config.quality ? config.quality : null;
-
+       
         if(config && config.width && config.height) {
             canvas = new Kinetic.Canvas(config.width, config.height);
         }
         else {
             canvas = this.getCanvas();
         }
+    
         return canvas.toDataURL(mimeType, quality);
     },
     /**
