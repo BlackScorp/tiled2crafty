@@ -77,7 +77,12 @@ $(function(){
             var backgroundLayer = new Kinetic.Layer(),
             objectLayer = new Kinetic.Layer(),
             collisionLayer = new Kinetic.Layer();
-       
+            objectLayer.beforeDrawFunc = function(){
+               this.children.sort(function(a,b){return a.attrs.index - b.attrs.index;});
+            }
+              backgroundLayer.beforeDrawFunc = function(){
+                this.children.sort(function(a,b){return a.attrs.index - b.attrs.index;});
+            }
         }else{
             
             backgroundLayer = stage.children[0];
@@ -97,7 +102,7 @@ $(function(){
         if(!init)
             map.centerAt(stage,10,10);
       
-        var area = map.area(stage,-1);
+        var area = map.area(stage,1);
         var grid = {};
         for(var m in area){
             
@@ -111,7 +116,7 @@ $(function(){
             grid["Y"+y+"X"+x] = true;
             if(background > 0 && sprites[background]){
                    
-                
+                l=1;
                 tile = sprites[background];
                 pos = map.pos2px(x, y);
                 name = "Y"+y+"X"+x+"Z1";
@@ -130,19 +135,19 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:y*l,
+                        index:pos.top*l,
                         name:name
                     });
                     
                     backgroundLayer.add(image);
                     tiles[name] = image;
-                
+                    image.setZIndex(pos.top*l);
                 }
             
             }
             if(object> 0 && sprites[object]){
    
-    
+                l=2;
                 tile = sprites[object];
                 pos = map.pos2px(x, y);
                 name = "Y"+y+"X"+x+"Z2";
@@ -161,13 +166,14 @@ $(function(){
                             height:tile.height
                         },
                         offset :tile.offset,
-                        index:(y)*l,
+                        index:pos.top*l,
                         name:name
                     });
                     
                     objectLayer.add(image);
                   
                     tiles[name] = image;
+                    image.setZIndex(pos.top*l);
                 }
             }
             if(collision< 0 && sprites[collision]){
@@ -231,20 +237,11 @@ $(function(){
   
     var keyboard = new Kinetic.Keyboard();
  
-    window.requestAnimationFrame = (function(){
-        return  window.requestAnimationFrame       || 
-        window.webkitRequestAnimationFrame || 
-        window.mozRequestAnimationFrame    || 
-        window.oRequestAnimationFrame      || 
-        window.msRequestAnimationFrame     || 
-        function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-        };
-    })();
+
  
     var speed = {
-        x:10,
-        y:10
+        x:6,
+        y:6
     };
     var globalX = 0,globalY=0;
     var update = function(){
@@ -295,38 +292,28 @@ $(function(){
         globalX = 0;
         globalY = 0;
     }
-    var FPS = 25;
-    var SKIP = 1000/FPS;
-    var MAX_FRAMES = 5;
-    var tick = (new Date()).getTime();
-    var frameTime =(new Date()).getTime();
-    var frame = 0;
+    var lastTime = 0;
+    var frameTime = (new Date()).getTime();
     var fpsText = info.find('#fps');
-    var gameLoop = function(){
-        requestAnimationFrame(gameLoop);
-         var loops = 0;
-        var currTime = (new Date()).getTime();
-         if(currTime > frameTime){
-           fpsText.text(frame);
-            frame = 0;
+    var frames = 0;
+    stage.onFrame(function(frame){
+        if((new Date()).getTime() > frameTime){
+            fpsText.text(frames);
+            frames = 0;
             frameTime += 1000;
         }else{
-            frame++;
+            frames++;
         }
-       
-        while(currTime > tick && loops < MAX_FRAMES){
+        if(frame.lastTime > lastTime ){
+            lastTime = frame.lastTime;
+            draw(frame.timeDiff/30);
+        }else{
             update();
-            tick += SKIP;
-            loops++;
         }
-        if(loops > 0){
-            var interpolation = parseFloat(currTime + SKIP - tick) / parseFloat(SKIP);
-            draw(interpolation);
-            tick = currTime;
-        }
-       
-    }
-    gameLoop();
+        
+    });
+    stage.start();
+   
     
     size.on("keydown",function(e){
         keyboard.dispatch(e);

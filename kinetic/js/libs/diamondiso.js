@@ -64,8 +64,10 @@ Kinetic.Isometric.prototype ={
             _h:stage.getHeight()
             
         }
- 
-        var ow = offset*(this._tile.width);
+        vp._x -= this._tile.width/2;
+        vp._y += this._tile.height;
+        
+        var ow = offset*(this._tile.width/2);
         
         var oh = offset*(this._tile.height);
      
@@ -73,7 +75,7 @@ Kinetic.Isometric.prototype ={
         var grid = [];
         
         for(var y = vp._y-oh,yl = (vp._y+vp._h)+oh;y<yl;y+=this._tile.height/2){
-            for(var x = vp._x-ow,xl = (vp._x+vp._w)+oh;x<xl;x+=this._tile.width/2){
+            for(var x = vp._x-ow,xl = (vp._x+vp._w)+ow;x<xl;x+=this._tile.width/2){
                 var row = this.px2pos(x,y),
                 posX = ~~row.x,posY = ~~row.y;
                 if(!torus && posX > 0 || posY > 0) {
