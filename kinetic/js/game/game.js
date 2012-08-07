@@ -341,7 +341,9 @@ $(function(){
     stage.start();
    
   
-    
+    size.on("click",function(e){
+        keyboard.preventDefault(e);
+    })
     size.on("keydown",function(e){
         keyboard.dispatch(e);
     });

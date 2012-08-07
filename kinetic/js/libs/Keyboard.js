@@ -124,3 +124,8 @@ Kinetic.Keyboard.prototype.dispatch = function(e){
         this.anyDown = false;
     }
 }
+Kinetic.Keyboard.prototype.preventDefault = function(e){
+    if (!e) var e = window.event;
+    e.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+}
