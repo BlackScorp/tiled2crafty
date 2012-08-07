@@ -49,8 +49,8 @@ Kinetic.Isometric.prototype ={
         posX = -pos.left+stage.getWidth()/2-this._tile.width/2,
         posY = -pos.top+stage.getHeight()/2;
    
-        stage.setX(posX);
-        stage.setY(posY);
+        stage.setX(~~posX);
+        stage.setY(~~posY);
       
     },
     area:function(stage,offset,torus){

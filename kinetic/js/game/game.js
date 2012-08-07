@@ -11,6 +11,8 @@ $(function(){
     var loaded = 0;
     var sprites = {};
     var assets = {};
+    var stats = new Stats();
+    info.append(stats.domElement);
     for(var i = 0,il = tilesets.length;i<il;i++){
         var set = tilesets[i];
         
@@ -71,6 +73,8 @@ $(function(){
     var init = false;
     var drawed = false;
     var countTiles = 0;
+    var startX = 20;
+    var startY = 20;
     function drawMap(){
         
         if(!drawed){
@@ -78,10 +82,14 @@ $(function(){
             objectLayer = new Kinetic.Layer(),
             collisionLayer = new Kinetic.Layer();
             objectLayer.beforeDrawFunc = function(){
-               this.children.sort(function(a,b){return a.attrs.index - b.attrs.index;});
+                this.children.sort(function(a,b){
+                    return a.attrs.index - b.attrs.index;
+                });
             }
-              backgroundLayer.beforeDrawFunc = function(){
-                this.children.sort(function(a,b){return a.attrs.index - b.attrs.index;});
+            backgroundLayer.beforeDrawFunc = function(){
+                this.children.sort(function(a,b){
+                    return a.attrs.index - b.attrs.index;
+                });
             }
         }else{
             
@@ -100,7 +108,7 @@ $(function(){
         map = new Kinetic.Isometric(tw,th,mw,mh),
         tile = null,pos=null,name;
         if(!init)
-            map.centerAt(stage,10,10);
+            map.centerAt(stage,startX,startY);
       
         var area = map.area(stage,1);
         var grid = {};
@@ -240,12 +248,12 @@ $(function(){
 
  
     var speed = {
-        x:6,
-        y:6
+        x:5,
+        y:5
     };
-    var globalX = 0,globalY=0;
+    var globalX = stage.getX(),globalY=stage.getY();
     var update = function(){
-        if(!keyboard.isDown()) return; 
+     
         if(keyboard.isDown('W')){
             globalY +=speed.y;  
         }
@@ -262,11 +270,11 @@ $(function(){
     }
     var draw = function(interpolation){
         
-        if(!keyboard.isDown()) return; 
+  
        
         var x = stage.getX()+globalX;
         var y = stage.getY()+globalY;
-        
+
       
        
         if(keyboard.isDown('W')){
@@ -293,27 +301,38 @@ $(function(){
         globalY = 0;
     }
     var lastTime = 0;
-    var frameTime = (new Date()).getTime();
-    var fpsText = info.find('#fps');
-    var frames = 0;
+
+   
+    var FPS = 25;
+    var skipTicks = 1000/FPS;
+    var maxLoops = 5;
+    var nextTick = new Date().getTime();
+   
     stage.onFrame(function(frame){
-        if((new Date()).getTime() > frameTime){
-            fpsText.text(frames);
-            frames = 0;
-            frameTime += 1000;
-        }else{
-            frames++;
-        }
-        if(frame.lastTime > lastTime ){
-            lastTime = frame.lastTime;
-            draw(frame.timeDiff/30);
-        }else{
-            update();
-        }
+        stats.begin();
         
+        
+        if(keyboard.isDown()){
+            var loops = 0;
+           
+            while(new Date().getTime() > nextTick && loops < maxLoops){
+                update();
+                nextTick += skipTicks;
+                loops++;
+              
+            }
+            if(loops > 0){
+                var inter = parseFloat(new Date().getTime() + skipTicks - nextTick) / parseFloat(skipTicks);
+                draw(inter);
+            }
+           
+        }
+        stats.end();
     });
+
     stage.start();
    
+  
     
     size.on("keydown",function(e){
         keyboard.dispatch(e);
