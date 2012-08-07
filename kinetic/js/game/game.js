@@ -253,17 +253,17 @@ $(function(){
     };
     var globalX = stage.getX(),globalY=stage.getY();
     var update = function(){
-     if(!keyboard.isDown()) return;
-        if(keyboard.isDown('W')){
+        if(!keyboard.isDown()) return;
+        if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
             globalY +=speed.y;  
         }
-        if(keyboard.isDown('S')){
+        if(keyboard.isDown('S')|| keyboard.isDown('DOWN_ARROW')){
             globalY -=speed.y;  
         }
-        if(keyboard.isDown('D')){
+        if(keyboard.isDown('D') || keyboard.isDown('RIGHT_ARROW')){
             globalX -=speed.x;  
         }
-        if(keyboard.isDown('A')){
+        if(keyboard.isDown('A')|| keyboard.isDown('LEFT_ARROW')){
             globalX +=speed.x;  
         }
      
@@ -275,19 +275,19 @@ $(function(){
         var x = stage.getX()+globalX;
         var y = stage.getY()+globalY;
 
-        if(keyboard.isDown('W')){
+        if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
             y +=~~(speed.y*interpolation);  
             stage.setY(y);
         }
-        if(keyboard.isDown('S')){
+        if(keyboard.isDown('S')|| keyboard.isDown('DOWN_ARROW')){
             y -=~~(speed.y*interpolation);  
             stage.setY(y);
         }
-        if(keyboard.isDown('D')){
+        if(keyboard.isDown('D') || keyboard.isDown('RIGHT_ARROW')){
             x -=~~(speed.x*interpolation);  
             stage.setX(x);
         }
-        if(keyboard.isDown('A')){
+        if(keyboard.isDown('A')|| keyboard.isDown('LEFT_ARROW')){
             x +=~~(speed.x*interpolation);  
             stage.setX(x);
         }
@@ -310,18 +310,18 @@ $(function(){
         stats.begin();
 
        
-            var loops = 0;
-            var currTime = (new Date()).getTime();
-            while(currTime > nextTick && loops < maxLoops){
-                update();
-                nextTick += skipTicks;
-                loops++;
+        var loops = 0;
+        var currTime = (new Date()).getTime();
+        while(currTime > nextTick && loops < maxLoops){
+            update();
+            nextTick += skipTicks;
+            loops++;
               
-            }
-            var inter = parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks);
-            if(loops > 0){
-                draw(inter);      
-            }
+        }
+        var inter = parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks);
+        if(loops > 0){
+            draw(inter);      
+        }
         
         
         stats.end();
