@@ -100,12 +100,31 @@ Kinetic.Keyboard.prototype.isDown = function(key){
     if(typeof key === "string") key = this.keys[key];  
     return !!this.keyDown[key];
 }
+Kinetic.Keyboard.prototype.addKey = function(name,code){
+    this.keys[name] = code;
+    return this;
+}
+Kinetic.Keyboard.prototype.keyDown = function(name){
+    var code = null;
+    if(this.keys[name]) code = this.keys[name];
+    if(!code) return;
+    
+    this.dispatch({type:"keydown",code:code});
+}
+Kinetic.Keyboard.prototype.keyUp = function(name){
+     var code = null;
+    if(this.keys[name]) code = this.keys[name];
+    if(!code) return;
+    
+    this.dispatch({type:"keyup",code:code});
+}
 Kinetic.Keyboard.prototype.dispatch = function(e){
     var code = null;
     if (!e) var e = window.event;
     if (e.keyCode) code = e.keyCode;
     else if (e.which) code = e.which;
-        
+    else if (e.code) code = e.code;
+    
     if(e.type == "keydown"){
         if(!this.keyDown[code]){
             this.keyDown[code] = true;

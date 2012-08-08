@@ -2558,6 +2558,7 @@ Kinetic.Container = Kinetic.Node.extend({
      */
     remove: function(child) {
         if(child && child.index !== undefined && this.children[child.index]._id == child._id) {
+         
             var stage = this.getStage();
             /*
              * remove event listeners and references to the node
@@ -2691,7 +2692,7 @@ Kinetic.Container = Kinetic.Node.extend({
      */
     _drawChildren: function(canvas) {
         var stage = this.getStage();
-        var children = this.children;
+        var children = this.children.sort(function(a,b){return a.attrs.index-b.attrs.index});
         for(var n = 0; n < children.length; n++) {
             var child = children[n];
             if(child.nodeType === 'Shape') {
