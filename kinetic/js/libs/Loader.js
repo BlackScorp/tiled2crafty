@@ -58,9 +58,8 @@ Kinetic.Loader.prototype.load = function(){
         if(typeof file === "string"){
             src = file;
             ext = src.substr(src.lastIndexOf('.') + 1).toLowerCase();
-            id = src.substr(src.lastIndexOf('/') + 1).toLowerCase();
         }
-        
+ 
         if(this.extensions[ext] == 'image'){
             fileObj = new Image();
             if(!Kinetic.Assets[src]) Kinetic.Assets[src] = fileObj;

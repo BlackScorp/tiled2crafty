@@ -1,5 +1,5 @@
-Kinetic.Tiled = function(data,stage){
-    this.data = data;
+Kinetic.Tiled = function(stage){
+ 
     this.stage = stage;
  
     this.sprites = {};
@@ -7,33 +7,37 @@ Kinetic.Tiled = function(data,stage){
 
 Kinetic.Tiled.prototype = {
   
-    createSprites:function(){
-     
-        for(var i = 0,il = this.data.tilesets.length;i<il;i++){
-            var set = this.data.tilesets[i];
+    setTilesets:function(tilesets){
+       for(var i = 0,il = tilesets.length;i<il;i++){
+            var set = tilesets[i];
             var id = set.firstgid;
-            
-            for(var y = 0,yl=~~(set.imageheight/set.tileheight);y<yl;y++){
-                for(var x = 0,xl=~~(set.imagewidth/set.tilewidth);x<xl;x++){
-                    var sprite = new Kinetic.Image({
-                        image:set.img,
-                        crop:{
-                            x:x*set.tilewidth,
-                            y:y*set.tileheight,
-                            width:set.tilewidth,
-                            height:set.tileheight
-                        },
-                        name:id,
+            for(var y = 0,yl=(set.imageheight/set.tileheight);y<yl;y++){
+                for(var x = 0,xl=(set.imagewidth/set.tilewidth);x<xl;x++){
+         
+                    var offset = set.offset || {
+                        x:0,
+                        y:0
+                    }
+              
+                    
+                    this.sprites[id] ={
+                        img:set.image,
+                        x:(x*set.tilewidth),
+                        y:(y*set.tileheight),
                         width:set.tilewidth,
-                        height:set.tileheight
-                    });
-                    this.sprites[id] = sprite;
+                        height:set.tileheight,
+                        offset:{
+                            x:-offset.x,
+                            y:-offset.y
+                        }
+                    };
                     id++;
                 }   
             }
-           
-        }
-      
+        }  
+    },
+    setLayers:function(layers){
+        
     },
     getSprites:function(){
       

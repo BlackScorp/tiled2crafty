@@ -1,14 +1,13 @@
 $(function(){
-    var files = [
-   
+  
+    var toLoad = [
     "img/grassland_structures.png",
     "img/grassland_water.png",
     "img/grassland_trees.png",
     "img/grassland.png",
     "img/male_player.png"
-
     ];
-    var loader = new Kinetic.Loader(files);
+    var loader = new Kinetic.Loader(toLoad);
 
     loader.onProgress(function(data){
         console.log(data);
@@ -18,7 +17,12 @@ $(function(){
     });
     loader.onComplete(function(){
         var game = new Game();
-        game.start();
+        $.ajax({
+            url:"js/maps/frontier_plains.json",
+            success:function(data){
+                game.run(data);
+            }
+        });
     });
  
     loader.load();
@@ -31,40 +35,17 @@ var Game = function(){
         height:600
     });
     this.paused = false;
-    this.backgroundLayer = new Kinetic.Layer({
-        name:'background' 
-    });
-    this.objectLayer = new Kinetic.Layer({
-        name:'object' 
-    });
-    var sort = function(){
-        this.children.sort(function(a,b){
-            return a.attrs.zIndex - b.attrs.zIndex;
-        })
-    };
-    this.backgroundLayer.beforeDraw(sort);
-    this.objectLayer.beforeDraw(sort);
-    this.stage.add(this.backgroundLayer);
-    this.stage.add(this.objectLayer);
-    
-    var image = new Kinetic.Image({
-        width:64,
-        height:128,
-        image:Kinetic.Assets["img/grassland.png"],
-        crop:{
-            x:0,y:0,width:64,height:128
-        },
-        x:0,
-        y:0
-    });
- 
-    this.backgroundLayer.add(image);
-    this.stage.draw();
+  
 }
+Game.prototype.load = function(file,callback){
+
+    }
 Game.prototype.update = function(){
     
     }
-Game.prototype.start = function(){
+Game.prototype.run = function(data){
+    console.log(data);
+   
     this.stage.onFrame(function(){
         if(!this.paused) return;
     });
