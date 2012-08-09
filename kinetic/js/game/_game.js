@@ -81,35 +81,28 @@ $(function(){
     var countTiles = 0;
     var startX = 20;
     var startY = 20;
-    var grid = {};
-       var backgroundLayer = new Kinetic.Layer({
-                name:'backgrounds'
-            }),
-            objectLayer = new Kinetic.Layer({
-                name:'objects'
-            });
+   
+    var backgroundLayer = new Kinetic.Layer({
+        name:'backgrounds'
+    }),
+    objectLayer = new Kinetic.Layer({
+        name:'objects'
+    });
             
-            //sort tiles on their zIndex
-            backgroundLayer.beforeDraw(function(){
-                this.children.sort(function(a,b){
-                    return a.attrs.zIndex-b.attrs.zIndex
-                    }); 
-            });
-            objectLayer.beforeDraw(function(){
-                this.children.sort(function(a,b){
-                    return a.attrs.zIndex-b.attrs.zIndex
-                    }); 
-            });
+    //sort tiles on their zIndex
+    backgroundLayer.beforeDraw(function(){
+        this.children.sort(function(a,b){
+            return a.attrs.zIndex-b.attrs.zIndex
+        }); 
+    });
+    objectLayer.beforeDraw(function(){
+        this.children.sort(function(a,b){
+            return a.attrs.zIndex-b.attrs.zIndex
+        }); 
+    });
     function drawMap(){
         
-        if(!drawed){
-            //Create new Layers first time
-         
-        }else{
-            //Get the layers
-            backgroundLayer = stage.children[0];
-            objectLayer = stage.children[1];
-        }
+     
         //define vars
         var data = frontier_outpost,
         backgroundTiles = data.layers[0].data,
@@ -119,35 +112,24 @@ $(function(){
         tw = data.tilewidth,
         th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null,name;
+        tile = null,pos=null,name,grid=new Object();
         
         //Center the Stage at location x/y on init
         if(!init)
             map.centerAt(stage,startX,startY);
       
-            //Get locations of area within viewport
+        //Get locations of area within viewport
         var area = map.area(stage,-1);
-   
-        //clear map
-        //Loop over all tiles
-        for(var i in tiles){
-            name = i.substr(0,i.indexOf('Z')); //remove the Z Part
-            if(!grid[name]){ //if the name is in Grid var
-                var t = tiles[i]; //get tile
-                t.parent.remove(t); //this does not work correctly
-                delete tiles[i]; //remove it from object
-              
-            }
-            
-        }
-        grid = {}; //empty grid
+    
+ 
         //loop over area in viewport
+        
         for(var m in area){
             
             var
             x = area[m][0], //get X
             y = area[m][1], //get Y
-            index = y*mh+x, //get Index of array
+            index = y*mw+x, //get Index of array
             background = backgroundTiles[index], //get Background
             object = objectTiles[index],l=0; //get objects
             grid["Y"+y+"X"+x] = true; //set the grid on true, so this location is within viewport
@@ -161,7 +143,7 @@ $(function(){
                 //if tile does not exists
                 if(!tiles[name]){
                    
-                   //create new Image
+                    //create new Image
                     var image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
@@ -194,8 +176,8 @@ $(function(){
                 pos = map.pos2px(x, y);
                 name = "Y"+y+"X"+x+"Z2";
            
+             
                 if(!tiles[name]){
-               
                     image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
@@ -216,18 +198,53 @@ $(function(){
                     objectLayer.add(image);
                   
                     tiles[name] = image;
-                   
                 }
+                
             }
       
               
             tile = null;
             
         }
-
-      
-      
+    //clear map
+        //Loop over all tiles
+       
+        for(var i in tiles){
+            name = i.substr(0,i.indexOf('Z')); //remove the Z Part
+            var z = i.substr(i.indexOf('Z')+1);
+            var t;
+            if(!grid[name]){ //if the name is in Grid var
+                
+                switch(z){
+                    case '1':{
+                        t = backgroundLayer.get('.'+i);
+                        if(t.length>0){
+                            
+                            backgroundLayer.remove(t[0]);
+                            delete tiles[i];
+                        }
+                        break;
+                    }
+                    case '2':{
+                        t = objectLayer.get('.'+i);
+                         if(t.length>0){
+                            objectLayer.remove(t[0]);
+                         
+                            delete tiles[i];
+                        }
+                        break;
+                    }
+                }
      
+            }
+            
+        }
+        delete grid;
+        grid = {};
+       
+        if(!drawed){
+            stage.draw();
+        }
      
        
  
@@ -242,7 +259,7 @@ $(function(){
         info.find('#tiles').text(countChildren);
     }
     stage.add(backgroundLayer);
-            stage.add(objectLayer);
+    stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
  
 
@@ -292,16 +309,16 @@ $(function(){
             x +=~~(speed.x*interpolation);  
             stage.setX(x);
         }
-        
+     
         console.time("Draw Map")
         drawMap();
         console.timeEnd("Draw Map");
-        console.time("Draw Layer 0");
+        console.time("Draw Background Layer");
         stage.children[0].draw(); //seperated for performance tests
-        console.timeEnd("Draw Layer 0");
-        console.time("Draw Layer 1");
+        console.timeEnd("Draw Background Layer");
+        console.time("Draw Object Layer");
         stage.children[1].draw();
-        console.timeEnd("Draw Layer 1");
+        console.timeEnd("Draw Object Layer");
         globalX = 0;
         globalY = 0;
     }
@@ -337,13 +354,15 @@ $(function(){
     stage.start();
    
   
-    size.on("click mousedown mousemove",function(e){
+    size.on("click mousedown",function(e){
         keyboard.preventDefault(e);
     })
     size.on("keydown",function(e){
+           keyboard.preventDefault(e);
         keyboard.dispatch(e);
     });
     size.on("keyup",function(e){
+           keyboard.preventDefault(e);
         keyboard.dispatch(e);
     });
  

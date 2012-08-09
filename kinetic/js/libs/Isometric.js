@@ -64,13 +64,14 @@ Kinetic.Isometric.prototype ={
             _h:stage.getHeight()
             
         }
+        
         vp._x -= this._tile.width/2;
         vp._y += this._tile.height;
         
         var ow = offset*(this._tile.width/2);
         
         var oh = offset*(this._tile.height);
-     
+      
 
         var grid = [];
         

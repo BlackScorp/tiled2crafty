@@ -14,22 +14,15 @@ Kinetic.Tiled.prototype = {
             for(var y = 0,yl=(set.imageheight/set.tileheight);y<yl;y++){
                 for(var x = 0,xl=(set.imagewidth/set.tilewidth);x<xl;x++){
          
-                    var offset = set.offset || {
-                        x:0,
-                        y:0
-                    }
-              
+      
                     
                     this.sprites[id] ={
-                        img:set.image,
+                        image:set.image,
                         x:(x*set.tilewidth),
                         y:(y*set.tileheight),
                         width:set.tilewidth,
                         height:set.tileheight,
-                        offset:{
-                            x:-offset.x,
-                            y:-offset.y
-                        }
+                        offset:set.tileoffset || {x:0,y:0}
                     };
                     id++;
                 }   
