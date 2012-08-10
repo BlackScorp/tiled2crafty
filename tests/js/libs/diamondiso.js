@@ -53,7 +53,7 @@ Crafty.extend({
             this._origin.x = this._map.height * this._tile.width / 2;
             return this;
         },
-   /**@
+        /**@
         * #Crafty.diamondIso.place
         * @comp Crafty.diamondIso
         * @sign public this Crafty.diamondIso.place(Entity tile,Number x, Number y, Number layer)
@@ -97,18 +97,17 @@ Crafty.extend({
             if(!offset) offset = 0;
             //calculate the corners
             var vp = Crafty.viewport.rect();
-            console.log(vp);
-            var ow = offset*this._tile.width;
-            var oh = offset*this._tile.height;
-            vp._x -= (ow);
-            vp._y -= (oh);
-            vp._w += (ow);
-            vp._h += (oh); 
-
-            console.log(vp);
+            vp._x -= this._tile.width/2;
+            vp._y += this._tile.height;
+        
+            var ow = offset*(this._tile.width/2);
+        
+            var oh = offset*(this._tile.height);
+      
+          
             var grid = [];
-            for(var y = vp._y,yl = (vp._y+vp._h);y<=yl;y+=this._tile.height/2){
-                for(var x = vp._x,xl = (vp._x+vp._w);x<=xl;x+=this._tile.width/2){
+            for(var y = vp._y-oh,yl = (vp._y+vp._h)+oh;y<yl;y+=this._tile.height/2){
+                for(var x = vp._x-ow,xl = (vp._x+vp._w)+ow;x<xl;x+=this._tile.width/2){
                     var row = this.px2pos(x,y);
                     grid.push([~~row.x,~~row.y]);
                 }
