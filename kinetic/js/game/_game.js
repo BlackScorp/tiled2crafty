@@ -112,7 +112,7 @@ $(function(){
         tw = data.tilewidth,
         th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null,name,grid=new Object();
+        tile = null,pos=null,name,grid={};
         
         //Center the Stage at location x/y on init
         if(!init)
@@ -120,10 +120,10 @@ $(function(){
       
         //Get locations of area within viewport
         var area = map.area(stage,-1);
-    
- 
-        //loop over area in viewport
         
+       
+        //loop over area in viewport
+        console.time("Add Images");
         for(var m in area){
             
             var
@@ -132,14 +132,15 @@ $(function(){
             index = y*mw+x, //get Index of array
             background = backgroundTiles[index], //get Background
             object = objectTiles[index],l=0; //get objects
-            grid["Y"+y+"X"+x] = true; //set the grid on true, so this location is within viewport
+            
             
             if(background > 0 && sprites[background]){ //if background and sprite exists
-                   
+                    
                 l=1;
                 tile = sprites[background]; //get sprite infos
                 pos = map.pos2px(x, y); //calculate x/y to top/left position
                 name = "Y"+y+"X"+x+"Z1";
+                grid[name] = true; //set the grid on true, so this location is within viewport
                 //if tile does not exists
                 if(!tiles[name]){
                    
@@ -163,22 +164,22 @@ $(function(){
                     //add image to layer
                     backgroundLayer.add(image);
                     //save image temporary
-                    tiles[name] = image;
+                    tiles[name] = image;   
+                }  
+            }  
+                 
+            if(object > 0 && sprites[object]){ //if background and sprite exists
                     
-                }
-              
-            
-            }
-            if(object> 0 && sprites[object]){
-   
                 l=2;
-                tile = sprites[object];
-                pos = map.pos2px(x, y);
+                tile = sprites[object]; //get sprite infos
+                pos = map.pos2px(x, y); //calculate x/y to top/left position
                 name = "Y"+y+"X"+x+"Z2";
-           
-             
+                grid[name] = true; //set the grid on true, so this location is within viewport
+                //if tile does not exists
                 if(!tiles[name]){
-                    image = new Kinetic.Image({
+                   
+                    //create new Image
+                     image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
                         image: tile.img,
@@ -194,62 +195,40 @@ $(function(){
                         zIndex:pos.top*l,
                         name:name
                     });
-                    
+                    //add image to layer
                     objectLayer.add(image);
-                  
-                    tiles[name] = image;
-                }
-                
-            }
-      
-              
+                    //save image temporary
+                    tiles[name] = image;   
+                }  
+            } 
             tile = null;
             
         }
-    //clear map
+        console.timeEnd("Add Images");
+ 
+        //clear map
         //Loop over all tiles
-       
+        console.time("Clear Map");
         for(var i in tiles){
-            name = i.substr(0,i.indexOf('Z')); //remove the Z Part
-            var z = i.substr(i.indexOf('Z')+1);
-            var t;
-            if(!grid[name]){ //if the name is in Grid var
-                
-                switch(z){
-                    case '1':{
-                        t = backgroundLayer.get('.'+i);
-                        if(t.length>0){
-                            
-                            backgroundLayer.remove(t[0]);
-                            delete tiles[i];
-                        }
-                        break;
-                    }
-                    case '2':{
-                        t = objectLayer.get('.'+i);
-                         if(t.length>0){
-                            objectLayer.remove(t[0]);
-                         
-                            delete tiles[i];
-                        }
-                        break;
-                    }
-                }
-     
+            var t = tiles[i];
+            if(!grid[i]){ //if the name is in Grid var
+                t.hide();
+            }else{
+                //here i need to delete it
+                t.show();
             }
             
         }
+        console.timeEnd("Clear Map");
         delete grid;
         grid = {};
-       
-        if(!drawed){
-            stage.draw();
-        }
+  
      
-       
- 
+        console.time("Draw Stage");
+        stage.draw();
+        console.timeEnd("Draw Stage");
         init =true;
-        drawed = true;
+    
         var countChildren = 0;
         //count all children of layers
         for(var i in stage.children){
@@ -261,9 +240,6 @@ $(function(){
     stage.add(backgroundLayer);
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
- 
-
- 
     var speed = {
         x:5,
         y:5
@@ -313,12 +289,6 @@ $(function(){
         console.time("Draw Map")
         drawMap();
         console.timeEnd("Draw Map");
-        console.time("Draw Background Layer");
-        stage.children[0].draw(); //seperated for performance tests
-        console.timeEnd("Draw Background Layer");
-        console.time("Draw Object Layer");
-        stage.children[1].draw();
-        console.timeEnd("Draw Object Layer");
         globalX = 0;
         globalY = 0;
     }
@@ -358,11 +328,11 @@ $(function(){
         keyboard.preventDefault(e);
     })
     size.on("keydown",function(e){
-           keyboard.preventDefault(e);
+        keyboard.preventDefault(e);
         keyboard.dispatch(e);
     });
     size.on("keyup",function(e){
-           keyboard.preventDefault(e);
+        keyboard.preventDefault(e);
         keyboard.dispatch(e);
     });
  
@@ -373,7 +343,6 @@ $(function(){
         stage.setWidth(size.width());
         stage.setHeight(size.height());
         drawMap();
-        stage.draw();
     })
   
    
