@@ -179,7 +179,7 @@ $(function(){
                 if(!tiles[name]){
                    
                     //create new Image
-                     image = new Kinetic.Image({
+                    image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
                         image: tile.img,
@@ -212,20 +212,26 @@ $(function(){
         for(var i in tiles){
             var t = tiles[i];
             if(!grid[i]){ //if the name is in Grid var
-                t.hide();
+                t.attrs.visible = false;
             }else{
                 //here i need to delete it
-                t.show();
+                t.attrs.visible = true;
             }
             
         }
+      
         console.timeEnd("Clear Map");
         delete grid;
         grid = {};
   
      
         console.time("Draw Stage");
-        stage.draw();
+        console.time("Draw Background");
+        backgroundLayer.draw();
+        console.timeEnd("Draw Background");
+        console.time("Draw Objects");
+        objectLayer.draw();
+        console.timeEnd("Draw Objects");
         console.timeEnd("Draw Stage");
         init =true;
      
@@ -241,8 +247,8 @@ $(function(){
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
     var speed = {
-        x:5,
-        y:5
+        x:6,
+        y:6
     };
     var globalX = stage.getX(),globalY=stage.getY();
     var update = function(){
@@ -262,6 +268,7 @@ $(function(){
         }
      
     }
+  
     var draw = function(interpolation){
         
         if(!keyboard.isDown()) return;
@@ -286,38 +293,36 @@ $(function(){
             stage.setX(x);
         }
      
-        console.time("Draw Map")
+       
         drawMap();
-        console.timeEnd("Draw Map");
+      
         globalX = 0;
         globalY = 0;
     }
-    var lastTime = 0;
+  
 
-    var FPS = 30;
+
+    var FPS = 25;
     var skipTicks = 1000/FPS;
     var maxLoops = 5;
     var nextTick = new Date().getTime();
    
     stage.onFrame(function(frame){
         stats.begin();
-
-       
+      
+     
         var loops = 0;
         var currTime = (new Date()).getTime();
         while(currTime > nextTick && loops < maxLoops){
-            update();
             nextTick += skipTicks;
             loops++;
-              
+            update();  
         }
-      
-        var inter = Math.min(1,parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks));
-         
         if(loops > 0){
+            var inter = parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks);
             draw(inter);      
         }
-       
+     
         stats.end();
     });
 

@@ -2692,7 +2692,7 @@ Kinetic.Container = Kinetic.Node.extend({
      */
     _drawChildren: function(canvas) {
         var stage = this.getStage();
-        var children = this.children.sort(function(a,b){return a.attrs.index-b.attrs.index});
+        var children = this.children;
         for(var n = 0; n < children.length; n++) {
             var child = children[n];
             if(child.nodeType === 'Shape') {
