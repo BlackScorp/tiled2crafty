@@ -3,16 +3,16 @@ Crafty.scene("FrontierOutpost",function(){
    
     console.time("Initial Scene");
   
-    console.log("Tiled Level Editor JSON file",frontier_outpost2);
+    console.log("Tiled Level Editor JSON file",frontier_outpost);
     //Get Object Tiles
     var objects = null;
     //Get Collision Tiles
     var collisions = null;
     var backgrounds = null;
     //Get Map Metadata;
-    var map = frontier_outpost2;
-    for(var i = 0,il = frontier_outpost2.layers.length;i<il;i++){
-        var layer = frontier_outpost2.layers[i];
+    var map = frontier_outpost;
+    for(var i = 0,il = frontier_outpost.layers.length;i<il;i++){
+        var layer = frontier_outpost.layers[i];
         if(layer.name == "background"){
             backgrounds = layer.data;
         }
