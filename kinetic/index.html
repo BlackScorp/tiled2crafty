@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <title>Isometric Map</title>
         <style>
             *{margin:0px;padding:0px}
 
@@ -12,36 +13,36 @@
                 top:0px;
                 left:0px;
                 width: 100%;
-                height: 100%;
+                height:100%;
 
             }
-            .kineticjs-content{background: black}
-            #info{width:200px;
+            .kineticjs-content{background: black;position: relative;}
+            #info{width:auto;
                   height:auto;
                   position:absolute;
                   top:10px;left:10px;
                   background:black;
                   color:white;
-                  border:1px solid black
+                  border:1px solid white;
             }
-            </style>
 
-        </head>
-        <body>
+        </style>
 
-            <div id="game"></div>
+    </head>
+    <body>
+
+        <div id="game"></div>
         <div id="info">
-            Count Tiles:<span id="tiles"></span><br/>
-            FPS:<span id="fps"></span>
+            <div id="tiles"></div>
+            <div id="fps"></div>
         </div>
+        <script src ="https://raw.github.com/mrdoob/stats.js/master/src/Stats.js"></script>
         <script src="js/libs/jquery.min.js"></script>
         <script src="js/libs/jquery-ui.min.js"></script>
         <script  src="js/libs/kinetic.js"></script>
-          <script  src="js/libs/spritemap.js"></script>
-            <script  src="js/libs/Keyboard.js"></script>
-           <script  src="js/libs/diamondiso.js"></script>
-           <script  src="js/libs/tiled.js"></script>
-
+        <script  src="js/libs/Keyboard.js"></script>
+        <script  src="js/libs/Isometric.js"></script>
+        <script  src="js/libs/Loader.js"></script>
         <script src="js/maps/frontier_outpost.js"></script>
  <script src="js/maps/frontier_plains.js"></script>
         <script src="js/game/game.js"></script>

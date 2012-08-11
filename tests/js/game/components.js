@@ -109,7 +109,7 @@ Crafty.c("Player",{
         .animate('shoot_s',28,6,31)
         .animate('shoot_sw',28,7,31)
         .bind("NewDirection",function(direction){
-            return true;
+      
             if (direction.x == 0 && direction.y < 0 ) {
                 this.direction = 'n';
             }
@@ -140,7 +140,7 @@ Crafty.c("Player",{
                     this.stop().animate('stand_'+this.direction,30,-1);
             }else{
                 if (!this.isPlaying("walk_"+this.direction))
-                   this.stop().animate("walk_"+this.direction, 10,-1);
+                    this.stop().animate("walk_"+this.direction, 10,-1);
             }
     
         })
@@ -167,11 +167,11 @@ Crafty.c("Player",{
         
            
            
-                 var vp = {
+            var vp = {
                 x:-this.x-this.w/2+Crafty.viewport.width/2,
                 y:-this.y-this.h+Crafty.viewport.height/2
             }
-                 Crafty.viewport.x = vp.x;
+            Crafty.viewport.x = vp.x;
             Crafty.viewport.y = vp.y;
             
        
@@ -188,7 +188,7 @@ Crafty.c("Player",{
             RIGHT_ARROW:0,
             LEFT_ARROW:180
         })
-     // .animate('stand_'+this.direction,10,-1)
+         .animate('stand_'+this.direction,10,-1)
 
         return this;
     }

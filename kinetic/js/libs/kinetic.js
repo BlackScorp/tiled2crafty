@@ -2558,6 +2558,7 @@ Kinetic.Container = Kinetic.Node.extend({
      */
     remove: function(child) {
         if(child && child.index !== undefined && this.children[child.index]._id == child._id) {
+         
             var stage = this.getStage();
             /*
              * remove event listeners and references to the node
@@ -3848,13 +3849,14 @@ Kinetic.Layer = Kinetic.Container.extend({
         var canvas;
         var mimeType = config && config.mimeType ? config.mimeType : null;
         var quality = config && config.quality ? config.quality : null;
-
+       
         if(config && config.width && config.height) {
             canvas = new Kinetic.Canvas(config.width, config.height);
         }
         else {
             canvas = this.getCanvas();
         }
+    
         return canvas.toDataURL(mimeType, quality);
     },
     /**

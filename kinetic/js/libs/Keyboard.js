@@ -96,34 +96,44 @@ Kinetic.Keyboard = function(){
 Kinetic.Keyboard.prototype.isDown = function(key){
  
     if(!key) return this.anyDown;
+    
     if(typeof key === "string") key = this.keys[key];  
     return !!this.keyDown[key];
 }
+Kinetic.Keyboard.prototype.addKey = function(name,code){
+    this.keys[name] = code;
+    return this;
+}
+
 Kinetic.Keyboard.prototype.dispatch = function(e){
     var code = null;
     if (!e) var e = window.event;
     if (e.keyCode) code = e.keyCode;
     else if (e.which) code = e.which;
-        
+    else if (e.code) code = e.code;
+    
     if(e.type == "keydown"){
-        this.anyDown = true;
         if(!this.keyDown[code]){
-           this.keyDown[code] = true;
-           this.countKeys++;
+            this.keyDown[code] = true;
+            this.countKeys++;
+        }
+    }
+    if(e.type == "keyup"){
+       
+        if(this.keyDown[code]){
+            delete this.keyDown[code];
+            this.countKeys--;
         }
  
     }
-    if(e.type == "keyup"){
-        
-       
-        
-        if(this.keyDown){
-            delete this.keyDown[code];
-            this.countKey--;
-        }
-        if(this.countKeys < 1){
-            this.anyDown = true;
-        }
+    if(this.countKeys > 0){
+        this.anyDown = true;
+    }else{
+        this.anyDown = false;
     }
-
+}
+Kinetic.Keyboard.prototype.preventDefault = function(e){
+    if (!e) var e = window.event;
+    e.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
 }
