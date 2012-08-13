@@ -4,8 +4,8 @@ $(function(){
     //Set the stage on fullscreen
     var stage = new Kinetic.Stage({
         container: "game",
-        width:size.width(),
-        height:size.height()
+        width:800,
+        height:600
     });
     
     //Get the tilesets
@@ -79,8 +79,8 @@ $(function(){
     var init = false;
     var drawed = false;
     var countTiles = 0;
-    var startX = 20;
-    var startY = 20;
+    var startX = 64;
+    var startY = 30;
    
     var backgroundLayer = new Kinetic.Layer({
         name:'backgrounds'
@@ -112,18 +112,17 @@ $(function(){
         tw = data.tilewidth,
         th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null,name,grid={};
+        tile = null,pos=null,name,grid={},bg=[];
         
         //Center the Stage at location x/y on init
         if(!init)
             map.centerAt(stage,startX,startY);
       
         //Get locations of area within viewport
-        var area = map.area(stage,-1);
-        
-       
+        var area = map.area(stage);
+            
         //loop over area in viewport
-        console.time("Add Images");
+            console.time("Add Images");
         for(var m in area){
             
             var
@@ -140,14 +139,9 @@ $(function(){
                 tile = sprites[background]; //get sprite infos
                 pos = map.pos2px(x, y); //calculate x/y to top/left position
                 name = "Y"+y+"X"+x+"Z1";
-                grid[name] = true; //set the grid on true, so this location is within viewport
-                //if tile does not exists
-                if(!tiles[name]){
-                   
-                    //create new Image
-                    var image = new Kinetic.Image({
-                        x: pos.left,
-                        y:pos.top-tile.height,
+                var obj = {
+                        x: pos.left+stage.getX(),
+                        y:pos.top-tile.height+stage.getY(),
                         image: tile.img,
                         width: tile.width,
                         height: tile.height,
@@ -160,12 +154,9 @@ $(function(){
                         offset :tile.offset,
                         zIndex:pos.top*l,
                         name:name
-                    });
-                    //add image to layer
-                    backgroundLayer.add(image);
-                    //save image temporary
-                    tiles[name] = image;   
-                }  
+                    }
+                    bg.push(obj);
+          
             }  
                  
             if(object > 0 && sprites[object]){ //if background and sprite exists
@@ -179,7 +170,7 @@ $(function(){
                 if(!tiles[name]){
                    
                     //create new Image
-                    image = new Kinetic.Image({
+                   var image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
                         image: tile.img,
@@ -205,7 +196,7 @@ $(function(){
             
         }
         console.timeEnd("Add Images");
- 
+        
         //clear map
         //Loop over all tiles
         console.time("Clear Map");
@@ -227,7 +218,7 @@ $(function(){
      
         console.time("Draw Stage");
         console.time("Draw Background");
-        backgroundLayer.draw();
+        drawOnBackground(backgroundLayer.getContext(),bg);
         console.timeEnd("Draw Background");
         console.time("Draw Objects");
         objectLayer.draw();
@@ -243,12 +234,36 @@ $(function(){
         }
         info.find('#tiles').text(countChildren);
     }
+    var drawOnBackground = function(context,objects){
+         
+        objects.sort(function(a,b){
+          
+            return a.zIndex-b.zIndex
+        }); 
+      
+        context.clearRect(0,0,stage.getWidth(),stage.getHeight());
+        for(var o = 0,ol=objects.length;o<ol;o++){
+            var object = objects[o];
+            context.drawImage(object.image,
+            object.crop.x,
+            object.crop.y,
+            object.crop.width,
+            object.crop.height,
+            object.x-object.offset.x,
+            object.y-object.offset.y,
+            object.width,
+            object.height);
+           
+        }
+        
+       // context.drawImage();
+    }
     stage.add(backgroundLayer);
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
     var speed = {
-        x:6,
-        y:6
+        x:1,
+        y:1
     };
     var globalX = stage.getX(),globalY=stage.getY();
     var update = function(){
@@ -306,11 +321,10 @@ $(function(){
     var skipTicks = 1000/FPS;
     var maxLoops = 5;
     var nextTick = new Date().getTime();
-   
+ 
     stage.onFrame(function(frame){
         stats.begin();
-      
-     
+ 
         var loops = 0;
         var currTime = (new Date()).getTime();
         while(currTime > nextTick && loops < maxLoops){
@@ -332,23 +346,14 @@ $(function(){
     size.on("click mousedown",function(e){
         keyboard.preventDefault(e);
     })
-    size.on("keydown",function(e){
+    size.on("keydown keyup",function(e){
         keyboard.preventDefault(e);
         keyboard.dispatch(e);
     });
-    size.on("keyup",function(e){
-        keyboard.preventDefault(e);
-        keyboard.dispatch(e);
+    size.on("focusout",function(e){
+       alert("test");
     });
- 
-    size.on("resize",function(){
-       
-        var size = $(window);
-        init = false;
-        stage.setWidth(size.width());
-        stage.setHeight(size.height());
-        drawMap();
-    })
+  
   
    
 
