@@ -112,7 +112,7 @@ $(function(){
     th = data.tileheight,  
     map = new Kinetic.Isometric(tw,th,mw,mh),
     tile = null,pos=null,name,grid={};
-    function drawMap(){
+    function updateMap(){
         
      
  
@@ -227,15 +227,7 @@ $(function(){
         delete grid;
         grid = {};
         
-     
-        //console.time("Draw Stage");
-        console.time("Draw Background");
-        backgroundLayer.draw();
-        console.timeEnd("Draw Background");
-        console.time("Draw Objects");
-        objectLayer.draw();
-        console.timeEnd("Draw Objects");
-        //console.timeEnd("Draw Stage");
+    
         init =true;
   
       
@@ -250,28 +242,8 @@ $(function(){
         y:10
     };
    
-    var update = function(){
-        if(!keyboard.isDown()) return;
-
-        if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
-            stage.attrs.y +=speed.y;  
-        }
-        if(keyboard.isDown('S')|| keyboard.isDown('DOWN_ARROW')){
-            stage.attrs.y -=speed.y;  
-        }
-        if(keyboard.isDown('D') || keyboard.isDown('RIGHT_ARROW')){
-            stage.attrs.x -=speed.x;  
-        }
-        if(keyboard.isDown('A')|| keyboard.isDown('LEFT_ARROW')){
-            stage.attrs.x +=speed.x;  
-        }
-     
-    }
-  
-    var draw = function(delta){
-       
-        if(!keyboard.isDown()) return;
-        
+    var updateStage = function(delta){
+ 
         if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
    
             stage.attrs.y +=~~(speed.y*delta); 
@@ -288,12 +260,10 @@ $(function(){
    
             stage.attrs.x +=~~(speed.x*delta); 
         }
-        
-        console.time("Draw Process");
-        drawMap();
-        console.timeEnd("Draw Process");
-  
+     
     }
+  
+
   
 
 
@@ -304,20 +274,17 @@ $(function(){
    
     stage.onFrame(function(frame){
         stats.begin();
-        
-      
-        var loops = 0;
-        var currTime = (new Date()).getTime();
-        while(currTime > nextTick && loops < maxLoops){
-            nextTick += skipTicks;
-            loops++;
-            update();  
+        if(keyboard.isDown()){
+            var delta = Math.max(0,frame.timeDiff/16);
+            updateMap();
+            updateStage(delta);
+            console.time("Draw Background Layer");
+            backgroundLayer.draw();
+            console.timeEnd("Draw Background Layer");
+            console.time("Draw Object Layer");
+            objectLayer.draw();
+            console.timeEnd("Draw Object Layer");
         }
-        if(loops > 0){
-           
-            draw(Math.min(0,frame.timeDiff/16));      
-        }
-        
         stats.end();
     });
 
