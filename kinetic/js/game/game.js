@@ -4,8 +4,8 @@ $(function(){
     //Set the stage on fullscreen
     var stage = new Kinetic.Stage({
         container: "game",
-        width:size.width(),
-        height:size.height()
+        width:800,
+        height:600
     });
     
     //Get the tilesets
@@ -72,7 +72,7 @@ $(function(){
         }
       
         //Draw map after sprites are created            
-        drawMap();
+        updateMap();
         
     }
     var tiles = {};
@@ -91,17 +91,18 @@ $(function(){
             
     //sort tiles on their zIndex
     backgroundLayer.beforeDraw(function(){
+   
         this.children.sort(function(a,b){
             return a.attrs.zIndex-b.attrs.zIndex
         }); 
     });
     objectLayer.beforeDraw(function(){
+    
         this.children.sort(function(a,b){
             return a.attrs.zIndex-b.attrs.zIndex
         }); 
     });
-    var clearTime = 3000;
-    var lastClear = (new Date()).getTime();
+  
     //define vars
     var data = frontier_outpost,
     backgroundTiles = data.layers[0].data,
@@ -227,7 +228,10 @@ $(function(){
         delete grid;
         grid = {};
         
-    
+        if(!init){
+            backgroundLayer.draw();
+            objectLayer.draw(); 
+        }
         init =true;
   
       
@@ -238,12 +242,12 @@ $(function(){
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
     var speed = {
-        x:10,
-        y:10
+        x:5,
+        y:4
     };
    
     var updateStage = function(delta){
- 
+       
         if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
    
             stage.attrs.y +=~~(speed.y*delta); 
@@ -266,29 +270,47 @@ $(function(){
 
   
 
-
-    var FPS = 10;
+    var FPS = 50;
     var skipTicks = 1000/FPS;
     var maxLoops = 5;
     var nextTick = new Date().getTime();
-   
+    stats.begin();
     stage.onFrame(function(frame){
-        stats.begin();
-        if(keyboard.isDown()){
-            var delta = Math.max(0,frame.timeDiff/16);
-            updateMap();
-            updateStage(delta);
-            console.time("Draw Background Layer");
-            backgroundLayer.draw();
-            console.timeEnd("Draw Background Layer");
-            console.time("Draw Object Layer");
-            objectLayer.draw();
-            console.timeEnd("Draw Object Layer");
+       
+        var loops = 0,inter = 0;
+        while((new Date()).getTime() > nextTick && loops < maxLoops){
+            updateStage(1);
+            nextTick +=skipTicks;
+            loops++;
         }
-        stats.end();
+        inter = ((new Date()).getTime() + skipTicks - nextTick) / skipTicks;
+  
+        if(loops > 0 && inter < 1){
+     
+         
+            if(keyboard.isDown())  {
+                console.time("Update Stage Position")
+                updateStage(inter);
+                console.timeEnd("Update Stage Position")
+                console.time("Update Map Images")
+                updateMap();
+                console.timeEnd("Update Map Images")
+                console.time("Draw Background Layer")
+                backgroundLayer.draw();
+                console.timeEnd("Draw Background Layer")
+                console.time("Draw Object Layer")
+                objectLayer.draw(); 
+                  console.timeEnd("Draw Object Layer")
+            }
+           
+        }
+        
+        stats.update();
+        
     });
-
+    stats.end();
     stage.start();
+
    
   
     size.on("click mousedown",function(e){
@@ -304,7 +326,7 @@ $(function(){
     });
  
     size.on("resize",function(){
-       
+        return true;
         var size = $(window);
         init = false;
         stage.setWidth(size.width());
