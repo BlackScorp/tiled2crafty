@@ -100,10 +100,9 @@ $(function(){
             return a.attrs.zIndex-b.attrs.zIndex
         }); 
     });
-    function drawMap(){
-        
-     
-        //define vars
+    var clearTime = 3000;
+    var lastClear = (new Date()).getTime();
+          //define vars
         var data = frontier_outpost,
         backgroundTiles = data.layers[0].data,
         objectTiles = data.layers[1].data,
@@ -113,13 +112,17 @@ $(function(){
         th = data.tileheight,  
         map = new Kinetic.Isometric(tw,th,mw,mh),
         tile = null,pos=null,name,grid={};
+    function drawMap(){
+        
+     
+ 
         
         //Center the Stage at location x/y on init
         if(!init)
             map.centerAt(stage,startX,startY);
       
         //Get locations of area within viewport
-        var area = map.area(stage,-1);
+        var area = map.area(stage,1);
         
        
         //loop over area in viewport
@@ -205,10 +208,10 @@ $(function(){
             
         }
         console.timeEnd("Add Images");
- 
+
         //clear map
         //Loop over all tiles
-        console.time("Clear Map");
+        console.time("Show/Hide Tiles");
         for(var i in tiles){
             var t = tiles[i];
             if(!grid[i]){ //if the name is in Grid var
@@ -220,97 +223,90 @@ $(function(){
             
         }
       
-        console.timeEnd("Clear Map");
+        console.timeEnd("Show/Hide Tiles");
         delete grid;
         grid = {};
-  
+        
      
-        console.time("Draw Stage");
+        //console.time("Draw Stage");
         console.time("Draw Background");
         backgroundLayer.draw();
         console.timeEnd("Draw Background");
         console.time("Draw Objects");
         objectLayer.draw();
         console.timeEnd("Draw Objects");
-        console.timeEnd("Draw Stage");
+        //console.timeEnd("Draw Stage");
         init =true;
-     
-        var countChildren = 0;
-        //count all children of layers
-        for(var i in stage.children){
-            var c = stage.children[i];
-            countChildren += c.children.length;
-        }
+  
+        var countChildren = backgroundLayer.children.length+objectLayer.children.length;
+      
         info.find('#tiles').text(countChildren);
     }
     stage.add(backgroundLayer);
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
     var speed = {
-        x:6,
-        y:6
+        x:10,
+        y:10
     };
-    var globalX = stage.getX(),globalY=stage.getY();
+   
     var update = function(){
         if(!keyboard.isDown()) return;
 
         if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
-            globalY +=speed.y;  
+            stage.attrs.y +=speed.y;  
         }
         if(keyboard.isDown('S')|| keyboard.isDown('DOWN_ARROW')){
-            globalY -=speed.y;  
+            stage.attrs.y -=speed.y;  
         }
         if(keyboard.isDown('D') || keyboard.isDown('RIGHT_ARROW')){
-            globalX -=speed.x;  
+            stage.attrs.x -=speed.x;  
         }
         if(keyboard.isDown('A')|| keyboard.isDown('LEFT_ARROW')){
-            globalX +=speed.x;  
+            stage.attrs.x +=speed.x;  
         }
      
     }
   
-    var draw = function(interpolation){
-        
-        if(!keyboard.isDown()) return;
-   
-        var x = stage.getX()+globalX;
-        var y = stage.getY()+globalY;
-
-        if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
-            y +=~~(speed.y*interpolation);  
-            stage.setY(y);
-        }
-        if(keyboard.isDown('S')|| keyboard.isDown('DOWN_ARROW')){
-            y -=~~(speed.y*interpolation);  
-            stage.setY(y);
-        }
-        if(keyboard.isDown('D') || keyboard.isDown('RIGHT_ARROW')){
-            x -=~~(speed.x*interpolation);  
-            stage.setX(x);
-        }
-        if(keyboard.isDown('A')|| keyboard.isDown('LEFT_ARROW')){
-            x +=~~(speed.x*interpolation);  
-            stage.setX(x);
-        }
-     
+    var draw = function(delta){
        
+        if(!keyboard.isDown()) return;
+        /*
+        if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
+   
+            stage.attrs.y +=~~(speed.y*delta); 
+        }
+        if(keyboard.isDown('S')|| keyboard.isDown('DOWN_ARROW')){
+
+            stage.attrs.y -=~~(speed.y*delta); 
+        }
+        if(keyboard.isDown('D') || keyboard.isDown('RIGHT_ARROW')){
+
+            stage.attrs.x -=~~(speed.x*delta); 
+        }
+        if(keyboard.isDown('A')|| keyboard.isDown('LEFT_ARROW')){
+   
+            stage.attrs.x +=~~(speed.x*delta); 
+        }
+        */
+        console.time("Draw Process");
         drawMap();
-      
-        globalX = 0;
-        globalY = 0;
+        console.timeEnd("Draw Process");
+  
     }
   
 
 
-    var FPS = 25;
+    var FPS = 10;
     var skipTicks = 1000/FPS;
     var maxLoops = 5;
     var nextTick = new Date().getTime();
    
     stage.onFrame(function(frame){
         stats.begin();
-      
-     
+        update();
+        if(frame.timeDiff > 50) draw();
+      /*
         var loops = 0;
         var currTime = (new Date()).getTime();
         while(currTime > nextTick && loops < maxLoops){
@@ -319,10 +315,10 @@ $(function(){
             update();  
         }
         if(loops > 0){
-            var inter = parseFloat(currTime + skipTicks - nextTick) / parseFloat(skipTicks);
-            draw(inter);      
+           
+            draw();      
         }
-     
+        */
         stats.end();
     });
 
