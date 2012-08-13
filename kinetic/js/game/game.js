@@ -102,16 +102,16 @@ $(function(){
     });
     var clearTime = 3000;
     var lastClear = (new Date()).getTime();
-          //define vars
-        var data = frontier_outpost,
-        backgroundTiles = data.layers[0].data,
-        objectTiles = data.layers[1].data,
-        mw = data.width,
-        mh = data.height,
-        tw = data.tilewidth,
-        th = data.tileheight,  
-        map = new Kinetic.Isometric(tw,th,mw,mh),
-        tile = null,pos=null,name,grid={};
+    //define vars
+    var data = frontier_outpost,
+    backgroundTiles = data.layers[0].data,
+    objectTiles = data.layers[1].data,
+    mw = data.width,
+    mh = data.height,
+    tw = data.tilewidth,
+    th = data.tileheight,  
+    map = new Kinetic.Isometric(tw,th,mw,mh),
+    tile = null,pos=null,name,grid={};
     function drawMap(){
         
      
@@ -126,7 +126,7 @@ $(function(){
         
        
         //loop over area in viewport
-        console.time("Add Images");
+        console.time("Create new Tiles");
         for(var m in area){
             
             var
@@ -207,7 +207,7 @@ $(function(){
             tile = null;
             
         }
-        console.timeEnd("Add Images");
+        console.timeEnd("Create new Tiles");
 
         //clear map
         //Loop over all tiles
@@ -238,9 +238,9 @@ $(function(){
         //console.timeEnd("Draw Stage");
         init =true;
   
-        var countChildren = backgroundLayer.children.length+objectLayer.children.length;
       
-        info.find('#tiles').text(countChildren);
+        info.find('#bg').text(backgroundLayer.children.length);
+        info.find('#obj').text(objectLayer.children.length);
     }
     stage.add(backgroundLayer);
     stage.add(objectLayer);
@@ -271,7 +271,7 @@ $(function(){
     var draw = function(delta){
        
         if(!keyboard.isDown()) return;
-        /*
+        
         if(keyboard.isDown('W') || keyboard.isDown('UP_ARROW')){
    
             stage.attrs.y +=~~(speed.y*delta); 
@@ -288,7 +288,7 @@ $(function(){
    
             stage.attrs.x +=~~(speed.x*delta); 
         }
-        */
+        
         console.time("Draw Process");
         drawMap();
         console.timeEnd("Draw Process");
@@ -304,9 +304,8 @@ $(function(){
    
     stage.onFrame(function(frame){
         stats.begin();
-        update();
-        if(frame.timeDiff > 50) draw();
-      /*
+        
+      
         var loops = 0;
         var currTime = (new Date()).getTime();
         while(currTime > nextTick && loops < maxLoops){
@@ -316,9 +315,9 @@ $(function(){
         }
         if(loops > 0){
            
-            draw();      
+            draw(Math.min(0,frame.timeDiff/16));      
         }
-        */
+        
         stats.end();
     });
 
