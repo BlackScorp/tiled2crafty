@@ -112,13 +112,13 @@ Kinetic.Keyboard.prototype.dispatch = function(e){
     else if (e.which) code = e.which;
     else if (e.code) code = e.code;
     
-    if(e.type == "keydown"){
+    if(e.type === "keydown"){
         if(!this.keyDown[code]){
             this.keyDown[code] = true;
             this.countKeys++;
         }
     }
-    if(e.type == "keyup"){
+    if(e.type === "keyup"){
        
         if(this.keyDown[code]){
             delete this.keyDown[code];
