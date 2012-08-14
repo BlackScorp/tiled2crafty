@@ -4,8 +4,8 @@ $(function(){
     //Set the stage on fullscreen
     var stage = new Kinetic.Stage({
         container: "game",
-        width:800,
-        height:600
+        width:size.width(),
+        height:size.height()
     });
     
     //Get the tilesets
@@ -113,6 +113,12 @@ $(function(){
     th = data.tileheight,  
     map = new Kinetic.Isometric(tw,th,mw,mh),
     tile = null,pos=null,name,grid={};
+    var bgCanvas = document.createElement("canvas");
+    bgCanvas.width = map._width;
+    bgCanvas.height = map._height;
+    bgCanvas.style.position = 'absolute';
+    var bgContext = bgCanvas.getContext('2d');
+   
     function updateMap(){
         
      
@@ -124,10 +130,10 @@ $(function(){
       
         //Get locations of area within viewport
         var area = map.area(stage,1);
-        
+        var bgTiles = [];
        
         //loop over area in viewport
-        console.time("Create new Tiles");
+       // console.time("Create new Tiles");
         for(var m in area){
             
             var
@@ -135,7 +141,7 @@ $(function(){
             y = area[m][1], //get Y
             index = y*mw+x, //get Index of array
             background = backgroundTiles[index], //get Background
-            object = objectTiles[index],l=0; //get objects
+            object = objectTiles[index],l=0,image=null; //get objects
             
             
             if(background > 0 && sprites[background]){ //if background and sprite exists
@@ -147,9 +153,9 @@ $(function(){
                 grid[name] = true; //set the grid on true, so this location is within viewport
                 //if tile does not exists
                 if(!tiles[name]){
-                   
+                   /*
                     //create new Image
-                    var image = new Kinetic.Image({
+                     image = new Kinetic.Image({
                         x: pos.left,
                         y:pos.top-tile.height,
                         image: tile.img,
@@ -166,9 +172,26 @@ $(function(){
                         name:name
                     });
                     //add image to layer
-                    backgroundLayer.add(image);
+                    backgroundLayer.add(image);*/
                     //save image temporary
-                    tiles[name] = image;   
+                    bgTiles.push({
+                        x: pos.left,
+                        y:pos.top-tile.height,
+                        image: tile.img,
+                        width: tile.width,
+                        height: tile.height,
+                        crop:{
+                            x:tile.x,
+                            y:tile.y,
+                            width:tile.width,
+                            height:tile.height
+                        },
+                        offset :tile.offset,
+                        zIndex:pos.top*l,
+                        name:name
+                    });
+                 
+                    tiles[name] = {attrs:{visible:true}};   
                 }  
             }  
                  
@@ -208,11 +231,23 @@ $(function(){
             tile = null;
             
         }
-        console.timeEnd("Create new Tiles");
-
+        
+      //  console.timeEnd("Create new Tiles");
+      bgTiles.sort(function(a,b){
+            return a.zIndex-b.zIndex;
+        });
+      
+        for(var b = 0,bl = bgTiles.length;b<bl;b++){
+            var bgTile = bgTiles[b];
+           
+            
+            bgContext.drawImage(bgTile.image,bgTile.crop.x,bgTile.crop.y,bgTile.crop.width,bgTile.crop.height,bgTile.x-bgTile.offset.x,bgTile.y-bgTile.offset.y,bgTile.width,bgTile.height);
+        }
+        delete bgTiles;
+        bgTiles = [];
         //clear map
         //Loop over all tiles
-        console.time("Show/Hide Tiles");
+       // console.time("Show/Hide Tiles");
         for(var i in tiles){
             var t = tiles[i];
             if(!grid[i]){ //if the name is in Grid var
@@ -224,12 +259,14 @@ $(function(){
             
         }
       
-        console.timeEnd("Show/Hide Tiles");
+       // console.timeEnd("Show/Hide Tiles");
         delete grid;
         grid = {};
         
         if(!init){
-            backgroundLayer.draw();
+             backgroundLayer.getContext().clearRect(0, 0, stage.attrs.width,stage.attrs.height);
+          backgroundLayer.getContext().drawImage(bgCanvas,Math.max(0,-stage.attrs.x),Math.max(0,-stage.attrs.y),stage.attrs.width,stage.attrs.height,0,0,stage.attrs.width,stage.attrs.height);
+                 
             objectLayer.draw(); 
         }
         init =true;
@@ -243,7 +280,7 @@ $(function(){
     var keyboard = new Kinetic.Keyboard();
     var speed = {
         x:5,
-        y:4
+        y:5
     };
    
     var updateStage = function(delta){
@@ -283,9 +320,9 @@ $(function(){
             nextTick +=skipTicks;
             loops++;
         }
-        inter = ((new Date()).getTime() + skipTicks - nextTick) / skipTicks;
+        inter = parseFloat(((new Date()).getTime() + skipTicks - nextTick) / skipTicks);
   
-        if(loops > 0 && inter < 1){
+    
      
          
             if(keyboard.isDown())  {
@@ -296,14 +333,15 @@ $(function(){
                 updateMap();
                 console.timeEnd("Update Map Images")
                 console.time("Draw Background Layer")
-                backgroundLayer.draw();
+                 backgroundLayer.getContext().clearRect(0, 0, stage.attrs.width,stage.attrs.height);
+                backgroundLayer.getContext().drawImage(bgCanvas,Math.max(0,-stage.attrs.x),Math.max(0,-stage.attrs.y),stage.attrs.width,stage.attrs.height,0,0,stage.attrs.width,stage.attrs.height);
                 console.timeEnd("Draw Background Layer")
                 console.time("Draw Object Layer")
                 objectLayer.draw(); 
                   console.timeEnd("Draw Object Layer")
             }
            
-        }
+        
         
         stats.update();
         
