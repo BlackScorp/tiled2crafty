@@ -9,14 +9,20 @@
 
             #game{
                 overflow: hidden;
-                position: absolute;
-                top:0px;
-                left:0px;
-                width: 100%;
-                height:100%;
 
+                width: auto;
+                height:auto;
+                position: absolute;
+                margin-left:50%;
+                left:-400px;
             }
-            .kineticjs-content{background: black;position: relative;}
+            .kineticjs-content{
+                position: absolute;
+                margin:15px auto;
+                background: black;
+                
+            }
+
             #info{width:auto;
                   height:auto;
                   position:absolute;
@@ -33,19 +39,20 @@
 
         <div id="game"></div>
         <div id="info">
-          
-            Count tiles: <div id="tiles"></div>
+            Background Layer Children: <div id="bg"></div>
+            Object Layer Children: <div id="obj"></div>
             <div id="fps"></div>
         </div>
         <script src ="https://raw.github.com/mrdoob/stats.js/master/src/Stats.js"></script>
         <script src="js/libs/jquery.min.js"></script>
         <script src="js/libs/jquery-ui.min.js"></script>
         <script  src="js/libs/kinetic.js"></script>
+        <script  src="js/libs/ImageList.js"></script>
         <script  src="js/libs/Keyboard.js"></script>
         <script  src="js/libs/Isometric.js"></script>
         <script  src="js/libs/Loader.js"></script>
         <script src="js/maps/frontier_outpost.js"></script>
- <script src="js/maps/frontier_plains.js"></script>
+        <script src="js/maps/frontier_plains.js"></script>
         <script src="js/game/game.js"></script>
     </body>
 </html>
