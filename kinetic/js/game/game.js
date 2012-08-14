@@ -279,8 +279,8 @@ $(function(){
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
     var speed = {
-        x:5,
-        y:5
+        x:10,
+        y:10
     };
    
     var updateStage = function(delta){
@@ -313,7 +313,7 @@ $(function(){
     var nextTick = new Date().getTime();
     stats.begin();
     stage.onFrame(function(frame){
-       
+       /*
         var loops = 0,inter = 0;
         while((new Date()).getTime() > nextTick && loops < maxLoops){
             updateStage(1);
@@ -322,12 +322,12 @@ $(function(){
         }
         inter = parseFloat(((new Date()).getTime() + skipTicks - nextTick) / skipTicks);
   
-    
+        */
      
          
             if(keyboard.isDown())  {
                 console.time("Update Stage Position")
-                updateStage(inter);
+                updateStage(1);
                 console.timeEnd("Update Stage Position")
                 console.time("Update Map Images")
                 updateMap();
