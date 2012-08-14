@@ -55,14 +55,16 @@ Kinetic.Loader.prototype.load = function(){
     for(;i<l;++i){
         var file = this.files[i],fileObj =null,src,ext,id;
 
-        if(typeof file === "string"){
-            src = file;
+        if(typeof file === "object"){
+            src = file.src;
+            id = file.id;
             ext = src.substr(src.lastIndexOf('.') + 1).toLowerCase();
+            
         }
  
         if(this.extensions[ext] == 'image'){
             fileObj = new Image();
-            if(!Kinetic.Assets[src]) Kinetic.Assets[src] = fileObj;
+            if(!Kinetic.Assets[id]) Kinetic.Assets[id] = fileObj;
             fileObj.onload = function(e){
                 progress(e);
             }
