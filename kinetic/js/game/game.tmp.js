@@ -63,19 +63,41 @@ Game.prototype.load = function(file){
         }
     });
 }
+Game.prototype.render = function(diff){
+  
+    
+}
 Game.prototype.update = function(){
     
-    }
+   
+    
+}
 Game.prototype.run = function(data){
  
     //create Map
     var map = new Map(data);
     map.init(this.stage);
-    
+    var lastTime = 0;
+    var game = this;
+    var fps = 1;
+ 
+   
     this.stage.onFrame(function(frame){
-        if(!this.paused) return;
+        if(!!game.paused) return;
+        var currTime = +new Date;
+        game.update();
+        var timeToCall = Math.max(0, ~~(1000/fps) - (currTime - lastTime));
+    
+        var id = window.setTimeout(function() {
+            game.render(timeToCall);
+        },
+        timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
     });
     this.stage.start();
+    
+    
 }
 Game.prototype.pause = function(){
     this.paused = true;
@@ -83,3 +105,4 @@ Game.prototype.pause = function(){
 Game.prototype.unpause = function(){
     this.paused = false;
 }
+

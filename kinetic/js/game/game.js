@@ -283,8 +283,8 @@ stage.add(backgroundLayer);
     stage.add(objectLayer);
     var keyboard = new Kinetic.Keyboard();
     var speed = {
-        x:16,
-        y:32
+        x:5,
+        y:5
     };
    
     var updateStage = function(delta){
@@ -327,15 +327,19 @@ stage.add(backgroundLayer);
         inter = parseFloat(((new Date()).getTime() + skipTicks - nextTick) / skipTicks);
   
         */
-   
-         
+       
+       if(Date.now() > frame.lastTime-1000/60){
+        
+           
+        
+       
         if(keyboard.isDown())  {
            // console.time("Update Stage Position")
             updateStage(1);
             //console.timeEnd("Update Stage Position")
-            console.time("Update Map Images")
+           // console.time("Update Map Images")
             updateMap();
-            console.timeEnd("Update Map Images")
+            //console.timeEnd("Update Map Images")
             //console.time("Draw Background Layer")
             backgroundLayer.getContext().clearRect(0, 0, stage.attrs.width,stage.attrs.height);
             backgroundLayer.getContext().drawImage(bgCanvas,Math.max(0,-stage.attrs.x),Math.max(0,-stage.attrs.y),stage.attrs.width,stage.attrs.height,0,0,stage.attrs.width,stage.attrs.height);
@@ -344,7 +348,7 @@ stage.add(backgroundLayer);
             objectLayer.draw(); 
             //console.timeEnd("Draw Object Layer")
         }
-           
+           }
        
         
 
