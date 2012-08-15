@@ -3,12 +3,16 @@ var Map = function(data){
     this.data = data;
     this.tilesets = {};
     this.map = null;
-
+    this.tiles = {};
+    this.grid = {};
 }
 
 Map.prototype.draw = function(){
+    if(!this.map) return;
     
-    }
+    
+}
+    
 Map.prototype.update = function(){
     
     }
@@ -17,7 +21,59 @@ Map.prototype.init = function(stage){
     this.createLayers();
     this.createTilesets();
     this.createMap();
-
+    this.map.centerAt(this.stage,128,90);
+    this.drawLayer('.background');
+    this.drawLayer('.object');
+      
+ 
+}
+Map.prototype.drawLayer = function(name){
+    var area = this.map.area(this.stage);
+    var layer = this.stage.get(name)[0];
+    
+  
+   
+    for(var m in area){
+            
+        var x = area[m][0], //get X
+        y = area[m][1], //get Y
+        index = y*this.map._map.width+x, //get Index of array
+        z=layer.index+1,image=null,pos,name,
+        tile = layer.attrs.data[index]; //get objects
+         
+        if(tile > 0 && this.tilesets[tile]){
+          
+            z++;
+            tile = this.tilesets[tile]; //get sprite infos
+            pos = this.map.pos2px(x, y); //calculate x/y to top/left position
+            name = "Y"+y+"X"+x+"Z"+z;
+            
+            this.grid[name] = true;
+                 
+            if(!this.tiles[name]){
+                   
+                image = new Kinetic.Image({
+                    x: pos.left,
+                    y:pos.top-tile.height,
+                    image: tile.img,
+                    width: tile.width,
+                    height: tile.height,
+                    crop:{
+                        x:tile.x,
+                        y:tile.y,
+                        width:tile.width,
+                        height:tile.height
+                    },
+                    offset :tile.offset,
+                    zIndex:pos.top*z,
+                    name:name
+                });
+                layer.add(image);
+                this.tiles[name] = image;
+            }
+        }   
+    }
+  
 }
 Map.prototype.createLayers = function(){
 
@@ -30,7 +86,13 @@ Map.prototype.createLayers = function(){
             data:data,
             visible:layer.visible
         });
-  
+        if(data.length > 0){
+            tmpLayer.beforeDraw(function(){
+                this.children.sort(function(a,b){
+                    return a.attrs.zIndex-b.attrs.zIndex;
+                })
+            });
+        }
         
         this.stage.add(tmpLayer);
     }
@@ -65,7 +127,8 @@ Map.prototype.createTilesets = function(){
             }
         }
     }
-    
+ 
+
 }
 
 Map.prototype.createMap = function(){
@@ -75,6 +138,8 @@ Map.prototype.createMap = function(){
         tw = this.data.tilewidth,
         th = this.data.tileheight;
         this.map = new Kinetic.Isometric(tw, th, mw, mh);
+       
     }
+   
 }
 

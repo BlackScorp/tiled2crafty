@@ -1,3 +1,4 @@
+var stage = null;
 $(function(){
   
     var toLoad = [
@@ -77,16 +78,18 @@ Game.prototype.run = function(data){
     //create Map
     var map = new Map(data);
     map.init(this.stage);
+    this.stage.draw();
+    
     var lastTime = 0;
     var game = this;
     var fps = 1;
- 
+    var tick = ~~(1000/fps);
    
     this.stage.onFrame(function(frame){
         if(!!game.paused) return;
         var currTime = +new Date;
         game.update();
-        var timeToCall = Math.max(0, ~~(1000/fps) - (currTime - lastTime));
+        var timeToCall = Math.max(0, tick - (currTime - lastTime));
     
         var id = window.setTimeout(function() {
             game.render(timeToCall);
