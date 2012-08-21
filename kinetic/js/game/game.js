@@ -83,10 +83,12 @@ $(function(){
     var startY = 20;
    
     var backgroundLayer = new Kinetic.Layer({
-        name:'backgrounds'
+        name:'backgrounds',
+        listening:false
     }),
     objectLayer = new Kinetic.Layer({
-        name:'objects'
+        name:'objects',
+        listening:false
     });
             
     //sort tiles on their zIndex

@@ -7,25 +7,36 @@ var Map = function(data){
     this.grid = {};
 }
 
-Map.prototype.draw = function(){
+Map.prototype.draw = function(x,y){
     if(!this.map) return;
     
-    
+    this.map.centerAt(this.stage,x,y);
+    this.drawLayer('.background').draw();
+    this.drawLayer('.object').draw();
+    this.clear();
 }
     
 Map.prototype.update = function(){
-    
-    }
+    this.drawLayer();
+    this.clear();
+}
 Map.prototype.init = function(stage){
     this.stage = stage;
     this.createLayers();
     this.createTilesets();
     this.createMap();
-    this.map.centerAt(this.stage,128,90);
-    this.drawLayer('.background');
-    this.drawLayer('.object');
-      
- 
+}
+Map.prototype.clear = function(){
+    for(var i in this.tiles){
+        var t = this.tiles[i];
+        if(!this.grid[i]){ 
+            t.attrs.visible = false;
+        }else{
+            t.attrs.visible = true;
+        }
+            
+    }
+    this.grid = {};
 }
 Map.prototype.drawLayer = function(name){
     var area = this.map.area(this.stage);
@@ -73,7 +84,7 @@ Map.prototype.drawLayer = function(name){
             }
         }   
     }
-  
+    return layer;
 }
 Map.prototype.createLayers = function(){
 

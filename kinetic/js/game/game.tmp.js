@@ -44,14 +44,33 @@ $(function(){
     var loadingText = new Kinetic.Text({
         x: 0,
         y: 0,
+        width:406,
+        lineHeight:1,
+        height:50,
+        padding:10,
+        align:'center',
+        text: "Loading...",
+        fontSize: 28,
+        listening:false,
+        fontFamily: "Calibri",
+        textFill: "#FFFFFF",
+        offset:[-(w/2-250),-(h/2-70)]
+    });
+   
+   
+    var percentText = new Kinetic.Text({
+        x: 0,
+        y: 0,
         text: "0%",
         fontSize: 10,
         fontFamily: "Calibri",
         textFill: "#FFFFFF",
         offset:[-(w/2-246),-(h/2+28)]
     });
-        
-    loadingPoints.add(loadingText);
+    
+
+    loadingScreen.add(loadingText);
+    loadingPoints.add(percentText);
     loadingScreen.add(loadingPoints);
     
 
@@ -70,7 +89,7 @@ $(function(){
         point.attrs.height =30;
         var text = loadingPoints.children[100];
         text.attrs.x = (data.percent*4)-(16);
-        text.setText(data.percent+'%');
+        text.setText(~~(data.percent)+'%');
         
         loadingScreen.draw(); 
     });
@@ -78,8 +97,46 @@ $(function(){
         console.warn("Error on Load "+data.name);
     });
     loader.onComplete(function(){
+        var startText = new Kinetic.Text({
+        x: 0,
+        y: 0,
+        width:406,
+        lineHeight:1,
+        height:50,
+        padding:10,
+        align:'center',
+        text: "Start",
+        fontSize: 14,
+        listening:false,
+        fontFamily: "Calibri",
+        textFill: "#FFFFFF",
+        offset:[-(w/2-250),-(h/2-70)]
+    });
+   
+        var startBtn = new Kinetic.Image({
+            image:Kinetic.Assets['button'],
+            crop:{
+                x:0,
+                y:28,
+                width:141,
+                height:28
+            },
+            width:141,
+            height:28,
+               offset:[-(w/2-125),-(h/2-70)]
+        });
+        loadingScreen.remove(loadingText);
+        loadingScreen.add(startBtn);
+        loadingScreen.add(startText);
+        
+        loadingScreen.draw();
+        startBtn.on("click",function(){
+           stage.remove(loadingScreen);
+      
         var game = new Game();
-        game.load('frontier_plains.json');
+        game.load('frontier_plains.json');   
+        });
+      
        
     });
  
@@ -95,7 +152,8 @@ var Game = function(){
         height:this.gameDiv.height()
     });
     this.paused = false;
-  
+    this.keyboard = new Kinetic.Keyboard();
+    
 }
 Game.prototype.load = function(file){
     var game = this;
@@ -120,8 +178,8 @@ Game.prototype.run = function(data){
  
     //create Map
     var map = new Map(data);
-    map.init(this.stage);
-    this.stage.draw();
+    map.init(stage);
+    map.draw(128,100);
     
     var lastTime = 0;
     var game = this;
@@ -133,7 +191,7 @@ Game.prototype.run = function(data){
         var currTime = +new Date;
         game.update();
         var timeToCall = Math.max(0, tick - (currTime - lastTime));
-    
+        
         var id = window.setTimeout(function() {
             game.render(timeToCall);
         },
