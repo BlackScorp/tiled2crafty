@@ -178,7 +178,7 @@ Map.prototype.createLayers = function(){
         var layer = this.data.layers[l];
         var data = layer.data || [];
      
-        this.layers[layer.name]= new Kinetic.Staticlayer({
+        this.layers[layer.name]= new Kinetic.Layer({
             name:layer.name,
             data:data,
             visible:layer.visible,

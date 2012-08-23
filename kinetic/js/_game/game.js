@@ -104,8 +104,8 @@ $(function(){
     });
     loader.onComplete(function(){
         
-           // var game = new Game();
-            //game.run("frontier_plains.json");
+            var game = new Game();
+            game.run("frontier_plains.json");
             return;
         var startText = new Kinetic.Text({
             x: 0,

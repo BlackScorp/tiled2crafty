@@ -24,6 +24,7 @@ Map.prototype = {
         var images = [];
         for(var i =0,il = this._data.tilesets.length;i<il;i++){
             var tileset = this._data.tilesets[i];
+            
         }
     },
     _init:function(){
