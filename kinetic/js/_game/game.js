@@ -1,4 +1,6 @@
 var stage = null;
+var player = {x:128,y:100};
+var velocity = {x:10,y:5};
 $(function(){
     var gameDiv = $('#game');
     var h = gameDiv.height();
@@ -6,9 +8,12 @@ $(function(){
     stage = new Kinetic.Stage({
         container:'game',
         width:w,
-        height:h
+        height:h,
+        listening:false
     });
-    
+
+  
+    /*
     var loadingScreen = new Kinetic.Layer();
     var loadingBG = new Kinetic.Rect({
         width:w,
@@ -74,10 +79,11 @@ $(function(){
     loadingScreen.add(loadingPoints);
     
 
-    stage.add(loadingScreen);
+    stage.add(loadingScreen); */
     var loader = new Kinetic.Loader(toLoad);
     
     loader.onProgress(function(data){
+        return;
         for(var i = 0,il = data.percent;i<il;i++){
             var point = loadingPoints.children[i];
             if(point){
@@ -97,21 +103,25 @@ $(function(){
         console.warn("Error on Load "+data.name);
     });
     loader.onComplete(function(){
+        
+           // var game = new Game();
+            //game.run("frontier_plains.json");
+            return;
         var startText = new Kinetic.Text({
-        x: 0,
-        y: 0,
-        width:406,
-        lineHeight:1,
-        height:50,
-        padding:10,
-        align:'center',
-        text: "Start",
-        fontSize: 14,
-        listening:false,
-        fontFamily: "Calibri",
-        textFill: "#FFFFFF",
-        offset:[-(w/2-250),-(h/2-70)]
-    });
+            x: 0,
+            y: 0,
+            width:406,
+            lineHeight:1,
+            height:50,
+            padding:10,
+            align:'center',
+            text: "Start",
+            fontSize: 14,
+            listening:false,
+            fontFamily: "Calibri",
+            textFill: "#FFFFFF",
+            offset:[-(w/2-250),-(h/2-70)]
+        });
    
         var startBtn = new Kinetic.Image({
             image:Kinetic.Assets['button'],
@@ -123,7 +133,7 @@ $(function(){
             },
             width:141,
             height:28,
-               offset:[-(w/2-125),-(h/2-70)]
+            offset:[-(w/2-125),-(h/2-70)]
         });
         loadingScreen.remove(loadingText);
         loadingScreen.add(startBtn);
@@ -131,10 +141,10 @@ $(function(){
         
         loadingScreen.draw();
         startBtn.on("click",function(){
-           stage.remove(loadingScreen);
+            stage.remove(loadingScreen);
       
-        var game = new Game();
-        game.load('frontier_plains.json');   
+           // var game = new Game();
+          //  game.run("frontier_plains.json");
         });
       
        
@@ -152,19 +162,10 @@ var Game = function(){
         height:this.gameDiv.height()
     });
     this.paused = false;
-    this.keyboard = new Kinetic.Keyboard();
-    
+ 
+ 
 }
-Game.prototype.load = function(file){
-    var game = this;
 
-    $.ajax({
-        url:"js/maps/"+file,
-        success:function(data){
-            game.run(data);
-        }
-    });
-}
 Game.prototype.render = function(diff){
   
     
@@ -174,34 +175,13 @@ Game.prototype.update = function(){
    
     
     }
-Game.prototype.run = function(data){
+Game.prototype.run = function(level){
  
     //create Map
-    var map = new Map(data);
-    map.init(stage);
-    map.draw(128,100);
-    
-    var lastTime = 0;
-    var game = this;
-    var fps = 1;
-    var tick = ~~(1000/fps);
+    var map = new Map(stage,player.x,player.y);
+    map.load(level);
    
-    this.stage.onFrame(function(frame){
-        if(!!game.paused) return;
-        var currTime = +new Date;
-        game.update();
-        var timeToCall = Math.max(0, tick - (currTime - lastTime));
-        
-        var id = window.setTimeout(function() {
-            game.render(timeToCall);
-        },
-        timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-    });
-    this.stage.start();
-    
-    
+ 
 }
 Game.prototype.pause = function(){
     this.paused = true;

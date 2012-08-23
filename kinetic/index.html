@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Isometric Map</title>
+        <title>Test</title>
         <style>
             *{margin:0px;padding:0px}
 
@@ -16,39 +16,31 @@
                 height:100%;
 
             }
-            .kineticjs-content{background: black;position: relative;}
-            #info{width:auto;
-                  height:auto;
-                  position:absolute;
-                  top:10px;left:10px;
-                  background:black;
-                  color:white;
-                  border:1px solid white;
-            }
-
         </style>
 
     </head>
     <body>
-
         <div id="game"></div>
-        <div id="info" style="display: none">
-           Background Layer Children: <div id="bg"></div>
-             Object Layer Children: <div id="obj"></div>
-            <div id="fps"></div>
-        </div>
+        <!-- Initial Data Could be created by PHP Script -->
+        <script>
+         
+            var playerConfigs = {
+                x:248,y:186,map:'frontier_plains'
+            }
+        </script>
+        <!-- Libs -->
         <script src ="https://raw.github.com/mrdoob/stats.js/master/src/Stats.js"></script>
         <script src="js/libs/jquery.min.js"></script>
         <script src="js/libs/jquery-ui.min.js"></script>
-  
-       <script  src="js/libs/kinetic.js"></script> 
-        <script src="js/game/files.js"></script>
-            <script  src="js/libs/ImageList.js"></script>
+        <script  src="js/libs/kinetic.js"></script> 
+        <!-- Kinetic Extensions -->
         <script  src="js/libs/Keyboard.js"></script>
         <script  src="js/libs/Isometric.js"></script>
         <script  src="js/libs/Loader.js"></script>
-        <script src="js/maps/frontier_outpost.js"></script>
+        <!-- Game Files -->
+        <script src="js/game/index.js"></script>
+        <script src="js/game/files.js"></script>
         <script src="js/game/map.js"></script>
-        <script src="js/game/game.tmp.js"></script>
+        <script src="js/game/game.js"></script>
     </body>
 </html>
