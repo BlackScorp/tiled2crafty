@@ -91,19 +91,22 @@ Kinetic.Keyboard = function(){
     this.keyDown = {};
     this.anyDown = false;
     this.countKeys = 0;
+    this.active = true;
 }
-
+Kinetic.Keyboard.prototype.disable = function(){
+    this.active = false;
+}
+Kinetic.Keyboard.prototype.enable = function(){
+    this.active = true;
+}
 Kinetic.Keyboard.prototype.isDown = function(key){
- 
+    if(!this.active) return false;
     if(!key) return this.anyDown;
     
     if(typeof key === "string") key = this.keys[key];  
     return !!this.keyDown[key];
 }
-Kinetic.Keyboard.prototype.addKey = function(name,code){
-    this.keys[name] = code;
-    return this;
-}
+
 
 Kinetic.Keyboard.prototype.dispatch = function(e){
     var code = null;
@@ -112,13 +115,13 @@ Kinetic.Keyboard.prototype.dispatch = function(e){
     else if (e.which) code = e.which;
     else if (e.code) code = e.code;
     
-    if(e.type == "keydown"){
+    if(e.type === "keydown"){
         if(!this.keyDown[code]){
             this.keyDown[code] = true;
             this.countKeys++;
         }
     }
-    if(e.type == "keyup"){
+    if(e.type === "keyup"){
        
         if(this.keyDown[code]){
             delete this.keyDown[code];

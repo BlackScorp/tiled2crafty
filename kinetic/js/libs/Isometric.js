@@ -9,7 +9,8 @@ Kinetic.Isometric = function(tw,th,mw,mh){
     this._map.height = parseInt(mh) || parseInt(mw);
        
     this._origin.x = this._map.height * this._tile.width / 2;
-                            
+    this._width =  this._map.height * this._tile.width;
+    this._height = this._map.height * this._tile.height;
             
          
     return this;
