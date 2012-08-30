@@ -30,6 +30,16 @@ Kinetic.Isometric.prototype ={
         x:0,
         y:0
     },
+    _vp:{
+      x:0,
+      y:0,
+      width:0,
+      height:0
+    },
+    setViewport:function(vp){
+        this._vp =vp;
+    },
+
     pos2px:function(x,y){
  
         return{
@@ -43,45 +53,26 @@ Kinetic.Isometric.prototype ={
             x:((top+x) / this._tile.height),
             y:((top-x) / this._tile.height)
         }
-    }
-    ,
+    },
     centerAt:function(stage,x,y){
         var pos = this.pos2px(x,y),
-        posX = -pos.left+stage.getWidth()/2-this._tile.width/2,
-        posY = -pos.top+stage.getHeight()/2;
-   
+        posX = -pos.left+stage.attrs.width/2-this._tile.width/2,
+        posY = -pos.top+stage.attrs.height/2;
         stage.setX(~~posX);
         stage.setY(~~posY);
       
     },
-    area:function(stage,offset,torus){
+    area:function(offset,torus){
         if(!offset) offset = 0;
         if(!torus) torus = false;
-        //calculate the corners
-        var vp = {
-            _x:-stage.getX(),
-            _y:-stage.getY(),
-            _w:stage.getWidth(),
-            _h:stage.getHeight()
-            
-        }
-        
-        vp._x -= this._tile.width/2;
-        vp._y += this._tile.height;
-        
-        var ow = offset*(this._tile.width/2);
-        
-        var oh = offset*(this._tile.height);
-      
-
         var grid = [];
         
-        for(var y = vp._y-oh,yl = (vp._y+vp._h)+oh;y<yl;y+=this._tile.height/2){
-            for(var x = vp._x-ow,xl = (vp._x+vp._w)+ow;x<xl;x+=this._tile.width/2){
+        for(var y = this._vp.y,yl = (this._vp.y+this._vp.height);y<yl;y+=this._tile.height/2){
+            for(var x = this._vp.x,xl = (this._vp.x+this._vp.width);x<xl;x+=this._tile.width/2){
                 var row = this.px2pos(x,y),
                 posX = ~~row.x,posY = ~~row.y;
                 if(!torus && posX > 0 || posY > 0) {
-                    posX =   Math.max(0,Math.min(this._map.width, posX));
+                    posX = Math.max(0, Math.min(this._map.width, posX));
                     posY = Math.max(0, Math.min(this._map.height, posY));
                     grid.push([posX,posY]); 
                 }else{

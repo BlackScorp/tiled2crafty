@@ -17,8 +17,8 @@ Game.prototype ={
             height:this._window.height()
         });
         this._map = new Map(this._stage);
-        this._map.load(this._config.map);
-        this._map.draw(this._config.x,this._config.y);
+        this._map.load(this._config);
+       
     }
 }
 
