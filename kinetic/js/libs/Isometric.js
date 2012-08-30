@@ -37,7 +37,14 @@ Kinetic.Isometric.prototype ={
       height:0
     },
     setViewport:function(vp){
-        this._vp =vp;
+      this._vp = vp;  
+    },
+    viewportAdjust:function(offset){
+        this._vp.x -= offset.left;
+        this._vp.y -= offset.top;
+        this._vp.width += offset.right;
+        this._vp.height += offset.bottom;
+        return this._vp;
     },
 
     pos2px:function(x,y){
@@ -58,9 +65,15 @@ Kinetic.Isometric.prototype ={
         var pos = this.pos2px(x,y),
         posX = -pos.left+stage.attrs.width/2-this._tile.width/2,
         posY = -pos.top+stage.attrs.height/2;
+       
         stage.setX(~~posX);
         stage.setY(~~posY);
-      
+         this._vp = {
+            x:-stage.getX(),
+            y:-stage.getY(),
+            width:stage.getWidth(),
+            height:stage.getHeight()
+        }
     },
     area:function(offset,torus){
         if(!offset) offset = 0;

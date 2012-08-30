@@ -11,6 +11,8 @@ Game.prototype ={
     },
     _init:function(){
         this._window = $('#game');
+          var stats = new Stats();
+    $('#stats').append(stats.domElement);
         this._stage = new Kinetic.Stage({
             container:'game',
             width:this._window.width(),
@@ -18,6 +20,19 @@ Game.prototype ={
         });
         this._map = new Map(this._stage);
         this._map.load(this._config);
+        var map = this._map;
+        var stage = this._stage;
+        var animation = new Kinetic.Animation({
+            func:function(frame){
+                 stats.update();
+                stage.attrs.y += 4;
+                console.time("Animation");
+                map.draw();
+                  console.timeEnd("Animation");
+            },
+            node:this._stage
+        });
+        animation.start();
        
     }
 }
