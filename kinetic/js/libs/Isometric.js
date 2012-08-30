@@ -40,10 +40,12 @@ Kinetic.Isometric.prototype ={
       this._vp = vp;  
     },
     viewportAdjust:function(offset){
-        this._vp.x -= offset.left;
-        this._vp.y -= offset.top;
+      
+        this._vp.x += offset.left;
+        this._vp.y += offset.top;
         this._vp.width += offset.right;
         this._vp.height += offset.bottom;
+     
         return this._vp;
     },
 
@@ -68,12 +70,7 @@ Kinetic.Isometric.prototype ={
        
         stage.setX(~~posX);
         stage.setY(~~posY);
-         this._vp = {
-            x:-stage.getX(),
-            y:-stage.getY(),
-            width:stage.getWidth(),
-            height:stage.getHeight()
-        }
+     
     },
     area:function(offset,torus){
         if(!offset) offset = 0;

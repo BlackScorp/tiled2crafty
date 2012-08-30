@@ -17,10 +17,10 @@ var Map = function(stage){
     var w = this._stage.getWidth();
     var h = this._stage.getHeight();
     this._offset = {
-        top:h/2,
-        right:w/2,
-        bottom:h/2,
-        left:w/2
+        top:~~(h/2),
+        right:~~(w/2),
+        bottom:~~(h/2),
+        left:~~(w/2)
     }
 }
 
@@ -37,6 +37,7 @@ Map.prototype = {
             console.time("UpdateMap");
             this._updateLayers();
             console.timeEnd("UpdateMap");
+            this._stageWithinViewport()
         } 
         //draw Layer
         console.time("DrawMap");
@@ -94,13 +95,16 @@ Map.prototype = {
                 if(l.visible){
                     var w = this._stage.getWidth();
                     var h = this._stage.getHeight();
+                    var x = -this._stage.getX();
+                    var y = -this._stage.getY();
                     var o = this._offset;
                     //Create a cache Canvas
+                   
                     var cache =new Kinetic.Canvas(w*2,h*2);
                     cache.name = 'cache';
                     //add chacheCanvas to layer
                     layer.cacheCanvas = cache;
-                    
+                     
                     //sort the children before Draw
                     layer.beforeDraw(function(){
                         this.children.sort(function(a,b){
@@ -109,12 +113,13 @@ Map.prototype = {
                     });
                  
                     layer.drawCache = function(){ 
+                        this.getCanvas().clear();
                         //Draw the part of cached Canvas into layer canvas
-                        this.getContext().drawImage(this.cacheCanvas.getElement(),o.left,o.right,w,h,0,0,w,h);  
+                       this.getContext().drawImage(this.cacheCanvas.getElement(),o.left,o.top,w,h,0,0,w,h);  
                     }
                     
                     layer.updateCache = function(){
-                        //this.cacheCanvas.clear();
+                        this.cacheCanvas.clear();
                         //draw children into cacheCanvas
                         this.draw(this.cacheCanvas);
                    
@@ -144,6 +149,7 @@ Map.prototype = {
         loader.onComplete(function(){
             //draw map
             map.draw();
+           
         });
         //start loading
         loader.load();
@@ -202,10 +208,11 @@ Map.prototype = {
             width:this._stage.getWidth(),
             height:this._stage.getHeight()
         }
+       
         //set the viewport
         this._map.setViewport(vp);
         //adjust the viewport with layer
-        this._vp = this._map.viewportAdjust(this._offset);
+         this._vp = this._map.viewportAdjust(this._offset);
         
         //get area of viewport
         var area = this._map.area(),x=0,y=0,mw=this._data.width,i=0,grid={};
@@ -289,7 +296,7 @@ Map.prototype = {
             w:this._vp.width,
             h:this._vp.height
         }
-       
+        console.log("stage",stage,"viewport",vp)
 
         return vp.x <= stage.x && vp.x + vp.w >= stage.x + stage.w &&
         vp.y <= stage.y && vp.y + vp.h >= stage.y + stage.h;
