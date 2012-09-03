@@ -14,13 +14,20 @@ var Map = function(stage){
     //Viewport
     this._vp = null; 
     
-    var w = this._stage.getWidth();
-    var h = this._stage.getHeight();
+    //Lazy vars
+    var w = this._stage.attrs.width;
+    var h = this._stage.attrs.height;
+    //Define offset for Viewport
     this._offset = {
         top:~~(h/2),
         right:~~(w/2),
         bottom:~~(h/2),
         left:~~(w/2)
+    };
+    //Define cache canvas size
+    this._cache = {
+        width:this._offset.left+this._offset.right+w,
+        height:this._offset.top+this._offset.bottom+h
     }
 }
 
@@ -32,17 +39,17 @@ Map.prototype = {
         if(!this._map) return true;
         //If there is no viewport or the viewport is not within the stage
         if(!this._vp || !this._stageWithinViewport()){
-            //Update layer
-          
-            console.time("UpdateMap");
-            this._updateLayers();
-            console.timeEnd("UpdateMap");
-            this._stageWithinViewport()
+        //Update layer
+           
+        //console.time("UpdateMap");
+        //   this._updateLayers();
+        // console.timeEnd("UpdateMap");
+       
         } 
-        //draw Layer
-        console.time("DrawMap");
-        this._drawLayers(); 
-        console.timeEnd("DrawMap");
+    //draw Layer
+    // console.time("DrawMap");
+    //this._drawLayers(); 
+    // console.timeEnd("DrawMap");
       
     },
     //Initial Function, loads json file and initialize Map
@@ -72,9 +79,16 @@ Map.prototype = {
             //Create new Isometric Helper
             this._map = new Kinetic.Isometric(tw, th, mw, mh);   
         }
+        
+      
         //Center the stage at position x/y
-        this._map.centerAt(this._stage,this._x,this._y);
+        var pos = this._map.pos2px(this._x,this._y); //calculate position 2 pixel
        
+        //set center position of stage
+        this._stage.attrs.x = -pos.left+this._stage.attrs.width/2-tw/2; 
+        this._stage.attrs.y = -pos.top+this._stage.attrs.height/2;
+       
+      
 
     },
     //Function to create layers
@@ -93,35 +107,38 @@ Map.prototype = {
                 });
                 //if layer is visible
                 if(l.visible){
-                    var w = this._stage.getWidth();
-                    var h = this._stage.getHeight();
-                    var x = -this._stage.getX();
-                    var y = -this._stage.getY();
-                    var o = this._offset;
                     //Create a cache Canvas
-                   
-                    var cache =new Kinetic.Canvas(w*2,h*2);
+                    var cache =new Kinetic.Canvas(this._cache.width,this._cache.height);
                     cache.name = 'cache';
                     //add chacheCanvas to layer
                     layer.cacheCanvas = cache;
-                     
+                    $('#cache').append(cache.getElement());
                     //sort the children before Draw
                     layer.beforeDraw(function(){
                         this.children.sort(function(a,b){
                             return a.attrs.zIndex - b.attrs.zIndex;
                         }); 
+                        this.cacheCanvas.clear();
                     });
-                 
+                    var map = this;
                     layer.drawCache = function(){ 
+                        if(!map._vp) return
+                   
+                        var y = -map._vp.t - map._stage.attrs.y+map._offset.top,
+                        x = -map._vp.l - map._stage.attrs.x+map._offset.left,
+                        w = map._stage.attrs.width,h = map._stage.attrs.height;
+                        if(x < 0) x= 0;
+                        if(y < 0) y = 0;
                         this.getCanvas().clear();
                         //Draw the part of cached Canvas into layer canvas
-                       this.getContext().drawImage(this.cacheCanvas.getElement(),o.left,o.top,w,h,0,0,w,h);  
+                        this.getContext().drawImage(this.cacheCanvas.getElement(),x,y,w,h,0,0,w,h);  
                     }
                     
                     layer.updateCache = function(){
-                        this.cacheCanvas.clear();
+                        
                         //draw children into cacheCanvas
                         this.draw(this.cacheCanvas);
+                      
                    
                     }
                     //create new array of visible layers
@@ -148,7 +165,8 @@ Map.prototype = {
             });
         loader.onComplete(function(){
             //draw map
-            map.draw();
+            //map.draw();
+            map._updateLayers();
            
         });
         //start loading
@@ -202,20 +220,22 @@ Map.prototype = {
       
     },
     _updateLayers:function(){
-        var vp = {
-            x:-this._stage.getX(),
-            y:-this._stage.getY(),
-            width:this._stage.getWidth(),
-            height:this._stage.getHeight()
-        }
-       
+      console.time("UpdateLayers");
+        var width = this._stage.attrs.width,height = this._stage.attrs.height,o = this._offset;
+        var x = -this._stage.attrs.x,y=-this._stage.attrs.y;
+        this._vp = {
+            x:x,
+            y:y,
+            w:width,
+            h:height
+        };
+        console.log(this._vp,x);
         //set the viewport
-        this._map.setViewport(vp);
-        //adjust the viewport with layer
-         this._vp = this._map.viewportAdjust(this._offset);
-        
+        this._map.setViewport(this._vp);
+      
         //get area of viewport
-        var area = this._map.area(),x=0,y=0,mw=this._data.width,i=0,grid={};
+        var area = this._map.area(),mw=this._data.width,i=0;
+  
         //loop throught elements
         for(var a = 0,al = area.length;a<al;a++){
             x = area[a][0]; //get x
@@ -230,47 +250,33 @@ Map.prototype = {
                 
                 //create individual tile name
                 var name = "Y"+y+"X"+x+"Z"+(l+1);
-                //set this grid as visible
-                grid[name] = true;
-                
-                //if no Kinetic.Image object exists
-                if(!this._tiles[name]){
-                    //create one
-                    var pos = this._map.pos2px(x,y);
-                    var image = new Kinetic.Image({
-                        x: pos.left,
-                        y:pos.top-tile.height,
-                        image: Kinetic.Assets[tile.name],
-                        width: tile.width,
-                        height: tile.height,
-                        crop:{
-                            x:tile.x,
-                            y:tile.y,
-                            width:tile.width,
-                            height:tile.height
-                        },
-                        offset :tile.offset,
-                        zIndex:pos.top*(l+1),
-                        name:name
-                    });
-                    this._tiles[name] = image;
-                    //add image to layer
-                    layer.add(image);
-                }
+
+                var pos = this._map.pos2px(x,y);
+                var image = new Kinetic.Image({
+                    x: pos.left,
+                    y:pos.top-tile.height,
+                    image: Kinetic.Assets[tile.name],
+                    width: tile.width,
+                    height: tile.height,
+                    crop:{
+                        x:tile.x,
+                        y:tile.y,
+                        width:tile.width,
+                        height:tile.height
+                    },
+                    offset :tile.offset,
+                    zIndex:pos.top*(l+1),
+                    name:name
+                });
+                  
+                //add image to layer
+                layer.add(image);
+              
                
             }
         }
         
-        //loop throught tiles and hide all tiles outside grid
-        for(i in this._tiles){
-            var t = this._tiles[i];
-            t.attrs.visible = true;
-            if(!grid[i]) t.attrs.visible = false; 
-        }
-        //clear grid for next update
-        delete grid;
-        grid = {};
-        
+  
         
         //loop throught visible layers and draw children on cache canvas
         for(l = 0,ll = this._layers.length;l<ll;l++){
@@ -278,28 +284,31 @@ Map.prototype = {
             layer.updateCache();
       
         }
-  
+          console.timeEnd("UpdateLayers");
         
          
     },
     _stageWithinViewport:function(){
-        var s = this._stage.attrs;
+        var s = this._stage.attrs,o = this._offset,x=-s.x,y=-s.y,width = s.width,height=s.height;
+    
         var stage = {
-            x:-s.x,
-            y:-s.y,
-            w:s.width,
-            h:s.height
-        }
+            l:x-width/2,
+            t:y-height/2,
+            r:x+width/2,
+            b:y+height/2
+        };
         var vp ={
-            x:this._vp.x,
-            y:this._vp.y,
-            w:this._vp.width,
-            h:this._vp.height
+            l:this._vp.x,
+            t:this._vp.y,
+            r:this._vp.width,
+            b:this._vp.height
         }
-        console.log("stage",stage,"viewport",vp)
-
-        return vp.x <= stage.x && vp.x + vp.w >= stage.x + stage.w &&
-        vp.y <= stage.y && vp.y + vp.h >= stage.y + stage.h;
+        var within = vp.l > stage.l && vp.t > stage.t &&
+        vp.r > stage.r && vp.b >  stage.b;
+    
+      
+   
+        return within;
                             
 
  

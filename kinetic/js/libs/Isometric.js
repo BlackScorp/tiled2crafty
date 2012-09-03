@@ -31,22 +31,14 @@ Kinetic.Isometric.prototype ={
         y:0
     },
     _vp:{
-      x:0,
-      y:0,
-      width:0,
-      height:0
+        x:0, 
+        y:0,
+        w:0,
+        h:0
     },
+
     setViewport:function(vp){
-      this._vp = vp;  
-    },
-    viewportAdjust:function(offset){
-      
-        this._vp.x += offset.left;
-        this._vp.y += offset.top;
-        this._vp.width += offset.right;
-        this._vp.height += offset.bottom;
-     
-        return this._vp;
+        this._vp = vp;  
     },
 
     pos2px:function(x,y){
@@ -63,24 +55,28 @@ Kinetic.Isometric.prototype ={
             y:((top-x) / this._tile.height)
         }
     },
-    centerAt:function(stage,x,y){
+    getCenterPosition:function(x,y,width,height){
         var pos = this.pos2px(x,y),
-        posX = -pos.left+stage.attrs.width/2-this._tile.width/2,
-        posY = -pos.top+stage.attrs.height/2;
-       
-        stage.setX(~~posX);
-        stage.setY(~~posY);
-     
+        newX = -pos.left+width/2-this._tile.width/2,
+        newY = -pos.top+height/2;
+
+        return {
+            x:~~newX,
+            y:~~newY
+            };
     },
     area:function(offset,torus){
         if(!offset) offset = 0;
         if(!torus) torus = false;
         var grid = [];
-        
-        for(var y = this._vp.y,yl = (this._vp.y+this._vp.height);y<yl;y+=this._tile.height/2){
-            for(var x = this._vp.x,xl = (this._vp.x+this._vp.width);x<xl;x+=this._tile.width/2){
+        this._vp.x -= this._tile.width/2;
+        this._vp.y += this._tile.height/2;
+        for(var y = this._vp.y,yl = this._vp.y+this._vp.h;y<yl;y+=this._tile.height/2){
+            for(var x = this._vp.x,xl =this._vp.x+this._vp.w;x<xl;x+=this._tile.width/2){
+               
                 var row = this.px2pos(x,y),
                 posX = ~~row.x,posY = ~~row.y;
+          
                 if(!torus && posX > 0 || posY > 0) {
                     posX = Math.max(0, Math.min(this._map.width, posX));
                     posY = Math.max(0, Math.min(this._map.height, posY));
