@@ -1,167 +1,106 @@
-var Map = function(data){
-    this.stage = null;
-    this.data = data;
-    this.sprites = {};
-    this.map = null;
-    this.tiles = {};
-    this.grid = {};
-}
-
-
-Map.prototype.update = function(){
-        this.drawLayers();
-    }
-Map.prototype.init = function(stage){
-    this.stage = stage;
-    this.createLayers();
-    this.createTilesets();
-    this.createMap(); 
-    this.drawLayers();
-}
-Map.prototype.drawLayers = function(){
-    var area = this.map.area(this.stage,1);
- 
-    var backgroundLayer = this.stage.get('#background')[0];
-    var objectLayer = this.stage.get('#object')[0];
+var Map = function(stage){
+    this._stage = stage;
+    this._bgLayer = new Kinetic.Canvas(stage.getWidth()*3,stage.getHeight()*3);
     
-    for(var m in area){
-        var x = area[m][0], 
-        y = area[m][1], 
-        index = y*this.map._map.width+x, 
-        z=0,image=null,tile,pos,name,background,object;
-  
-   
-        background = backgroundLayer.attrs.data[index];
-        object = objectLayer.attrs.data[index];
-            
-       
-        if(background > 0 && this.sprites[background]){
-            z=1;
-            tile = this.sprites[background]; //get sprite infos
-            pos = this.map.pos2px(x, y); //calculate x/y to top/left position
-            name = "Y"+y+"X"+x+"Z"+z;
-            this.grid[name] = true; //set the grid on true, so this location is within viewport
-            //if tile does not exists
-            if(!this.tiles[name]){
-                   
-                //create new Image
-                image = new Kinetic.Image({
-                    x: pos.left,
-                    y:pos.top-tile.height,
-                    image: tile.img,
-                    width: tile.width,
-                    height: tile.height,
-                    crop:{
-                        x:tile.x,
-                        y:tile.y,
-                        width:tile.width,
-                        height:tile.height
-                    },
-                    offset :tile.offset,
-                    zIndex:pos.top*z,
-                    name:name
-                });
-                //add image to layer
-                backgroundLayer.add(image);
-                //save image temporary
-                this.tiles[name] = image;   
-            }
-        }
-        
-          if(object > 0 && this.sprites[object]){
-            z=2;
-            tile = this.sprites[object]; //get sprite infos
-            pos = this.map.pos2px(x, y); //calculate x/y to top/left position
-            name = "Y"+y+"X"+x+"Z"+z;
-            this.grid[name] = true; //set the grid on true, so this location is within viewport
-            //if tile does not exists
-            if(!this.tiles[name]){
-                   
-                //create new Image
-                image = new Kinetic.Image({
-                    x: pos.left,
-                    y:pos.top-tile.height,
-                    image: tile.img,
-                    width: tile.width,
-                    height: tile.height,
-                    crop:{
-                        x:tile.x,
-                        y:tile.y,
-                        width:tile.width,
-                        height:tile.height
-                    },
-                    offset :tile.offset,
-                    zIndex:pos.top*z,
-                    name:name
-                });
-                //add image to layer
-                objectLayer.add(image);
-                //save image temporary
-                this.tiles[name] = image;   
-            }
-        }
-    }
-           
-
 }
-Map.prototype.createLayers = function(){
 
-    for(var l=0,ll=this.data.layers.length;l<ll;l++){
-        var layer = this.data.layers[l];
-        var data = layer.data || [];
-     
-        var tmpLayer = new Kinetic.Layer({
-            id:layer.name,
-            data:data,
-            visible:layer.visible
+Map.prototype = {
+    _data:null,
+    _tilesets:{},
+    draw:function(x,y){
+        
+    },
+    load:function(mapName){
+        var map = this;
+        $.ajax({
+            url:"js/maps/"+mapName+'.json',
+            success:function(data){
+                map._setData(data);
+                map._loadImages();
+            }
         });
-  
+    },
+    _setData:function(data){
+        this._data = data;
+   
+    },
+    _loadImages:function(){
+       
+        var images = [];
+        for(var i =0,il = this._data.tilesets.length;i<il;i++){
+            var tileset = this._data.tilesets[i];
+            images.push({
+                id:tileset.name,
+                src:tileset.image
+            });
+        }
+       
+        var loader = new Kinetic.Loader(images);
+        var map = this;
+   
+        loader.onComplete(function(){
+          
+            map._createTilesets();
+            map._create();
+            map._map.centerAt(map._stage,100,200);
+            map._updateCache();
+        });
+        loader.load();
+     
+    },
+    _createTilesets:function(){
         
-        this.stage.add(tmpLayer);
-    }
-
-}
-
-Map.prototype.createTilesets = function(){
-
-    for(var t = 0,tl = this.data.tilesets.length;t<tl;t++){
-        var set = this.data.tilesets[t];   
-        if(Kinetic.Assets[set.name]){           
-            var id = set.firstgid;
-            for(var y = 0,yl=(set.imageheight/set.tileheight);y<yl;y++){
-                for(var x = 0,xl=(set.imagewidth/set.tilewidth);x<xl;x++){
-                    var offset = set.tileoffset || {
-                        x:0,
-                        y:0
-                    } 
-                    this.sprites[id] ={
-                        img:Kinetic.Assets[set.name],
-                        x:(x*set.tilewidth),
-                        y:(y*set.tileheight),
-                        width:set.tilewidth,
-                        height:set.tileheight,
-                        offset:{
-                            x:-offset.x,
-                            y:-offset.y
-                        }
-                    };
-                    id++;
-                }   
+        for(var t = 0,tl = this._data.tilesets.length;t<tl;t++){
+            var set = this._data.tilesets[t];
+          
+            if(Kinetic.Assets[set.name]){     
+              
+                
+                var id = set.firstgid;
+                for(var y = 0,yl=(set.imageheight/set.tileheight);y<yl;y++){
+                    for(var x = 0,xl=(set.imagewidth/set.tilewidth);x<xl;x++){
+                        var offset = set.tileoffset || {
+                            x:0,
+                            y:0
+                        };
+                        this._tilesets[id] = {
+                            img:Kinetic.Assets[set.name],
+                            x:x*set.tilewidth,
+                            y:y*set.tileheight,
+                            width:set.tilewidth,
+                            height:set.tileheight,
+                            offset:{
+                                x:-offset.x,
+                                y:-offset.y
+                            }
+                        };
+                       
+                        id++;
+                    }   
+                }
+                
             }
         }
+         
+    },
+    _updateCache:function(){
+         console.log(this._bgLayer);
+         var viewport = {
+             x:this._stage.attrs.x,
+             y:this._stage.attrs.y,
+             w:this._bgLayer.element.width,
+             h:this._bgLayer.element.height
+         }
+         
+        var area = this._map.area(this._bgLayer);
+       console.log(viewport,area);
+    },
+    _create:function(){
+        var tw = this._data.tilewidth,
+        th = this._data.tileheight,
+        mw = this._data.width,
+        mh = this._data.height;
+        
+        this._map = new Kinetic.Isometric(tw, th, mw, mh);
     }
- 
-  
 }
-
-Map.prototype.createMap = function(){
-    if(this.data.orientation === "isometric"){
-        var mw = this.data.width,
-        mh = this.data.height,
-        tw = this.data.tilewidth,
-        th = this.data.tileheight;
-        this.map = new Kinetic.Isometric(tw, th, mw, mh);
-        this.map.centerAt(this.stage,100,100);
-    }
-}
-

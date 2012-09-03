@@ -599,7 +599,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/..\/..\/..\/..\/flare\/tiled\/grassland\/tiled_collision.png",
+         "image":"img\/tiled_collision.png",
          "imageheight":32,
          "imagewidth":960,
          "margin":0,
@@ -614,7 +614,7 @@
         }, 
         {
          "firstgid":16,
-         "image":"..\/..\/..\/..\/..\/flare\/tiled\/grassland\/grassland.png",
+         "image":"img\/grassland.png",
          "imageheight":1024,
          "imagewidth":1024,
          "margin":0,
@@ -629,7 +629,7 @@
         }, 
         {
          "firstgid":144,
-         "image":"..\/..\/..\/..\/..\/flare\/tiled\/grassland\/grassland_water.png",
+         "image":"img\/grassland_water.png",
          "imageheight":256,
          "imagewidth":1024,
          "margin":0,
@@ -649,7 +649,7 @@
         }, 
         {
          "firstgid":208,
-         "image":"..\/..\/..\/..\/..\/flare\/tiled\/grassland\/grassland_structures.png",
+         "image":"img\/grassland_structures.png",
          "imageheight":512,
          "imagewidth":1024,
          "margin":0,
@@ -664,7 +664,7 @@
         }, 
         {
          "firstgid":240,
-         "image":"..\/..\/..\/..\/..\/flare\/tiled\/grassland\/grassland_trees.png",
+         "image":"img\/grassland_trees.png",
          "imageheight":512,
          "imagewidth":1024,
          "margin":0,
