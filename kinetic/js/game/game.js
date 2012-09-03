@@ -11,13 +11,27 @@ Game.prototype ={
     },
     _init:function(){
         this._window = $('#game');
+        var stats = new Stats();
+        $('#stats').append(stats.domElement);
         this._stage = new Kinetic.Stage({
             container:'game',
-            width:this._window.width(),
-            height:this._window.height()
+            width:640,
+            height:480
+        // width:this._window.width(),
+        // height:this._window.height()
         });
         this._map = new Map(this._stage);
-        this._map.load(this._config.map);
-        this._map.draw(this._config.x,this._config.y);
+        this._map.load(this._config);
+        var map = this._map;
+        var stage = this._stage;
+        var animation = new Kinetic.Animation({
+            func:function(frame){
+                stats.update();
+                stage.attrs.y += 1;
+                map.draw();
+            }
+        });
+        animation.start();
+       
     }
 }

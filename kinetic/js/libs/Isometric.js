@@ -30,6 +30,17 @@ Kinetic.Isometric.prototype ={
         x:0,
         y:0
     },
+    _vp:{
+        x:0, 
+        y:0,
+        w:0,
+        h:0
+    },
+
+    setViewport:function(vp){
+        this._vp = vp;  
+    },
+
     pos2px:function(x,y){
  
         return{
@@ -43,27 +54,32 @@ Kinetic.Isometric.prototype ={
             x:((top+x) / this._tile.height),
             y:((top-x) / this._tile.height)
         }
-    }
-    ,
-    centerAt:function(stage,x,y){
-        var pos = this.pos2px(x,y),
-        posX = -pos.left+stage.getWidth()/2-this._tile.width/2,
-        posY = -pos.top+stage.getHeight()/2;
-   
-        stage.setX(~~posX);
-        stage.setY(~~posY);
-      
     },
-    area:function(vp,torus){
+    getCenterPosition:function(x,y,width,height){
+        var pos = this.pos2px(x,y),
+        newX = -pos.left+width/2-this._tile.width/2,
+        newY = -pos.top+height/2;
+
+        return {
+            x:~~newX,
+            y:~~newY
+            };
+    },
+    area:function(offset,torus){
+        if(!offset) offset = 0;
         if(!torus) torus = false;
-        var grid = [];
         
-        for(var y = vp.y,yl = vp.y+vp.h;y<yl;y+=this._tile.height/2){
-            for(var x = vp.x,xl = vp._x+vp._w;x<xl;x+=this._tile.width/2){
+        this._vp.x -= this._tile.width/2;
+        this._vp.y += this._tile.height;
+        var grid = [];
+        for(var y = this._vp.y,yl = this._vp.y+this._vp.h;y<=yl;y+=this._tile.height/2){
+            for(var x = this._vp.x,xl =this._vp.x+this._vp.w;x<=xl;x+=this._tile.width/2){
+               
                 var row = this.px2pos(x,y),
                 posX = ~~row.x,posY = ~~row.y;
+          
                 if(!torus && posX > 0 || posY > 0) {
-                    posX =   Math.max(0,Math.min(this._map.width, posX));
+                    posX = Math.max(0, Math.min(this._map.width, posX));
                     posY = Math.max(0, Math.min(this._map.height, posY));
                     grid.push([posX,posY]); 
                 }else{
@@ -73,7 +89,7 @@ Kinetic.Isometric.prototype ={
             }
         }
       
-       
+      
         return grid;       
     } 
     
