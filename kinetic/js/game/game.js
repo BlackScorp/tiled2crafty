@@ -27,7 +27,7 @@ Game.prototype ={
         var animation = new Kinetic.Animation({
             func:function(frame){
                 stats.update();
-                stage.attrs.y += 5;
+                stage.attrs.y += 1;
                 map.draw();
             }
         });
