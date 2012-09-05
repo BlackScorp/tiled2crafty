@@ -35,17 +35,18 @@ Map.prototype = {
         //If map is not initialized, return
         if(!this._map) return;
         //If there is no viewport or the viewport is not within the stage
-        if(!this._vp || !this._stageWithinViewport()){
+        if(!this._vp || !this._stageWithinViewport() ){
         //Update layer
            
         //console.time("UpdateMap");
-        //   this._updateLayers();
+         this._updateLayers();
         // console.timeEnd("UpdateMap");
        
         } 
+        
     //draw Layer
     // console.time("DrawMap");
-    //this._drawLayers(); 
+    this._drawLayers(); 
     // console.timeEnd("DrawMap");
       
     },
@@ -83,10 +84,9 @@ Map.prototype = {
         var pos = this._map.pos2px(this._x,this._y); //calculate position 2 pixel
        
         //set center position of stage
-        this._stage.attrs.x = -pos.left+this._stage.attrs.width/2-tw/2; 
-        this._stage.attrs.y = -pos.top+this._stage.attrs.height/2;
-        this._stage.attrs.offset.x = -this._offset.x;
-        this._stage.attrs.offset.y = -this._offset.y;
+        this._stage.attrs.x = -pos.left+this._cache.width/2-tw/2; 
+        this._stage.attrs.y = -pos.top+this._cache.height/2;
+  
       
 
     },
@@ -111,7 +111,7 @@ Map.prototype = {
                     cache.name = 'cache';
                     //add chacheCanvas to layer
                     layer.cacheCanvas = cache;
-                    $('#cache').append(cache.getElement());
+                   // $('#cache').append(cache.getElement());
                     //sort the children before Draw
                     layer.beforeDraw(function(){
                         this.children.sort(function(a,b){
@@ -124,17 +124,17 @@ Map.prototype = {
                     })
                     var map = this;
                     layer.drawCache = function(){ 
-                        
+                       
                         var 
                         w=map._stage.attrs.width,
                         h=map._stage.attrs.height,
-                        x = -map._stage.attrs.x - map._vp.x,
-                        y=-map._stage.attrs.y -map._vp.y;
-                      //  console.log(-map._stage.attrs.y-map._margin.y+map._vp.y);
-                        x = 0,y=0;
+                        x=(-map._stage.attrs.x-map._vp.x)+map._offset.x,
+                        y=(-map._stage.attrs.y-map._vp.y)+map._offset.y;
+    
                         this.getCanvas().clear();
                         //Draw the part of cached Canvas into layer canvas
                         this.getContext().drawImage(this.cacheCanvas.getElement(),x,y,w,h,0,0,w,h);  
+                       
                     }
                     
                    
@@ -163,9 +163,8 @@ Map.prototype = {
             });
         loader.onComplete(function(){
             //draw map
-            //map.draw();
-            map._updateLayers();
-            map._drawLayers();
+            map.draw();
+           
         });
         //start loading
         loader.load();
@@ -221,19 +220,18 @@ Map.prototype = {
         console.time("UpdateLayers");
 
       
-        this._vp = {
+         this._vp = {
             x:-this._stage.attrs.x,
             y:-this._stage.attrs.y,
             w:this._cache.width,
             h:this._cache.height
         }
-        
-        //set the viewport
-        this._map.setViewport(this._vp);
+     
+   
       
         //get area of viewport
-        var area = this._map.area(),mw=this._data.width,x=0,y=0,i=0,tiles = {};
-        
+        var area = this._map.area(this._vp),mw=this._data.width,x=0,y=0,i=0,tiles = {};
+            
         //loop throught elements
         console.time("Get Images");
        
@@ -292,26 +290,28 @@ Map.prototype = {
         
          
     },
+    
     _stageWithinViewport:function(){
-        var s = this._stage.attrs,o = this._offset,x=-s.x,y=-s.y,width = s.width,height=s.height;
+        //lazy vars
+        var s = this._stage.attrs,o = this._offset,vp = this._vp;
     
         var stage = {
-            l:x-width/2,
-            t:y-height/2,
-            r:x+width/2,
-            b:y+height/2
+            x:-s.x,
+            y:-s.y,
+            w:s.width+o.x,
+            h:s.height+o.y
         };
-        var vp ={
-            l:this._vp.x,
-            t:this._vp.y,
-            r:this._vp.width,
-            b:this._vp.height
+        var viewport ={
+            x:vp.x-o.x,
+            y:vp.y-o.y,
+            w:vp.w,
+            h:vp.h
         }
-        var within = vp.l > stage.l && vp.t > stage.t &&
-        vp.r > stage.r && vp.b >  stage.b;
+        
+        var within = viewport.x <= stage.x && viewport.x + viewport.w >= stage.x + stage.w &&
+				viewport.y <= stage.y && vp.y + viewport.h >= stage.y + stage.h;
     
-      
-   
+  
         return within;
                             
 

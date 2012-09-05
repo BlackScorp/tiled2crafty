@@ -30,16 +30,7 @@ Kinetic.Isometric.prototype ={
         x:0,
         y:0
     },
-    _vp:{
-        x:0, 
-        y:0,
-        w:0,
-        h:0
-    },
-
-    setViewport:function(vp){
-        this._vp = vp;  
-    },
+ 
 
     pos2px:function(x,y){
  
@@ -65,15 +56,22 @@ Kinetic.Isometric.prototype ={
             y:~~newY
             };
     },
-    area:function(offset,torus){
+    area:function(vp,offset,torus){
         if(!offset) offset = 0;
         if(!torus) torus = false;
         
-        this._vp.x -= this._tile.width/2;
-        this._vp.y += this._tile.height;
+        
+        var start = {
+            x:vp.x-this._tile.width/2,
+            y:vp.y+this._tile.height
+        };
+        var end = {
+            x:start.x+vp.w,
+            y:start.y+vp.h
+        }
         var grid = [];
-        for(var y = this._vp.y,yl = this._vp.y+this._vp.h;y<=yl;y+=this._tile.height/2){
-            for(var x = this._vp.x,xl =this._vp.x+this._vp.w;x<=xl;x+=this._tile.width/2){
+        for(var y = start.y,yl =end.y;y<=yl;y+=this._tile.height/2){
+            for(var x = start.x,xl =end.x;x<=xl;x+=this._tile.width/2){
                
                 var row = this.px2pos(x,y),
                 posX = ~~row.x,posY = ~~row.y;
