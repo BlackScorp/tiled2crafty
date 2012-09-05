@@ -26,10 +26,15 @@ Game.prototype ={
         var stage = this._stage;
         var animation = new Kinetic.Animation({
             func:function(frame){
-                stats.begin();
-                stage.attrs.y += 1;
+      
+                stats.begin(); 
+                stage.attrs.y +=1;
+                  
                 map.draw();
+                
                 stats.end();
+            
+                  
             }
         });
         animation.start();

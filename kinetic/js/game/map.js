@@ -16,8 +16,8 @@ var Map = function(stage){
   
     //Define cache canvas size
     this._cache = {
-        width:this._stage.attrs.width*2,
-        height:this._stage.attrs.height*2,
+        width:this._stage.attrs.width*3,
+        height:this._stage.attrs.height*3,
         x:0,
         y:0
     }
@@ -31,9 +31,12 @@ var Map = function(stage){
         getImages:$('#get_images'),
         drawImages:$('#draw_images'),
         drawCache:$('#draw_cache'),
-        draw:$('#draw')
+        draw:$('#draw'),
+        bgChildren:$('#count_bg'),
+        objChildren:$('#count_obj'),
+        totalChildren:$('#count_all')
     }
-   
+    this._tiles = {};
 }
 
 Map.prototype = {
@@ -41,24 +44,20 @@ Map.prototype = {
     //Main function to draw the map
     draw:function(){
         var drawTime = this._t();
-        //If map is not initialized, return
-        if(!this._map) return;
-        //If there is no viewport or the viewport is not within the stage
-        if(!this._vp || !this._stageWithinViewport() ){
-        //Update layer
-           
-        //console.time("UpdateMap");
-         this._updateLayers();
-        // console.timeEnd("UpdateMap");
+        //If map is not initialized or there is no viewport,return
+      
+        if(!this._map || !this._vp) return;
        
+     
+        //If  the viewport is not within the stage
+        if(!this._stageWithinViewport()){
+            //Update layer
+            this._updateLayers();
         } 
-        
-    //draw Layer
-    // console.time("DrawMap");
-    this._drawLayers(); 
-    // console.timeEnd("DrawMap");
-      var drawDiff = this._t() - drawTime;
-      this._info.draw.text(drawDiff);
+        //draw Layer
+        this._drawLayers(); 
+        var drawDiff = this._t() - drawTime;
+        this._info.draw.text(drawDiff);
     },
     //Initial Function, loads json file and initialize Map
     load:function(config){
@@ -116,36 +115,40 @@ Map.prototype = {
                 });
                 //if layer is visible
                 if(l.visible){
+                    var map = this;
                     //Create a cache Canvas
                     var cache =new Kinetic.Canvas(this._cache.width,this._cache.height);
                     cache.name = 'cache';
                     //add chacheCanvas to layer
                     layer.cacheCanvas = cache;
-                   // $('#cache').append(cache.getElement());
+                    // $('#cache').append(cache.getElement());
                     //sort the children before Draw
                     layer.beforeDraw(function(){
+                        if(this.attrs.name === 'background') {
+                            map._info.bgChildren.text(this.children.length);
+                        }
+                        if(this.attrs.name === 'object') {
+                            map._info.objChildren.text(this.children.length);
+                        }
                         this.children.sort(function(a,b){
                             return a.attrs.zIndex - b.attrs.zIndex;
                         }); 
                         this.cacheCanvas.clear();
                     });
-                    layer.afterDraw(function(){
-                        this.children = [];
-                    })
-                    var map = this;
-                    layer.drawCache = function(){ 
-                       
-                       
+
+                    layer.drawCache = function(){  
                         var 
                         w=map._stage.attrs.width,
                         h=map._stage.attrs.height,
                         x=(-map._stage.attrs.x-map._vp.x)+map._offset.x,
                         y=(-map._stage.attrs.y-map._vp.y)+map._offset.y;
-    
+                       
+                    
                         this.getCanvas().clear();
+                       
                         //Draw the part of cached Canvas into layer canvas
                         this.getContext().drawImage(this.cacheCanvas.getElement(),x,y,w,h,0,0,w,h);  
-                      
+                     
                     }
                     
                    
@@ -174,7 +177,7 @@ Map.prototype = {
             });
         loader.onComplete(function(){
             //draw map
-            map.draw();
+            map._updateLayers();
            
         });
         //start loading
@@ -227,13 +230,13 @@ Map.prototype = {
             this._layers[l].drawCache();
         }
         var diff = this._t() - t;
-                        this._info.drawCache.text(diff);
+        this._info.drawCache.text(diff);
     },
     _updateLayers:function(){
-       var updateTime = this._t();
+        var updateTime = this._t();
 
       
-         this._vp = {
+        this._vp = {
             x:-this._stage.attrs.x,
             y:-this._stage.attrs.y,
             w:this._cache.width,
@@ -243,11 +246,11 @@ Map.prototype = {
    
       
         //get area of viewport
-        var area = this._map.area(this._vp),mw=this._data.width,x=0,y=0,i=0,tiles = {};
+        var area = this._map.area(this._vp),mw=this._data.width,x=0,y=0,i=0,tiles = {},grid={};
             
         //loop throught elements
-        console.time("Get Images");
-       var imageTime = this._t();
+       
+        var imageTime = this._t();
         for(var a = 0,al = area.length;a<al;a++){
             x = area[a][0]; //get x
             y = area[a][1]; //get y
@@ -259,10 +262,12 @@ Map.prototype = {
                 id = layer.attrs.data[i],
                 tile = this._sprites[id];
                 //if sprite not exists or sprite id = 0 continue to next layer
-               
+                
                 var name = "Y"+y+"X"+x+"Z"+(l+1);
+                grid[name] = true;
                 //reduce amount of loops
-                if(id < 1 || !tile || tiles[name]) continue;
+              
+                if(id < 1 || !tile || this._tiles[name]) continue;
                 //create individual tile name
                    
                 var pos = this._map.pos2px(x,y);
@@ -283,7 +288,7 @@ Map.prototype = {
                     name:name
                 });
              
-                tiles[name]=image; 
+                this._tiles[name]=image; 
                 //add image to layer
                 layer.add(image);
                     
@@ -292,17 +297,31 @@ Map.prototype = {
         }
         var imageDiff = this._t()-imageTime;
         this._info.getImages.text(imageDiff);
-        console.timeEnd("Get Images");
-        
+   
+        for(var i in this._tiles){
+            var t = this._tiles[i];
+            if(!grid[i]){ //if the name is in Grid var
+                t.attrs.visible = false;
+            }else{
+                //here i need to delete it
+                t.attrs.visible = true;
+            }   
+        }
+        delete grid;
+ 
         var drawTime = this._t();
         //loop throught visible layers and draw children on cache canvas
+        var children = 0;
         for(l = 0,ll = this._layers.length;l<ll;l++){
             layer =this._layers[l];
+            children += layer.children.length;
             layer.draw(layer.cacheCanvas);
+            
         }
+        this._info.totalChildren.text(children);
         var drawDiff = this._t()-drawTime;
         this._info.drawImages.text(drawDiff);
-        console.timeEnd("UpdateLayers");
+   
         var updateDiff = this._t()-updateTime;
         this._info.updateLayer.text(updateDiff);
          
@@ -326,8 +345,8 @@ Map.prototype = {
         }
         
         var within = viewport.x <= stage.x && viewport.x + viewport.w >= stage.x + stage.w &&
-				viewport.y <= stage.y && vp.y + viewport.h >= stage.y + stage.h;
-    
+        viewport.y <= stage.y && vp.y + viewport.h >= stage.y + stage.h;
+        
   
         return within;
                             
@@ -336,6 +355,6 @@ Map.prototype = {
        
     },
     _t:function(){
-        return (new Date()).getTime();
+        return Date.now();
     }
 }
