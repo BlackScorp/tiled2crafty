@@ -99,6 +99,9 @@ Kinetic.Keyboard.prototype.disable = function(){
 Kinetic.Keyboard.prototype.enable = function(){
     this.active = true;
 }
+Kinetic.Keyboard.prototype.enabled = function(){
+    return this.active;
+}
 Kinetic.Keyboard.prototype.isDown = function(key){
     if(!this.active) return false;
     if(!key) return this.anyDown;

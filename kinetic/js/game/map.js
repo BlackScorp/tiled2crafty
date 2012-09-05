@@ -332,14 +332,14 @@ Map.prototype = {
         var s = this._stage.attrs,o = this._offset,vp = this._vp,tw =this._data.tilewidth,th = this._data.tileheight;
     
         var stage = {
-            x:-s.x,
-            y:-s.y,
-            w:s.width+(o.x-tw/2),
-            h:s.height+(o.y-th)
+            x:-s.x+(o.x-tw/2),
+            y:-s.y+(o.y-th),
+            w:s.width,
+            h:s.height
         };
         var viewport ={
-            x:vp.x-(o.x-tw/2),
-            y:vp.y-(o.y-th),
+            x:vp.x,
+            y:vp.y,
             w:vp.w,
             h:vp.h
         }
