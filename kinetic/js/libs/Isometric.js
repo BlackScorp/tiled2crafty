@@ -35,8 +35,8 @@ Kinetic.Isometric.prototype ={
     pos2px:function(x,y){
  
         return{
-            left:((x-y)*this._tile.width/2+this._origin.x),
-            top:((x+y)*this._tile.height/2)
+            left:~~((x-y)*this._tile.width/2+this._origin.x),
+            top:~~((x+y)*this._tile.height/2)
         }
     },
     px2pos:function(left,top){
@@ -58,7 +58,7 @@ Kinetic.Isometric.prototype ={
     },
     area:function(vp,offset,torus){
         if(!offset) offset = 0;
-        if(!torus) torus = false;
+        if(!torus) torus = true;
         
         
         var start = {

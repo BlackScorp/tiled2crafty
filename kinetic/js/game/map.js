@@ -9,15 +9,15 @@ var Map = function(stage){
     this._y = 0;
     //Drawn Layers
     this._layers = [];
-
+    this._ready = false;
     //Viewport
     this._vp = null; 
     
   
     //Define cache canvas size
     this._cache = {
-        width:this._stage.attrs.width*3,
-        height:this._stage.attrs.height*3,
+        width:this._stage.attrs.width*2,
+        height:this._stage.attrs.height*2,
         x:0,
         y:0
     }
@@ -43,11 +43,11 @@ Map.prototype = {
     _data:null,
     //Main function to draw the map
     draw:function(){
-        var drawTime = this._t();
+        
         //If map is not initialized or there is no viewport,return
       
-        if(!this._map || !this._vp) return;
-       
+        if(!this._ready) return;
+       var drawTime = this._t();
      
         //If  the viewport is not within the stage
         if(!this._stageWithinViewport()){
@@ -121,7 +121,7 @@ Map.prototype = {
                     cache.name = 'cache';
                     //add chacheCanvas to layer
                     layer.cacheCanvas = cache;
-                    // $('#cache').append(cache.getElement());
+                     //$('#cache').append(cache.getElement());
                     //sort the children before Draw
                     layer.beforeDraw(function(){
                         if(this.attrs.name === 'background') {
@@ -178,7 +178,7 @@ Map.prototype = {
         loader.onComplete(function(){
             //draw map
             map._updateLayers();
-           
+            map._ready = true;
         });
         //start loading
         loader.load();
@@ -329,17 +329,17 @@ Map.prototype = {
     
     _stageWithinViewport:function(){
         //lazy vars
-        var s = this._stage.attrs,o = this._offset,vp = this._vp;
+        var s = this._stage.attrs,o = this._offset,vp = this._vp,tw =this._data.tilewidth,th = this._data.tileheight;
     
         var stage = {
             x:-s.x,
             y:-s.y,
-            w:s.width+o.x,
-            h:s.height+o.y
+            w:s.width+(o.x-tw/2),
+            h:s.height+(o.y-th)
         };
         var viewport ={
-            x:vp.x-o.x,
-            y:vp.y-o.y,
+            x:vp.x-(o.x-tw/2),
+            y:vp.y-(o.y-th),
             w:vp.w,
             h:vp.h
         }
