@@ -25,6 +25,13 @@ var Map = function(stage){
         x:(this._cache.width-this._stage.attrs.width)/2,
         y:(this._cache.height-this._stage.attrs.height)/2
     }
+    
+    this._info = {
+        updateLayer:$('#update_layer'),
+        getImages:$('#get_images'),
+        drawImages:$('#draw_images'),
+        drawCache:$('#draw_cache')
+    }
    
 }
 
@@ -125,6 +132,7 @@ Map.prototype = {
                     var map = this;
                     layer.drawCache = function(){ 
                        
+                       var t = map._t();
                         var 
                         w=map._stage.attrs.width,
                         h=map._stage.attrs.height,
@@ -134,7 +142,8 @@ Map.prototype = {
                         this.getCanvas().clear();
                         //Draw the part of cached Canvas into layer canvas
                         this.getContext().drawImage(this.cacheCanvas.getElement(),x,y,w,h,0,0,w,h);  
-                       
+                        var diff = map._t() - t;
+                        map._info.drawCache.text(diff);
                     }
                     
                    
@@ -217,7 +226,7 @@ Map.prototype = {
       
     },
     _updateLayers:function(){
-        console.time("UpdateLayers");
+       var updateTime = this._t();
 
       
          this._vp = {
@@ -234,7 +243,7 @@ Map.prototype = {
             
         //loop throught elements
         console.time("Get Images");
-       
+       var imageTime = this._t();
         for(var a = 0,al = area.length;a<al;a++){
             x = area[a][0]; //get x
             y = area[a][1]; //get y
@@ -277,17 +286,21 @@ Map.prototype = {
  
             }
         }
+        var imageDiff = this._t()-imageTime;
+        this._info.getImages.text(imageDiff);
         console.timeEnd("Get Images");
         
-        
+        var drawTime = this._t();
         //loop throught visible layers and draw children on cache canvas
         for(l = 0,ll = this._layers.length;l<ll;l++){
             layer =this._layers[l];
             layer.draw(layer.cacheCanvas);
         }
-       
+        var drawDiff = this._t()-drawTime;
+        this._info.drawImages.text(drawDiff);
         console.timeEnd("UpdateLayers");
-        
+        var updateDiff = this._t()-updateTime;
+        this._info.updateLayer.text(updateDiff);
          
     },
     
@@ -317,5 +330,8 @@ Map.prototype = {
 
  
        
+    },
+    _t:function(){
+        return (new Date()).getTime();
     }
 }

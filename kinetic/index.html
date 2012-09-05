@@ -17,26 +17,39 @@
                 left:0px;
                 width: 100%;
                 height:100%;
-               
+
             }
             #stats{
                 position: absolute;
                 top:10px;
                 left:10px;
             }
-          
+            #info{
+                position: absolute;
+                top:100px;
+                left:10px;
+                border:1px solid black;
+                background: #FFF;
+            }
+
         </style>
 
     </head>
     <body>
         <div id="game"></div>
-  
+
         <div id="stats"></div>
+        <div id="info">
+            Update offscreen Canvas<span id="update_layer"></span> ms<br/>
+            Get offscreen Images<span id="get_images"></span> ms<br/>
+            Draw images offscreen<span id="draw_images"></span> ms<br/>
+            Copy offscreen to screen <span id="draw_cache"></span> ms
+        </div>
         <!-- Initial Data Could be created by PHP Script -->
         <script>
          
             var playerConfigs = {
-              //   x:0,y:0,map:'frontier_outpost'
+                //   x:0,y:0,map:'frontier_outpost'
                 x:248,y:186,map:'frontier_plains'
             }
         </script>
@@ -50,7 +63,7 @@
         <script  src="js/libs/Isometric.js"></script>
         <script  src="js/libs/Loader.js"></script>
         <!-- Game Files -->
-         <script src="js/game/index.js"></script>
+        <script src="js/game/index.js"></script>
         <script src="js/game/files.js"></script>
         <script src="js/game/map.js"></script>
         <script src="js/game/game.js"></script>
