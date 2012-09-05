@@ -30,7 +30,8 @@ Game.prototype ={
         var frame = 0;
         var animation = new Kinetic.Animation({
             func:function(frame){
-      
+               
+                if(!map.isReady()) return;
                 stats.begin(); 
                   stage.attrs.y+=speed;
                 if(++frame % FPS == 0) return;

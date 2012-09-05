@@ -356,5 +356,8 @@ Map.prototype = {
     },
     _t:function(){
         return Date.now();
+    },
+    isReady:function(){
+        return this._ready;
     }
 }
