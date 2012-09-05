@@ -30,7 +30,8 @@ var Map = function(stage){
         updateLayer:$('#update_layer'),
         getImages:$('#get_images'),
         drawImages:$('#draw_images'),
-        drawCache:$('#draw_cache')
+        drawCache:$('#draw_cache'),
+        draw:$('#draw')
     }
    
 }
@@ -39,6 +40,7 @@ Map.prototype = {
     _data:null,
     //Main function to draw the map
     draw:function(){
+        var drawTime = this._t();
         //If map is not initialized, return
         if(!this._map) return;
         //If there is no viewport or the viewport is not within the stage
@@ -55,7 +57,8 @@ Map.prototype = {
     // console.time("DrawMap");
     this._drawLayers(); 
     // console.timeEnd("DrawMap");
-      
+      var drawDiff = this._t() - drawTime;
+      this._info.draw.text(drawDiff);
     },
     //Initial Function, loads json file and initialize Map
     load:function(config){
@@ -132,7 +135,7 @@ Map.prototype = {
                     var map = this;
                     layer.drawCache = function(){ 
                        
-                       var t = map._t();
+                       
                         var 
                         w=map._stage.attrs.width,
                         h=map._stage.attrs.height,
@@ -142,8 +145,7 @@ Map.prototype = {
                         this.getCanvas().clear();
                         //Draw the part of cached Canvas into layer canvas
                         this.getContext().drawImage(this.cacheCanvas.getElement(),x,y,w,h,0,0,w,h);  
-                        var diff = map._t() - t;
-                        map._info.drawCache.text(diff);
+                      
                     }
                     
                    
@@ -219,11 +221,13 @@ Map.prototype = {
         return images;
     },
     _drawLayers:function(){
+        var t = this._t();
         //loop throught visible layers and draw part of chacecanvas into screencanvas
         for(var l = 0,ll = this._layers.length;l<ll;l++){
             this._layers[l].drawCache();
         }
-      
+        var diff = this._t() - t;
+                        this._info.drawCache.text(diff);
     },
     _updateLayers:function(){
        var updateTime = this._t();
