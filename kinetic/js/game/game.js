@@ -62,24 +62,18 @@ Game.prototype ={
                 if(loops > 0){
                     var inter = parseFloat((Date.now()+tick-time) / tick);
                     game.update(inter);
-                    game.render(inter);
+                    game.render();
                     time = Date.now();
                 }
                
             }
         });
         animation.start();
-     
-  
-     
-       
-        
- 
        
     },
-    render:function(inter){
-        console.log(inter);
-        if(!this._map.isReady()) return;
+    render:function(){
+       
+        
         this._map.draw(); 
          
     },
@@ -96,23 +90,23 @@ Game.prototype ={
         if(!inter) inter = 1;
         var pos = this._stage.attrs;
         var speed = this._speed;
-        if( !this._keyboard.isDown()) return;
+      
         
         if(this._keyboard.isDown('UP_ARROW')){
    
-            this._stage.attrs.y = pos.y + speed.y * inter; 
+            this._stage.attrs.y = ~~(pos.y + speed.y * inter); 
         }
         if(this._keyboard.isDown('DOWN_ARROW')){
 
-            this._stage.attrs.y = pos.y- speed.y * inter; 
+            this._stage.attrs.y = ~~(pos.y- speed.y * inter); 
         }
         if( this._keyboard.isDown('RIGHT_ARROW')){
 
-            this._stage.attrs.x = pos.x - speed.x * inter;
+            this._stage.attrs.x = ~~(pos.x - speed.x * inter);
         }
         if(this._keyboard.isDown('LEFT_ARROW')){
    
-            this._stage.attrs.x =pos.x + speed.x * inter;
+            this._stage.attrs.x =~~(pos.x + speed.x * inter);
         }
     }
 }
