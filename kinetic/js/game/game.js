@@ -29,13 +29,16 @@ Game.prototype ={
         this._map.load(this._config);
         this._keyboard = new Kinetic.Keyboard();
         var keyboard = this._keyboard;
-         $(document).focus();
+        $(document).focus();
      
-        var map = this._map;
+     
       
-        var FPS = 25;
+        var maxFPS = 25;
+        var tick = 1000/maxFPS;
+        var maxFrames = 5;
+        var time = Date.now();
         var game = this;
-        var frame = 0;
+
         $(document).on("keyup keydown",function(e){
             e.preventDefault();
             keyboard.dispatch(e);
@@ -45,22 +48,40 @@ Game.prototype ={
         }).on("focusout",function(){
             keyboard.disable();
         });
+        
         var animation = new Kinetic.Animation({
             func:function(frame){
+                if(game.isPaused()) return;
+                stats.update();
+                var loops =0;
+                while(Date.now() > time && loops < maxFrames){
+                    game.update();
+                    time += tick;
+                    loops++;
+                }
+                if(loops > 0){
+                    var inter = parseFloat((Date.now()+tick-time) / tick);
+                    game.update(inter);
+                    game.render(inter);
+                    time = Date.now();
+                }
                
-                if(!map.isReady() && game.isPaused())return
-                    
-                stats.begin(); 
-                game.update();
-                if(++frame % FPS == 0) return;
-                map.draw(); 
-                stats.end();
-            
-                  
             }
         });
         animation.start();
+     
+  
+     
        
+        
+ 
+       
+    },
+    render:function(inter){
+        console.log(inter);
+        if(!this._map.isReady()) return;
+        this._map.draw(); 
+         
     },
     isPaused:function(){
         return this._paused;
@@ -71,24 +92,27 @@ Game.prototype ={
     unpause:function(){
         this._paused = false;
     },
-    update:function(){
+    update:function(inter){
+        if(!inter) inter = 1;
+        var pos = this._stage.attrs;
+        var speed = this._speed;
         if( !this._keyboard.isDown()) return;
         
         if(this._keyboard.isDown('UP_ARROW')){
    
-            this._stage.attrs.y +=this._speed.y; 
+            this._stage.attrs.y = pos.y + speed.y * inter; 
         }
         if(this._keyboard.isDown('DOWN_ARROW')){
 
-            this._stage.attrs.y -=this._speed.y; 
+            this._stage.attrs.y = pos.y- speed.y * inter; 
         }
         if( this._keyboard.isDown('RIGHT_ARROW')){
 
-            this._stage.attrs.x -=this._speed.x; 
+            this._stage.attrs.x = pos.x - speed.x * inter;
         }
         if(this._keyboard.isDown('LEFT_ARROW')){
    
-            this._stage.attrs.x +=this._speed.x; 
+            this._stage.attrs.x =pos.x + speed.x * inter;
         }
     }
 }
